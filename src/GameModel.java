@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class GameModel{
   private Player p1; 
   private Player p2; 
