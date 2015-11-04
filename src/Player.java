@@ -1,4 +1,3 @@
-
 public class Player extends Character {
 	
 	private String name;
@@ -7,6 +6,10 @@ public class Player extends Character {
 	private State state;
 	private enum State {STANDING, RUNNING, JUMPING, FALLING, DYING};
 
+	public Player(String name) {
+		this.name = name;
+	}
+	
 	public State getState() {
 		return state;
 	}
