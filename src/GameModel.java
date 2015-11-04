@@ -2,6 +2,7 @@ public class GameModel{
   private Player p1; 
   private Player p2; 
   private Level currentLevel; 
+  private Engine engine; 
   private List<EnemySpawn> enemies; 
   private Coin coins[]; 
   private Powerup powerups[]; 
