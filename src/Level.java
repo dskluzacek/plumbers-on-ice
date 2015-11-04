@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class Level { 
   private List<Block> blocks; 
   private List<Decoration> decorations; 

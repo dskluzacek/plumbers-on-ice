@@ -2,9 +2,9 @@ public class Vector {
 	private double x;
 	private double y;
 
-	public Vector(double a, double b) {
-		x = a;
-		y =b;
+	public Vector(double x, double y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	public double getX() {
@@ -33,7 +33,7 @@ public class Vector {
 	public Vector sum(Vector r) {
 		double a = this.x + r.getX();
 		double b = this.y + r.getY();
-		return Vector(a, b);
+		return new Vector(a, b);
 
 	}
 }
