@@ -12,6 +12,7 @@ public class Level {
   public List<Decoration> getDecoration(){
     return decorations; 
   }
+
   
   public List<EnemySpawn> getEnemies(){
     return enemies; 
