@@ -57,13 +57,9 @@ public class Rectangle {
 		}
 		
 		int topDistance = (this.y + this.h) - other.y;
-		System.out.println("Top: " + topDistance);
 		int bottomDistance = this.y - (other.y + other.h);
-		System.out.println("Bottom: " + bottomDistance);
 		int leftDistance = (this.x + this.w) - other.x;
-		System.out.println("Left: " + leftDistance);
 		int rightDistance = this.x - (other.x + other.w);
-		System.out.println("Right: " + rightDistance);
 		
 		int[] arr = new int[] { topDistance, bottomDistance, leftDistance, rightDistance };
 		Arrays.sort(arr);
