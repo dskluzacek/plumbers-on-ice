@@ -47,7 +47,7 @@ public class Rectangle {
 	}
 
 	public boolean intersects(Rectangle other) {
-		return ( this.x + this.w < other.x || other.x + other.w < this.x
+		return !( this.x + this.w < other.x || other.x + other.w < this.x
 			    || this.y + this.h < other.y || other.y + other.h < this.y );
 	}
 	
