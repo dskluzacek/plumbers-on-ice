@@ -57,28 +57,37 @@ public class Rectangle {
 		}
 		
 		int topDistance = (this.y + this.h) - other.y;
+		System.out.println("Top: " + topDistance);
 		int bottomDistance = this.y - (other.y + other.h);
+		System.out.println("Bottom: " + bottomDistance);
 		int leftDistance = (this.x + this.w) - other.x;
+		System.out.println("Left: " + leftDistance);
 		int rightDistance = this.x - (other.x + other.w);
+		System.out.println("Right: " + rightDistance);
 		
 		int[] arr = new int[] { topDistance, bottomDistance, leftDistance, rightDistance };
 		Arrays.sort(arr);
 		
-		final Direction direction;
-		final int distance;
+		int lowest = 0;
 		
-		if (arr[0] == topDistance && topDistance >= 0) {
+		for (int dist : arr)
+		{
+			if (dist >= 0) {
+				lowest = dist;
+				break;
+			}
+		}
+		final int distance = lowest;
+		final Direction direction;
+		
+		if (lowest == topDistance) {
 			direction = Direction.TOP;
-			distance = topDistance;
-		} else if (arr[0] == leftDistance && leftDistance >= 0) {
+		} else if (lowest == leftDistance) {
 			direction = Direction.LEFT;
-			distance = leftDistance;
-		} else if (arr[0] == bottomDistance && bottomDistance >= 0) {
+		} else if (lowest == bottomDistance) {
 			direction = Direction.BOTTOM;
-			distance = bottomDistance;
-		} else if (arr[0] == rightDistance && rightDistance >= 0) {
+		} else if (lowest == rightDistance) {
 			direction = Direction.RIGHT;
-			distance = rightDistance;
 		}
 		else
 			throw new IllegalStateException();
