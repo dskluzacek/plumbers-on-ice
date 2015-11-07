@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 public class Rectangle {
 	
@@ -48,5 +49,55 @@ public class Rectangle {
 	public boolean intersects(Rectangle other) {
 		return ( this.x + this.w < other.x || other.x + other.w < this.x
 			    || this.y + this.h < other.y || other.y + other.h < this.y );
+	}
+	
+	public CollisionInfo collisionInfo(Rectangle other) {
+		if ( ! this.intersects(other) ) {
+			return null;
+		}
+		
+		int topDistance = (this.y + this.h) - other.y;
+		int bottomDistance = this.y - (other.y + other.h);
+		int leftDistance = (this.x + this.w) - other.x;
+		int rightDistance = this.x - (other.x + other.w);
+		
+		int[] arr = new int[] { topDistance, bottomDistance, leftDistance, rightDistance };
+		Arrays.sort(arr);
+		
+		final Direction direction;
+		final int distance;
+		
+		if (arr[0] == topDistance && topDistance >= 0) {
+			direction = Direction.TOP;
+			distance = topDistance;
+		} else if (arr[0] == leftDistance && leftDistance >= 0) {
+			direction = Direction.LEFT;
+			distance = leftDistance;
+		} else if (arr[0] == bottomDistance && bottomDistance >= 0) {
+			direction = Direction.BOTTOM;
+			distance = bottomDistance;
+		} else if (arr[0] == rightDistance && rightDistance >= 0) {
+			direction = Direction.RIGHT;
+			distance = rightDistance;
+		}
+		else
+			throw new IllegalStateException();
+		
+		return new CollisionInfo() {
+			@Override
+			public Direction getDirection() {
+				return direction;
+			}
+
+			@Override
+			public int getDistance() {
+				return distance;
+			}
+		};
+	}
+	
+	public interface CollisionInfo {
+		Direction getDirection();
+		int getDistance();
 	}
 }
