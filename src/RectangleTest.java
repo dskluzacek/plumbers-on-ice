@@ -60,7 +60,7 @@ public class RectangleTest {
 		assert( rect.collisionInfo(rect2).getDistance() == 5 );
 	}
 	
-	static void print(Rectangle.CollisionInfo info) {
+	static void print(Rectangle.Collision info) {
 		if (info != null)
 		{
         	System.out.print(info.getDirection() + ", ");
