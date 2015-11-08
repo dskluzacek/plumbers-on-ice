@@ -51,7 +51,7 @@ public class Rectangle {
 			    || this.y + this.h < other.y || other.y + other.h < this.y );
 	}
 	
-	public CollisionInfo collisionInfo(Rectangle other) {
+	public Collision collisionInfo(Rectangle other) {
 		if ( ! this.intersects(other) ) {
 			return null;
 		}
@@ -88,7 +88,7 @@ public class Rectangle {
 		else
 			throw new IllegalStateException();
 		
-		return new CollisionInfo() {
+		return new Collision() {
 			@Override
 			public Direction getDirection() {
 				return direction;
@@ -101,7 +101,7 @@ public class Rectangle {
 		};
 	}
 	
-	public interface CollisionInfo {
+	public interface Collision {
 		Direction getDirection();
 		int getDistance();
 	}
