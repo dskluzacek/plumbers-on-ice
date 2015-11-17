@@ -1,3 +1,14 @@
 /bin/
 .project
 .classpath
+/settings.gradle
+/local.properties
+/gradlew.bat
+/gradlew
+/gradle.properties
+/build.gradle
+/ForestBoy.png
+/Standard sprites upd.png
+/Ye_Oldy_Girl_02.png
+/gradle/
+/.settings/
