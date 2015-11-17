@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="150" height="16" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="Seasonal tiles" tilewidth="16" tileheight="16">
+  <image source="tilesheet.png" width="192" height="96"/>
+ </tileset>
+ <layer name="Platform layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJzt1rENgDAMRUEvA9SBAdh/K2qiKEoRV76T3P3yKUoEAAAAAEAt5+Suwf5Y3FHbPblnsG+LO2rTFRl0RYYdXb3hr8Xfjq68XfR0RYYP2wMULw==
+  </data>
+ </layer>
+ <layer name="Decorative layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztzqEOwCAQREGKBw/8/39yAl91IWlnkudWbCkAAAAAOZ6o3j7B57Sov2xGNE8r/REAAAAAf7YB49MAhw==
+  </data>
+ </layer>
+ <objectgroup name="Object layer" width="150" height="16">
+  <object name="Spawner 1" type="hello" x="272" y="128">
+   <properties>
+    <property name="type" value="greenbot"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
