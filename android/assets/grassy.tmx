@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="20">
+ <tileset firstgid="1" name="Seasonal tiles" tilewidth="16" tileheight="16" tilecount="72">
+  <image source="tilesheet.png" width="192" height="96"/>
+ </tileset>
+ <layer name="Platform layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztmFGOwyAMRLlM2u9mv1e9/60qVFm1RjZ4gIZslpFQlDS4Bp5tSEpLS0vf0G22AyfUmpN+7bMdWLqcclwurj7ajPs8R/cJvvxl7WlxJcoM/Tq/PdObL2mLM1+SqyJcXXm/ITnJY8oScobtv0rm0ePKm5urzJmwxPK09BHGEDJVyldn50jzwdSnx9c8OqdwHVvXVc91ZugJ93uKcVWzP1Ol/ZD3/lE5KlIfMdaPqKc9NkfPG+PLzbmOFstU1pE5CuO2Fr+R93tyTO25Xi+L6x6mtC12DPL+7lxZe9b5nsk3VuxbfTb4j1HxwHLl9R8pdkxY41rt4lgYPzyeWL702Sz3iY6tRZLzfpRvmgGrbkXrE8PVjLOklata7dTmStayxacoVyX7pdo2In5xjy/jFa7Y/IL2dItyhfvd0vcLVgw7rWx5fo/Yw4t95opCpqw6yPhmrbk11lauxF+PnyhXPX1F3nmglB+9vvLM22Ph817/azEzIl+JNuVLjoOWb9uPFB8vwxXWaabpmBa1rAvuAXfnHv23GLHk+Wx9mxoRFyW1chXJK7Vv29Luyiaz7hGuWJ5eNQFY3Q==
+  </data>
+ </layer>
+ <layer name="Decorative layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztmEkOgDAIRat77dbh/ve0GxPSRDtiEf5LSFyoQYZP0TkAAABAD55cT8HmUY4AtSzB1tFOCManbzHB1vj8HuyIDOigZjahr8qJ49zak9KRPpu0nMm446y9TntAY5STDzpPT8ejp8hbOzkaoUVHemLhfNDSX7dGvL2jVNdRh4CDr89xf6tj6q+lmdtT4++4cf5nkLaPpOpcmr8cWOqX3jzFjqNukCc9aM9lzffFc4drJ6dY2JGAfC7nrwTh
+  </data>
+ </layer>
+ <objectgroup name="Object layer">
+  <object id="1" name="Spawner 1" type="hello" x="272" y="128">
+   <properties>
+    <property name="type" value="greenbot"/>
+   </properties>
+  </object>
+  <object id="2" name="Spawner 2" type="greenbot" x="329" y="196"/>
+  <object id="3" name="Spawner3" type="Greenbot" x="469" y="231"/>
+  <object id="5" name="Spawner 4" type="greenbot" x="824" y="168"/>
+  <object id="6" name="Spawner 5" type="greenbot" x="837" y="227"/>
+  <object id="7" name="Spawner 6" type="greenbot" x="1001" y="201"/>
+  <object id="8" name="Spawner 7" type="greenbot" x="1272" y="117"/>
+  <object id="9" name="Spawner 8" type="greenbot" x="1689" y="167"/>
+  <object id="10" name="Spawner 9" type="greenbot" x="1803" y="101"/>
+  <object id="11" name="Spawner 10" type="greenbot" x="1753" y="230"/>
+  <object id="12" name="Spawner 11" type="greenbot" x="1849" y="232"/>
+  <object id="13" name="Spawner 12" type="greenbot" x="1750" y="151"/>
+  <object id="14" name="Spawner 13" type="greenbot" x="2010" y="120"/>
+  <object id="15" name="Spawner 14" type="greenbot" x="2229" y="53"/>
+  <object id="16" name="Spawner 15" type="greenbot" x="2137" y="166"/>
+  <object id="17" name="Spawner 16" type="greenbot" x="2264" y="165"/>
+  <object id="18" name="Spawner 17" type="greenbot" x="2007" y="181"/>
+  <object id="19" name="Spawner 18" type="greenbot" x="2104" y="53"/>
+ </objectgroup>
+</map>
