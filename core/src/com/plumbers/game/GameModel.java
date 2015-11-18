@@ -29,6 +29,8 @@ public class GameModel{
 	public /*List<Event>*/ void gameTick() {
 		++gameTicks;
 		player1.simulate();
+		player1.fallingCheck( currentLevel.getBlocks() );
+		player1.collisionCheck( currentLevel.getBlocks() );
 	}
 
 	public Iterable<Drawable> getDrawables() {

@@ -1,5 +1,8 @@
 package com.plumbers.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.plumbers.game.MovementAnimation.Action;
@@ -35,18 +38,46 @@ public abstract class Character extends Motionable implements Drawable {
 				frame.getRegionWidth() * 2, frame.getRegionHeight() * 2);
 	}
 	
-	@Override
-	public void simulate() {
-		super.simulate();
-
-		if (state == State.RUNNING && getVelocity().getX() <= 0) {
-			state = Character.State.STANDING;
-			setXVelocity(0);
-		}
+	private void updateHitbox() {
+		Vector position = getPosition();
+		hitbox.setX( Math.rposition.getX() );
 	}
 	
 	public void fallingCheck(Iterable<Block> blocks) {
+		if (state != State.STANDING && state != State.RUNNING)
+			return;
 		
+		
+		
+		Rectangle box = new Rectangle( hitbox.getX(),
+		                               hitbox.getY(),
+		                               hitbox.getW(),
+		                               hitbox.getH() - 1);
+		
+		for (Block b : blocks) {
+			Rectangle.Collision coll = box.collisionInfo( b.getRectangle() );
+			
+			if (coll == null || coll.getDirection() != Direction.TOP) {
+				state = State.FALLING;
+				setYAccel(640);
+			}
+		}
+	}
+	
+	public void collisionCheck(Iterable<Block> blocks) {
+		List<Rectangle.Collision> list = new ArrayList<Rectangle.Collision>();
+		
+		for (Block b : blocks) {
+			Rectangle.Collision coll = hitbox.collisionInfo( b.getRectangle() );
+			
+			if (coll != null) {
+				list.add(coll);
+			}	
+		}
+		
+		for (Rectangle.Collision info : list) {
+			respondToCollision(null, info);
+		}
 	}
 	
 	public void respondToCollision(Block b, Rectangle.Collision info) {
@@ -70,8 +101,6 @@ public abstract class Character extends Motionable implements Drawable {
 			}
 		}
 	}
-
-	public abstract void respondToCollision(Enemy e, Rectangle.Collision info);
 	
 	public State getState() {
 		return state;
