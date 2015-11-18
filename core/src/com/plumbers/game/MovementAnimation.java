@@ -11,7 +11,7 @@ public final class MovementAnimation {
 	private final Animation landAnim;
 	private final Animation knockbackAnim;
 	
-	private Action action;
+	private Action action = Action.IDLE;
 	private float horizontalSpeed;
 	
 	public MovementAnimation(Animation idleAnim, Animation runAnim,
