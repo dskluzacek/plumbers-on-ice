@@ -27,7 +27,7 @@ public class Player extends Character {
 		Animation landAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-land") } );
 		Animation knockbackAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-knockback") } );
 		
-		setMovementAnim( new MovementAnimation(idleAnimation, walkAnimation, 83, 5, jumpAnimation, landAnimation, knockbackAnimation) );
+		setMovementAnim( new MovementAnimation(idleAnimation, walkAnimation, 120, 5, jumpAnimation, landAnimation, knockbackAnimation) );
 	}
 
 	@Override
@@ -35,15 +35,18 @@ public class Player extends Character {
 		if ( getState() == State.STANDING || getState() == State.RUNNING ) {
 			if ( Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ) {
 				setState( State.JUMPING );
-				setYVelocity(-6.667f);
+				setYVelocity(-10);
 				setXAccel(0);
-				setYAccel(11);
+				setYAccel(GameModel.GRAVITY);
 			} else if ( Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
-    			setXAccel(20);
+    			setXAccel(0.25f);
     			setState( State.RUNNING );
     		} else {
-    			setXAccel(-20);
+    			setXAccel(-0.75f);
     		}
+		}
+		if ( getState() == State.JUMPING && Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
+			setXPosition( getPosition().getX() + 0.8f);
 		}
 		Vector velocity = getVelocity();
 		velocity.add( getAcceleration() );
@@ -51,16 +54,22 @@ public class Player extends Character {
 		
 		if (velocity.getX() > 5) {
 			setXVelocity(5);
-		} else if (velocity.getX() <= 0) {
+		} else if (velocity.getX() < 0) {
 			setXVelocity(0);
 		}
 		Vector position = getPosition();
 		position.add( getVelocity() );
 		setPosition(position);
 		
+		
+		
 		if ( getState() == State.RUNNING && getVelocity().getX() == 0 ) {
 			setState( State.STANDING );
 		}
+	}
+	
+	public boolean fallingDeathCheck(float bottom) {
+		return (getPosition().getY() > bottom);
 	}
 
 //	@Override
