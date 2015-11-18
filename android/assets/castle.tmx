@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="20">
+ <tileset firstgid="1" name="castle" tilewidth="16" tileheight="16" tilecount="320">
+  <image source="../../../../../Downloads/cave.png" width="320" height="256"/>
+ </tileset>
+ <tileset firstgid="321" name="castle2" tilewidth="16" tileheight="16" tilecount="660">
+  <image source="../../../../../Downloads/oppcastle-mod-tiles.png" width="480" height="352"/>
+ </tileset>
+ <tileset firstgid="981" name="castle3" tilewidth="16" tileheight="16" tilecount="572">
+  <image source="../../../../../Downloads/oppcastle-tiles.png" width="416" height="352"/>
+ </tileset>
+ <layer name="Platform layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztlk1KA0EQhadmo2AS3LhQIboxp1Cv4e9t1HVc6AHUtV4hca2gF1DXegWN+EKlmabpGXt6Og7C++AxAyFdUPX61WQZIYQQQgghhBBCSBpOJcvORJ+GoajOoSfoUsr//1/o5HG/kTiu4Zkb0afhVlR3LflppZ2yJCHjma/GloceRPXo+Gop17vdhZadO96dw51P4a+yM9yM8mUWcyyeCbzz7fjqXVQfAXn1m5/suZ5IsXcN7s69SJCRVX5gFv4NE09eLeSqxQb31Te/Kyn2rmGeO9f2V2geheYbqcbnqz56uAFtJu7laFbnPmDn2tTJmLrzt8+md9Lh24Pb6O8OtBvR5yoPvKDGK/QWuXOn2N94PehZiv1qU+aRut9R9Focxld2Nh3i/Qg6TtzTT9T5Eq1pSLFzzX71QV+0w3TGbjbt4X0fOkg8k1WctwatW+du5apBg1ojJ2/LCPUYvdicH1GyPrA=
+  </data>
+ </layer>
+ <layer name="Decorative layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJzt1cENwjAMQFEndJzuQheBRcoidBFYhM6Bz5EitcV2QvXfperFPvhLEbE1Vr7RM8pZR//RB7qCB7qCB7qCB7pC6ZpEpvTbDLpC6aZN3ekKxmZt6kFXMPbUppagrra8uXR1DpFd7XlzLW9NV/E8uqrZ8+Z63pqu/Fl2ZbkrsivYe+md3x12hf9m0VWPu9DWR++8Bt06chfaumSRIZ9vF+J9AcH4J5w=
+  </data>
+ </layer>
+ <objectgroup name="Object layer"/>
+</map>
