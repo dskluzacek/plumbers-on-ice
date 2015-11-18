@@ -27,10 +27,10 @@ public class Player extends Character {
 				textureAtlas.findRegion(name+"-idle2"),
 				textureAtlas.findRegion(name+"-idle3") };
 
-		walkAnimation = new Animation(1/8f, walkFrames);
-		idleAnimation = new Animation(1/3f, idleFrames);
-		jumpAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-jump") } );
-		knockbackAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-knockback") } );
+		Animation walkAnimation = new Animation(1/8f, walkFrames);
+		Animation idleAnimation = new Animation(1/3f, idleFrames);
+		Animation jumpAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-jump") } );
+		Animation knockbackAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-knockback") } );
 		
 		this.movementAnim = new MovementAnimation(idleAnimation, walkAnimation, 5000, 300, jumpAnimation, null, null);
 	}
