@@ -24,7 +24,7 @@ public class Level {
 		TmxMapLoader.Parameters mapParams = new TmxMapLoader.Parameters();
 		mapParams.flipY = false;
 
-		tiledMap = new TmxMapLoader().load("untitled.tmx", mapParams);
+		tiledMap = new TmxMapLoader().load("winter.tmx", mapParams);
 		
 		for ( TiledMapTileSet tileset : tiledMap.getTileSets() ) {
 			for (TiledMapTile tile : tileset) {
