@@ -24,7 +24,7 @@ public class Level {
 		TmxMapLoader.Parameters mapParams = new TmxMapLoader.Parameters();
 		mapParams.flipY = false;
 
-		tiledMap = new TmxMapLoader().load("winter.tmx", mapParams);
+		tiledMap = new TmxMapLoader().load("grassy.tmx", mapParams);
 		
 		for ( TiledMapTileSet tileset : tiledMap.getTileSets() ) {
 			for (TiledMapTile tile : tileset) {
@@ -34,8 +34,8 @@ public class Level {
 		
 		TiledMapTileLayer blockLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Platform layer");
 		
-		for (int row = 0; row < blockLayer.getTileWidth(); row++) {
-			for (int col = 0; col < blockLayer.getTileHeight(); col++) {
+		for (int row = 0; row < blockLayer.getWidth(); row++) {
+			for (int col = 0; col < blockLayer.getHeight(); col++) {
 				TiledMapTileLayer.Cell cell = blockLayer.getCell(row, col);
 				
 				if ( cell != null ) {

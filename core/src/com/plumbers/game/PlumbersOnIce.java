@@ -30,9 +30,12 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 	private float timeAccumulator = 0;
 	private float elapsedTime = 0;
 	private float cameraPos = 0;
+	private boolean death = false;
 	
 	@Override
 	public void create () {
+	//	Gdx.graphics.setVSync(true);
+		
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 
@@ -50,6 +53,7 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 		mapRenderer.setView(camera);
 		
 		player1 = new Player("hero", textureAtlas);
+		player1.setPosition( new Vector(0, 256) );
 		gameModel = new GameModel(level, player1);
 		
 		Gdx.input.setInputProcessor(this);
@@ -57,6 +61,29 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 
 	@Override
 	public void render () {
+		if (death) {
+			Gdx.gl.glClearColor(0, 0, 0, 1);
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			
+			if (elapsedTime < 0.75) {
+				elapsedTime += Gdx.graphics.getDeltaTime();
+				return;
+			} else {
+				camera.translate(- cameraPos, 0);
+				cameraPos = 0;
+				camera.update();
+				mapRenderer.setView(camera);
+				batch.setProjectionMatrix(camera.combined);
+				
+				player1.setPosition( new Vector(0, 256) );
+				player1.setVelocity( new Vector(0, 0) );
+				player1.setAcceleration( new Vector(0, GameModel.GRAVITY) );
+				player1.setState(Character.State.FALLING);
+				death = false;
+			}
+		}
+		
 		Gdx.gl.glClearColor(135/255f, 206/255f, 235/255f, 1);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -65,9 +92,17 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 		elapsedTime += deltaTime;
 		timeAccumulator += deltaTime;
 		
+		boolean died = false;
+		
 		while (timeAccumulator > 1/60f) {
-			gameModel.gameTick();
+			died = gameModel.gameTick();
 			timeAccumulator -= 1/60f;
+		}
+		if (died) {
+			death = true;
+			elapsedTime = 0;
+			timeAccumulator = 0;
+			died = false;
 		}
 		
 		Vector position = player1.getPosition();

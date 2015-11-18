@@ -14,6 +14,8 @@ public class GameModel{
 //  private List<Event> occuringEvents; 
 //  private List<Entity> entities; 
 	private int gameTicks = 0;
+	
+	public static final float GRAVITY = 0.3f;
 
 	public GameModel(Level level, Player p1) {
 		currentLevel = level; 
@@ -26,11 +28,12 @@ public class GameModel{
 //		currentLevel = level; 
 //	}
 
-	public /*List<Event>*/ void gameTick() {
+	public boolean gameTick() {
 		++gameTicks;
 		player1.simulate();
 		player1.fallingCheck( currentLevel.getBlocks() );
 		player1.collisionCheck( currentLevel.getBlocks() );
+		return player1.fallingDeathCheck(512);
 	}
 
 	public Iterable<Drawable> getDrawables() {

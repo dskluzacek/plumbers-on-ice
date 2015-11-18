@@ -52,7 +52,7 @@ public final class MovementAnimation {
 		case KNOCKED_BACK:
 			return knockbackAnim.getKeyFrame(currentTime, true);
 		case RUN:
-			runAnim.setFrameDuration(horizontalSpeed / speedRatio);
+//			runAnim.setFrameDuration(horizontalSpeed / speedRatio);
 			return runAnim.getKeyFrame(currentTime, true);
 		}
 		return null;

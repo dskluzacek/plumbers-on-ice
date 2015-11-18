@@ -9,6 +9,7 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 853;
 		config.height = 512;
+		config.resizable = false;
 		
 		new LwjglApplication(new PlumbersOnIce(), config);
 	}

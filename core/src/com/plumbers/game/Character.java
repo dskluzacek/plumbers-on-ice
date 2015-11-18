@@ -1,20 +1,19 @@
 package com.plumbers.game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.plumbers.game.MovementAnimation.Action;
 
 public abstract class Character extends Motionable implements Drawable {
 	private String characterName;
 	private Rectangle hitbox;
 	private MovementAnimation movementAnim;
-	private State state = State.STANDING;
+	private State state = State.RUNNING;
 
 	public Character(String characterName) {
 		this.characterName = characterName;
+		hitbox = new Rectangle(0, 0, 20, 26);
 	}
 
 	public enum State {
@@ -24,11 +23,11 @@ public abstract class Character extends Motionable implements Drawable {
 	@Override
 	public void draw(Batch batch, float time) {
 		switch (state) {
-			case STANDING: movementAnim.setAction(Action.IDLE);
-			case RUNNING: movementAnim.setAction(Action.RUN);
-			case JUMPING: movementAnim.setAction(Action.JUMP);
-			case FALLING: movementAnim.setAction(Action.LAND);
-			case DYING: movementAnim.setAction(Action.KNOCKED_BACK);
+			case STANDING: movementAnim.setAction(Action.IDLE); break;
+			case RUNNING: movementAnim.setAction(Action.RUN); break;
+			case JUMPING: movementAnim.setAction(Action.JUMP); break;
+			case FALLING: movementAnim.setAction(Action.LAND); break;
+			case DYING: movementAnim.setAction(Action.KNOCKED_BACK); break;
 		}
 		movementAnim.setHorizontalSpeed( getVelocity().getX() );
 		
@@ -40,43 +39,47 @@ public abstract class Character extends Motionable implements Drawable {
 	
 	private void updateHitbox() {
 		Vector position = getPosition();
-		hitbox.setX( Math.rposition.getX() );
+		hitbox.setX( MathUtils.round(position.getX()) + 4 );
+		hitbox.setY( MathUtils.round(position.getY()) + 4 );
 	}
 	
 	public void fallingCheck(Iterable<Block> blocks) {
-		if (state != State.STANDING && state != State.RUNNING)
+		if (state != State.STANDING && state != State.RUNNING) {
 			return;
-		
-		
-		
-		Rectangle box = new Rectangle( hitbox.getX(),
-		                               hitbox.getY(),
-		                               hitbox.getW(),
-		                               hitbox.getH() - 1);
+		}
+		updateHitbox();		
+		boolean flag = false;
 		
 		for (Block b : blocks) {
-			Rectangle.Collision coll = box.collisionInfo( b.getRectangle() );
+			Rectangle.Collision coll = hitbox.staticCollisionInfo( b.getRectangle() );
 			
-			if (coll == null || coll.getDirection() != Direction.TOP) {
-				state = State.FALLING;
-				setYAccel(640);
+			if (coll != null && coll.getDirection() == Direction.TOP) {
+				flag = true;
+				break;
 			}
+		}	
+		if (! flag) { 
+			state = State.FALLING;
+			setXAccel(0);
+			setYAccel(GameModel.GRAVITY);
 		}
 	}
 	
 	public void collisionCheck(Iterable<Block> blocks) {
-		List<Rectangle.Collision> list = new ArrayList<Rectangle.Collision>();
+		updateHitbox();
+		boolean flag = false;
 		
 		for (Block b : blocks) {
-			Rectangle.Collision coll = hitbox.collisionInfo( b.getRectangle() );
+			Rectangle.Collision coll = hitbox.collisionInfo( b.getRectangle(), getVelocity() );
 			
 			if (coll != null) {
-				list.add(coll);
+				respondToCollision(b, coll);
+				updateHitbox();
+				flag = true;
 			}	
 		}
-		
-		for (Rectangle.Collision info : list) {
-			respondToCollision(null, info);
+		if (flag) {
+			fallingCheck(blocks);
 		}
 	}
 	
@@ -84,21 +87,28 @@ public abstract class Character extends Motionable implements Drawable {
 		if (info.getDirection() == Direction.TOP) {
 			setYAccel(0);
 			setYVelocity(0);
-			setYPosition( getPosition().getY() + info.getDistance() );
+			setYPosition( getPosition().getY() - info.getDistance() );
 			
-			if ( getVelocity().getY() == 0 ) {
-				state = State.STANDING;
-			} else {
+			if (state == State.JUMPING || state == State.FALLING) {
 				state = State.RUNNING;
+				
 			}
 		} else if (info.getDirection() == Direction.LEFT) {
 			setXAccel(0);
 			setXVelocity(0);
-			setXPosition( getPosition().getX() + info.getDistance() );
+			setXPosition( getPosition().getX() - info.getDistance() );
 			
-			if (state == State.JUMPING) {
+			if (state == State.JUMPING && getVelocity().getY() > 0) {
 				state = State.FALLING;
 			}
+		} else if (info.getDirection() == Direction.BOTTOM) {
+			setYVelocity(0);
+			setYPosition( getPosition().getY() + info.getDistance() );
+			
+		} else if (info.getDirection() == Direction.RIGHT) {
+			setXAccel(0);
+			setXVelocity(0);
+			setXPosition( getPosition().getX() + info.getDistance() );
 		}
 	}
 	
