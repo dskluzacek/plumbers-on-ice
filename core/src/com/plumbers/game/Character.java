@@ -129,6 +129,7 @@ public abstract class Character extends Motionable implements Drawable {
 	}
 
 	public Rectangle getRectangle() {
+		updateHitbox();
 		return hitbox;
 	}
 
