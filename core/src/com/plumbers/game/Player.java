@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Player extends Character {
+	private int coinsCollected = 0;
 
 	public Player(String name, TextureAtlas textureAtlas) {
 		super(name);
@@ -21,13 +22,13 @@ public class Player extends Character {
 				textureAtlas.findRegion(name+"-idle2"),
 				textureAtlas.findRegion(name+"-idle3") };
 
-		Animation walkAnimation = new Animation(1/8f, walkFrames);
+		Animation walkAnimation = new Animation(1/12f, walkFrames);
 		Animation idleAnimation = new Animation(1/3f, idleFrames);
 		Animation jumpAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-jump") } );
 		Animation landAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-land") } );
 		Animation knockbackAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-knockback") } );
 		
-		setMovementAnim( new MovementAnimation(idleAnimation, walkAnimation, 120, 5, jumpAnimation, landAnimation, knockbackAnimation) );
+		setMovementAnim( new MovementAnimation(idleAnimation, walkAnimation, 240, 5, jumpAnimation, landAnimation, knockbackAnimation) );
 	}
 
 	@Override
@@ -46,7 +47,7 @@ public class Player extends Character {
     		}
 		}
 		if ( getState() == State.JUMPING && Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
-			setXPosition( getPosition().getX() + 0.8f);
+			setXPosition( getPosition().getX() + 1 );
 		}
 		Vector velocity = getVelocity();
 		velocity.add( getAcceleration() );
@@ -61,10 +62,19 @@ public class Player extends Character {
 		position.add( getVelocity() );
 		setPosition(position);
 		
-		
-		
 		if ( getState() == State.RUNNING && getVelocity().getX() == 0 ) {
 			setState( State.STANDING );
+		}
+	}
+	
+	public void coinCollectCheck(Iterable<Coin> coins) {
+		Rectangle rect = getRectangle();
+		
+		for (Coin coin : coins) {
+			if (! coin.isCollected() && rect.intersects(coin.getRectangle())) {
+				coin.setCollected(true);
+				++coinsCollected;
+			}
 		}
 	}
 	
@@ -72,9 +82,4 @@ public class Player extends Character {
 		return (getPosition().getY() > bottom);
 	}
 
-//	@Override
-//	public void respondToCollision(Enemy e, Collision info) {
-//		// TODO Auto-generated method stub
-//		
-//	}
 }
