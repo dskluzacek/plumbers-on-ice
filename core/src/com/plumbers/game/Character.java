@@ -30,7 +30,6 @@ public abstract class Character extends Motionable implements Drawable {
 			case FALLING: movementAnim.setAction(Action.LAND);
 			case DYING: movementAnim.setAction(Action.KNOCKED_BACK);
 		}
-		movementAnim.setHorizontalSpeed( getVelocity().getX() );
 		
 		TextureRegion frame = movementAnim.getFrame(time);
 		Vector position = getPosition();

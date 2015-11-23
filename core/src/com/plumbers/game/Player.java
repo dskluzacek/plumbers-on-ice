@@ -28,7 +28,7 @@ public class Player extends Character {
 		Animation landAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-land") } );
 		Animation knockbackAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-knockback") } );
 		
-		setMovementAnim( new MovementAnimation(idleAnimation, walkAnimation, 240, 5, jumpAnimation, landAnimation, knockbackAnimation) );
+		setMovementAnim( new MovementAnimation(idleAnimation, walkAnimation, jumpAnimation, landAnimation, knockbackAnimation) );
 	}
 
 	@Override
