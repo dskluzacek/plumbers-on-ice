@@ -151,7 +151,7 @@ public class Rectangle {
 			}
 			distance = Math.abs(moving.y - solution.y);
 		}
-		System.out.println(direction + " " + distance);
+
 		return new Collision() {
 			@Override
 			public Direction getDirection() {
