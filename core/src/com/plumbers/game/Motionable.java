@@ -1,16 +1,22 @@
 package com.plumbers.game;
 
 public abstract class Motionable {
-	private Vector position = new Vector(0, 0);
-	private Vector velocity = new Vector(0, 0);
-	private Vector acceleration = new Vector(0, 0);
+	private final Vector position = new Vector(0, 0);
+	private final Vector velocity = new Vector(0, 0);
+	private final Vector acceleration = new Vector(0, 0);
 	
 	public final Vector getPosition() {
 		return new Vector(position);
 	}
 	
 	public final void setPosition(Vector position) {
-		this.position = position;
+		this.position.setX( position.getX() );
+		this.position.setY( position.getY() );
+	}
+	
+	public final void setPosition(float x, float y) {
+		this.position.setX(x);
+		this.position.setY(y);
 	}
 	
 	public final Vector getVelocity() {
@@ -18,7 +24,13 @@ public abstract class Motionable {
 	}
 	
 	public final void setVelocity(Vector velocity) {
-		this.velocity = velocity;
+		this.velocity.setX( velocity.getX() );
+		this.velocity.setY( velocity.getY() );
+	}
+	
+	public final void setVelocity(float x, float y) {
+		this.velocity.setX(x);
+		this.velocity.setY(y);
 	}
 	
 	public final Vector getAcceleration() {
@@ -26,7 +38,13 @@ public abstract class Motionable {
 	}
 	
 	public final void setAcceleration(Vector acceleration) {
-		this.acceleration = acceleration;
+		this.acceleration.setX( acceleration.getX() );
+		this.acceleration.setY( acceleration.getY() );
+	}
+	
+	public final void setAcceleration(float x, float y) {
+		this.acceleration.setX(x);
+		this.acceleration.setY(y);
 	}
 	
 	public final void setXPosition(float value) {
@@ -53,8 +71,15 @@ public abstract class Motionable {
 		acceleration.setY(value);
 	}
 	
-	public void simulate() {
+	public void preVelocityLogic() {}
+	public void prePositionLogic() {}
+	public void postMotionLogic() {}
+	
+	public final void simulate() {
+		preVelocityLogic();
 		velocity.add( acceleration );
+		prePositionLogic();
 		position.add( velocity );
+		postMotionLogic();
 	}
 }

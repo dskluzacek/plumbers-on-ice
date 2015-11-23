@@ -1,6 +1,8 @@
 package com.plumbers.game;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
@@ -61,5 +63,14 @@ public final class Coin {
 	
 	public Rectangle getRectangle() {
 		return hitbox;
+	}
+	
+	public static Animation getAnimation(TextureAtlas textureAtlas) {
+		TextureRegion[] coinFrames = new TextureRegion[] {
+				textureAtlas.findRegion("coin-1"),
+				textureAtlas.findRegion("coin-2"),
+				textureAtlas.findRegion("coin-3"),
+				textureAtlas.findRegion("coin-4") };
+		return new Animation(COIN_FRAME_DURATION, coinFrames);
 	}
 }
