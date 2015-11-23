@@ -17,6 +17,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 
 @SuppressWarnings("unused")
 public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor {
@@ -25,30 +26,33 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 	private Player player1;
 	private SpriteBatch batch;
 	private OrthogonalTiledMapRenderer mapRenderer;
+	private Background background;
 	private OrthographicCamera camera;
 	
 	private float timeAccumulator = 0;
 	private float elapsedTime = 0;
 	private float cameraPos = 0;
+	private int width, height;
 	private boolean death = false;
 	
 	@Override
-	public void create () {
-	//	Gdx.graphics.setVSync(true);
-		
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
+	public void create () {	
+		width = Gdx.graphics.getWidth();
+		height = Gdx.graphics.getHeight();
 
 		camera = new OrthographicCamera();
-		camera.setToOrtho(true, w, h);
+		camera.setToOrtho(true, width, height);
 		camera.update();
 		
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.combined);
 		textureAtlas =
 				new TextureAtlas(Gdx.files.internal("sprites.atlas"), true);
-
-		Level level = new Level();
+		
+		Coin.createCoinTile(textureAtlas);
+		
+		Level level = new Level(textureAtlas);
+		background = new Background(level.getBackground(), 2, 0.25, width, height);
 		mapRenderer = level.getRenderer();
 		mapRenderer.setView(camera);
 		
@@ -62,8 +66,8 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 	@Override
 	public void render () {
 		if (death) {
-			Gdx.gl.glClearColor(0, 0, 0, 1);
-			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//			Gdx.gl.glClearColor(0, 0, 0, 1);
+//			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			
 			if (elapsedTime < 0.75) {
@@ -76,6 +80,7 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 				mapRenderer.setView(camera);
 				batch.setProjectionMatrix(camera.combined);
 				
+				gameModel.reset();
 				player1.setPosition( new Vector(0, 256) );
 				player1.setVelocity( new Vector(0, 0) );
 				player1.setAcceleration( new Vector(0, GameModel.GRAVITY) );
@@ -84,7 +89,7 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 			}
 		}
 		
-		Gdx.gl.glClearColor(135/255f, 206/255f, 235/255f, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -93,11 +98,17 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 		timeAccumulator += deltaTime;
 		
 		boolean died = false;
+		int count = 0;	
 		
 		while (timeAccumulator > 1/60f) {
 			died = gameModel.gameTick();
+			count++;
 			timeAccumulator -= 1/60f;
+			
 		}
+		if (count > 1)
+			timeAccumulator = 0;
+		
 		if (died) {
 			death = true;
 			elapsedTime = 0;
@@ -113,10 +124,13 @@ public class PlumbersOnIce extends ApplicationAdapter implements InputProcessor 
 			cameraPos += change;
 			camera.update();
 			mapRenderer.setView(camera);
-			batch.setProjectionMatrix(camera.combined);
 		}
 		
+		background.render( batch, MathUtils.round(cameraPos) );
+		
 		mapRenderer.render();
+		
+		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		
 		for (Drawable drawable : gameModel.getDrawables()) {
