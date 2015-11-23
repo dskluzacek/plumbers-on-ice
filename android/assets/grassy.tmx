@@ -4,7 +4,7 @@
   <image source="tilesheet.png" width="192" height="96"/>
  </tileset>
  <tileset firstgid="73" name="special tiles" tilewidth="16" tileheight="16">
-  <image source="special-tiles.png" width="48" height="32"/>
+  <image source="special-tiles.png" width="80" height="32"/>
  </tileset>
  <layer name="Platform layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
@@ -13,12 +13,12 @@
  </layer>
  <layer name="Decorative layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztmEkOgDAIRat77dbh/ve0GxPSRDtiEf5LSFyoQYZP0TkAAABAD55cT8HmUY4AtSzB1tFOCManbzHB1vj8HuyIDOigZjahr8qJ49zak9KRPpu0nMm446y9TntAY5STDzpPT8ejp8hbOzkaoUVHemLhfNDSX7dGvL2jVNdRh4CDr89xf6tj6q+lmdtT4++4cf5nkLaPpOpcmr8cWOqX3jzFjqNukCc9aM9lzffFc4drJ6dY2JGAfC7nrwTh
+   eJztmEkKgDAMRat7detwJV3o/Q9jFgpBnNtgTP6DDwoqMWPbEAAAAAA7VOw6I+VfGQLMUpBKdt+Tho9s0Uh1/YgL6sj3R9JEakjtImCDN7MJdfWcrZ9ja1I729mkDStrMmk/W8/TFHAf3YkHn6NdkOmniFs8d3qElT6SEg/rg5j6WnvE2Tee9nXkIZBgLw8lzxn+lsfcXk8zN2WPX/0mec6gbT9ylefa7JXAU72k5sh3EnmDONnBeizf/B+fN5J7co6HPRLQzwwdnwbx
   </data>
  </layer>
  <layer name="Coin layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJzt1jEKACAIBdBO2P2P09pgQ0YU9R6I6PwRSwEAAF5Qg7kvyJArflIHHbJkCjjBrWFF9P9He5jhJ2IneQLgFg0e4gdR
+   eJzt1jEKACAIBdCO2P1P09pgQ0YU9R6I6PwRSwEAAF5Qg7kvyJArflIHHbJkCjjBrWFF9P9He5jhJ2IneQLgFg2ORweB
   </data>
  </layer>
  <objectgroup name="Object layer" width="0" height="0">
@@ -44,5 +44,10 @@
   <object name="Spawner 16" type="greenbot" x="2264" y="165"/>
   <object name="Spawner 17" type="greenbot" x="2007" y="181"/>
   <object name="Spawner 18" type="greenbot" x="2104" y="53"/>
+  <object name="Goal" x="2328" y="-128" width="72" height="320">
+   <properties>
+    <property name="type" value="goal"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
