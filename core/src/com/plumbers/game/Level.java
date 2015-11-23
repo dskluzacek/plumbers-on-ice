@@ -17,6 +17,7 @@ public class Level {
 	private List<Decoration> decorations = new ArrayList<Decoration>();
 	private List<Coin> coins = new ArrayList<Coin>();
 	private TiledMap tiledMap;
+	private int width, height;
 	private OrthogonalTiledMapRenderer renderer;
 	private TextureRegion background;
 	private static final String PLATFORM_LAYER_NAME = "Platform layer",
@@ -39,6 +40,8 @@ public class Level {
 		}
 		
 		TiledMapTileLayer blockLayer = (TiledMapTileLayer) tiledMap.getLayers().get(PLATFORM_LAYER_NAME);
+		width = blockLayer.getWidth();
+		height = blockLayer.getHeight();
 		
 		for (int row = 0; row < blockLayer.getWidth(); row++) {
 			for (int col = 0; col < blockLayer.getHeight(); col++) {
@@ -86,6 +89,14 @@ public class Level {
 	
 	public OrthogonalTiledMapRenderer getRenderer() {
 		return renderer;
+	}
+	
+	public int getWidthInTiles() {
+		return width;
+	}
+	
+	public int getHeightInTiles() {
+		return height;
 	}
 	
 	public void resetCoins() {

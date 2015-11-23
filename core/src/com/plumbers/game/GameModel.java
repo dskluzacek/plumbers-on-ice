@@ -6,10 +6,10 @@ import java.util.List;
 public class GameModel{
 	private Player player1; 
 //  private Player p2; 
-	private Level currentLevel; 
+	private Level currentLevel;
+	private List<Event> occuringEvents = new ArrayList<Event>(); 
 //  private List<EnemySpawn> enemies; 
 //  private Powerup powerups[]; 
-//  private List<Event> occuringEvents; 
 //  private List<Entity> entities;
 	private int gameTicks = 0;
 	
@@ -27,13 +27,21 @@ public class GameModel{
 //		currentLevel = level; 
 //	}
 
-	public boolean gameTick() {
+	public List<Event> gameTick() {
 		++gameTicks;
+		occuringEvents.clear();
+		
 		player1.simulate();
+		occuringEvents.addAll( player1.getEvents() );
 		player1.fallingCheck( currentLevel.getBlocks() );
 		player1.collisionCheck( currentLevel.getBlocks() );
-		player1.coinCollectCheck( currentLevel.getCoins() );
-		return player1.fallingDeathCheck(512);
+		occuringEvents.addAll(
+		      player1.coinCollectCheck( currentLevel.getCoins() ));
+		
+		if ( player1.fallingDeathCheck(512) ) {
+			occuringEvents.add( new DeathEvent(player1) );
+		}
+		return occuringEvents;
 	}
 
 	public Iterable<Drawable> getDrawables() {
@@ -44,9 +52,22 @@ public class GameModel{
 	
 	public void reset() {
 		currentLevel.resetCoins();
+		gameTicks = 0;
+		player1.reset( new Vector(0, 256) );
 	}
 	
 	public int getTickNumber() {
 		return gameTicks;
+	}
+	
+	public int getLevelWidth() {
+		return currentLevel.getWidthInTiles() * TILE_SIZE;
+	}
+	
+	@SuppressWarnings("unused")
+	private void addEventNotNull(Event e) {
+		if (e != null) {
+			occuringEvents.add(e);
+		}
 	}
 }
