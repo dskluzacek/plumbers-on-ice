@@ -1,5 +1,9 @@
 package com.plumbers.game;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -8,7 +12,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Player extends Character {
 	private int coinsCollected = 0;
-
+	private boolean jumped = false;
+	
+	private static final float ACCELERATION = 0.25f,
+	                           DECELERATION = -0.75f,
+	                       	   JUMP_POWER = -10,
+	                           JUMP_ASSIST = 1;
+	
 	public Player(String name, TextureAtlas textureAtlas) {
 		super(name);
 
@@ -30,52 +40,82 @@ public class Player extends Character {
 		
 		setMovementAnim( new MovementAnimation(idleAnimation, walkAnimation, jumpAnimation, landAnimation, knockbackAnimation) );
 	}
-
+	
+	public int getCoinsCollected() {
+		return coinsCollected;
+	}
+	
 	@Override
-	public void simulate() {
+	public void preVelocityLogic() {
+		
 		if ( getState() == State.STANDING || getState() == State.RUNNING ) {
 			if ( Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ) {
+				jumped = true;
 				setState( State.JUMPING );
-				setYVelocity(-10);
+				setYVelocity(JUMP_POWER);
 				setXAccel(0);
 				setYAccel(GameModel.GRAVITY);
 			} else if ( Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
-    			setXAccel(0.25f);
+    			setXAccel(ACCELERATION);
     			setState( State.RUNNING );
     		} else {
-    			setXAccel(-0.75f);
+    			setXAccel(DECELERATION);
     		}
 		}
 		if ( getState() == State.JUMPING && Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
-			setXPosition( getPosition().getX() + 1 );
+			setXPosition( getPosition().getX() + JUMP_ASSIST );
 		}
-		Vector velocity = getVelocity();
-		velocity.add( getAcceleration() );
-		setVelocity(velocity);
+	}
+	
+	@Override
+	public void prePositionLogic() {
+		float Vx = getVelocity().getX();
 		
-		if (velocity.getX() > 5) {
+		if (Vx > 5) {
 			setXVelocity(5);
-		} else if (velocity.getX() < 0) {
+		} else if (Vx < 0) {
 			setXVelocity(0);
 		}
-		Vector position = getPosition();
-		position.add( getVelocity() );
-		setPosition(position);
-		
+	}
+	
+	@Override
+	public void postMotionLogic() {
 		if ( getState() == State.RUNNING && getVelocity().getX() == 0 ) {
 			setState( State.STANDING );
 		}
 	}
 	
-	public void coinCollectCheck(Iterable<Coin> coins) {
+	public List<Event> getEvents() {
+		boolean jumped = this.jumped;
+		this.jumped = false;
+		
+		if (jumped) {
+			return Collections.singletonList((Event) JumpEvent.instance());
+		} else {
+			return Collections.emptyList();
+		}
+	}
+	
+	public void reset(Vector position) {
+		coinsCollected = 0;
+		setPosition(position);
+		setVelocity(0, 0);
+		setAcceleration(0, GameModel.GRAVITY);
+		setState(Character.State.FALLING);
+	}
+	
+	public List<Event> coinCollectCheck(Iterable<Coin> coins) {
 		Rectangle rect = getRectangle();
+		List<Event> events = new ArrayList<Event>();
 		
 		for (Coin coin : coins) {
 			if (! coin.isCollected() && rect.intersects(coin.getRectangle())) {
 				coin.setCollected(true);
 				++coinsCollected;
+				events.add( CoinEvent.instance() );
 			}
 		}
+		return events;
 	}
 	
 	public boolean fallingDeathCheck(float bottom) {
