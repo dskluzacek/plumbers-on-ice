@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		config.width = 853;
 		config.height = 512;
 		config.resizable = false;
+		config.vSyncEnabled = false;
 		
 		new LwjglApplication(new PlumbersOnIce(), config);
 	}
