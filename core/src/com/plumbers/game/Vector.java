@@ -45,7 +45,7 @@ public class Vector {
 		this.y = this.y * i;
 	}
 	
-	public Vector scalarProduct(float i) {
+	public Vector multipliedBy(float i) {
 		float u = this.x * i;
 		float v = this.y * i;
 		return new Vector(u, v);
