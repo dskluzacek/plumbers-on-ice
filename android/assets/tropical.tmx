@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="36">
+ <properties>
+  <property name="bgcolor" value="0,0,0"/>
+  <property name="soundtrack" value="Castle-Theme.mp3"/>
+  <property name="soundtrack-delay" value="2"/>
+ </properties>
+ <tileset firstgid="1" name="Special Tiles" tilewidth="16" tileheight="16" tilecount="10">
+  <image source="special-tiles.png" width="80" height="32"/>
+  <tile id="6">
+   <properties>
+    <property name="special" value="spike"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="special" value="coin"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="11" name="tilesheet" tilewidth="16" tileheight="16" tilecount="72">
+  <image source="tilesheet.png" width="192" height="96"/>
+ </tileset>
+ <layer name="Decorative layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20Hb6AAAAAAAAAAAAB4DCWAAAE=
+  </data>
+ </layer>
+ <layer name="Platform layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJzt1kEKgCAQBVB3daLa2wG6/21CMJKBqDBo0XvwGQRxNcyYEgAAANwz1cCbcg30aueTvuINYzjrK3pMoe5KT63p+GfFwJk4o1r5IhCdzaiW/gG+UObS3PnGECqUfbY8uN/uybvhfzaOdQsI
+  </data>
+ </layer>
+ <layer name="Decorative layer 2" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20Hb6AAAAAAAAAAAAB4DCWAAAE=
+  </data>
+ </layer>
+ <objectgroup name="Object layer"/>
+</map>
