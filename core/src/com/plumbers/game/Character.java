@@ -32,7 +32,7 @@ public abstract class Character extends Motionable implements Drawable {
 		
 		TextureRegion frame = movementAnim.getFrame(time);
 		Vector position = getPosition();
-		batch.draw(frame, position.getX(), position.getY(),
+		batch.draw(frame, MathUtils.floor( position.getX() ), position.getY(),
 				frame.getRegionWidth() * 2, frame.getRegionHeight() * 2);
 	}
 	
@@ -65,6 +65,10 @@ public abstract class Character extends Motionable implements Drawable {
 	}
 	
 	public void collisionCheck(Iterable<Block> blocks) {
+		if (state == State.DYING) {
+			return;
+		}
+		
 		updateHitbox();
 		boolean flag = false;
 		
