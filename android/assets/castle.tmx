@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="36">
+<map version="1.0" orientation="orthogonal" width="150" height="16" tilewidth="16" tileheight="16">
  <properties>
   <property name="bgcolor" value="0,0,0"/>
   <property name="soundtrack" value="Castle-Theme.mp3"/>
   <property name="soundtrack-delay" value="2"/>
  </properties>
- <tileset firstgid="1" name="castle" tilewidth="16" tileheight="16" tilecount="320">
-  <image source="../../../../../Downloads/cave.png" width="320" height="256"/>
+ <tileset firstgid="1" name="castle" tilewidth="16" tileheight="16">
+  <image source="cave.png" width="320" height="256"/>
  </tileset>
- <tileset firstgid="321" name="castle2" tilewidth="16" tileheight="16" tilecount="660">
-  <image source="../../../../../Downloads/oppcastle-mod-tiles.png" width="480" height="352"/>
+ <tileset firstgid="321" name="castle2" tilewidth="16" tileheight="16">
+  <image source="oppcastle-mod-tiles.png" width="480" height="352"/>
  </tileset>
- <tileset firstgid="981" name="castle3" tilewidth="16" tileheight="16" tilecount="572">
-  <image source="../../../../../Downloads/oppcastle-tiles.png" width="416" height="352"/>
+ <tileset firstgid="981" name="castle3" tilewidth="16" tileheight="16">
+  <image source="oppcastle-tiles.png" width="416" height="352"/>
  </tileset>
- <tileset firstgid="1553" name="Special Tiles" tilewidth="16" tileheight="16" tilecount="10">
+ <tileset firstgid="1553" name="Special Tiles" tilewidth="16" tileheight="16">
   <image source="special-tiles.png" width="80" height="32"/>
   <tile id="6">
    <properties>
@@ -42,65 +42,65 @@
    eJzt0sENggAQRNEF6U8bwUakEWwEG4E63BZMdiUh790nmcOPAPi/+xDxGM5+wdXM2dRTVxR7ZVOLrii2ZlNvXVFMV3TQFR22bOqjK4rpig66osOeTR26opiu6KArOuiKDrqiw22MmMbfNl8QOBRW
   </data>
  </layer>
- <objectgroup name="Object layer">
-  <object id="21" name="Goal" x="2368" y="0" width="31" height="240"/>
-  <object id="22" name="badguy1" x="1976" y="22.6667">
+ <objectgroup name="Object layer" width="0" height="0">
+  <object name="Goal" x="2376" y="192" width="24" height="48"/>
+  <object name="badguy1" x="1976" y="0">
    <properties>
     <property name="spawndistance" value="0"/>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object id="25" name="badguy2" x="2184" y="-70.6667">
+  <object name="badguy2" x="2184" y="0">
    <properties>
     <property name="spawndistance" value="0"/>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object id="27" name="badguy1" x="2310.67" y="177.333">
+  <object name="badguy1" x="0" y="0">
    <properties>
     <property name="spawndistance" value="48"/>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object id="28" name="badguy2" x="1801.33" y="52">
+  <object name="badguy2" x="0" y="52">
    <properties>
     <property name="spawndistance" value="0"/>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object id="29" name="badguy1" x="1366.67" y="9.33333">
+  <object name="badguy1" x="0" y="0">
    <properties>
     <property name="spawndistance" value="35"/>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object id="30" name="badguy1" x="793.333" y="197.333">
+  <object name="badguy1" x="0" y="0">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object id="31" name="badguy1" x="936" y="162.667">
+  <object name="badguy1" x="936" y="0">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object id="32" name="badguy2" x="665.333" y="53.3333">
+  <object name="badguy2" x="0" y="0">
    <properties>
     <property name="spawndistance" value="16"/>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object id="33" name="badguy1" x="584" y="149.333">
+  <object name="badguy1" x="584" y="0">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object id="34" name="badguy1" x="105.333" y="101.333">
+  <object name="badguy1" x="0" y="0">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object id="35" name="badguy2" x="1593.33" y="20">
+  <object name="badguy2" x="0" y="20">
    <properties>
     <property name="spawndistance" value="5"/>
     <property name="type" value="badguy2"/>

@@ -12,6 +12,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Music.OnCompletionListener;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,6 +30,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 
 import sun.print.resources.serviceui;
 
@@ -49,6 +51,7 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 	private List<Event> events = new ArrayList<Event>();
 	private boolean death = false;
 	
+	private Matrix4 screenProjMatrix;
 	private BitmapFont mainFont;
 	private DecimalFormat secondsFormat;
 	private Animation coinAnimation;
@@ -56,7 +59,7 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 	private Music music;
 	private float musicEndTime;
 	private boolean musicWait = false;
-	private Sound coinSound, jumpSound, deathSound;
+	private Sound coinSound, jumpSound, damageSound, deathSound;
 	private long coinFrameNumber;
 	
 	private static final int MUSIC_DELAY = 2;
@@ -73,6 +76,8 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		                     Gdx.files.internal("DejaVuSansMono-Bold.ttf"));
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		parameter.size = 28;
+		parameter.borderWidth = 2;
+		parameter.borderColor = Color.BLACK;
 		parameter.flip = true;
 		mainFont = generator.generateFont(parameter);
 		generator.dispose();
@@ -80,6 +85,11 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(true, width, height);
 		camera.update();
+		
+		OrthographicCamera staticCamera = new OrthographicCamera();
+		staticCamera.setToOrtho(true, width, height);
+		staticCamera.update();
+		screenProjMatrix = staticCamera.combined;
 		
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.combined);
@@ -90,27 +100,31 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		Coin.createCoinTile(textureAtlas);
 		
 		Level level = new Level(textureAtlas);
-		background = new Background(level.getBackground(), 2, 0.125, width, height);
+		background = level.getBackground();
+		if (background != null) {
+			background.setWindowDimensions(width, height);
+		}
+		music = level.getSoundtrack();
 		mapRenderer = level.getRenderer();
 		mapRenderer.setView(camera);
 		
-		player1 = new Player("hero", textureAtlas);
-		player1.setPosition( new Vector(0, 256) );
+		player1 = new Player("plumber-red", textureAtlas);
+		player1.setPosition( new Vector(0, 0) );
 		gameModel = new GameModel(level, player1);
 
 		coinSound = Gdx.audio.newSound(Gdx.files.internal("coin.wav"));
 		jumpSound = Gdx.audio.newSound(Gdx.files.internal("jump.wav"));
+		damageSound = Gdx.audio.newSound(Gdx.files.internal("hurt.wav"));
 		deathSound = Gdx.audio.newSound(Gdx.files.internal("death.wav"));
-		music = Gdx.audio.newMusic(Gdx.files.internal("Grasslands Theme.mp3"));
+		
 		music.setOnCompletionListener( new MusicListener() );
 		music.setVolume(MUSIC_VOLUME);
-//		music.play();
-//		Gdx.input.setInputProcessor(this);
+		music.play();
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(20/255f, 12/255f, 28/255f, 1);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -147,9 +161,9 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		musicCheck();
 		positionCamera();
 		
-		background.render( batch, MathUtils.round(cameraPos) );
-		renderTimer();
-		renderCoinCounter();
+		if (background != null) {
+			background.render( batch, MathUtils.round(cameraPos) );
+		}
 		mapRenderer.render();
 		
 		batch.setProjectionMatrix(camera.combined);
@@ -158,7 +172,13 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		for (Drawable drawable : gameModel.getDrawables()) {
 			drawable.draw(batch, elapsedTime);
 		}
+		
 		batch.end();
+		
+		batch.setProjectionMatrix(screenProjMatrix);
+
+		renderTimer();
+		renderCoinCounter();
 	}
 
 	@Override
@@ -169,6 +189,11 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 			coinSound.play();
 			coinFrameNumber = frameId;
 		}
+	}
+	
+	@Override
+	public void apply(DamageEvent e) {
+		damageSound.play();
 	}
 	
 	@Override
@@ -191,7 +216,7 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		camera.update();
 		mapRenderer.setView(camera);
 		batch.setProjectionMatrix(camera.combined);
-//		music.play();
+		music.play();
 	}
 	
 	private void positionCamera() {
@@ -199,7 +224,7 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		
 		if ( position.getX() - 350 < gameModel.getLevelWidth() - width ) {
 			if ( position.getX() - 350 > cameraPos ) {
-				float change = position.getX() - cameraPos - 350;
+				float change = MathUtils.floor( position.getX() - cameraPos - 350 );
 				
 				camera.translate(change, 0);
 				cameraPos += change;
@@ -219,7 +244,8 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 	private void renderTimer() {
 		batch.begin();
 		String str = getTimerString();
-		mainFont.draw(batch, str, width - 5 - str.length() * mainFont.getSpaceWidth(), 5);
+		mainFont.draw(batch,
+		  str, width - 2 - str.length() * (mainFont.getSpaceWidth() + 2), 5);
 		batch.end();
 	}
 	
@@ -249,4 +275,5 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 			musicWait = true;
 		}
 	}
+	
 }
