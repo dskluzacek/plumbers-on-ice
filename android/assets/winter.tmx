@@ -1,24 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="12">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="13">
+ <properties>
+  <property name="background" value="winter.png"/>
+  <property name="soundtrack" value="Iceland-Theme.mp3"/>
+  <property name="soundtrack-delay" value="2"/>
+ </properties>
  <tileset firstgid="1" name="Seasonal tiles" tilewidth="16" tileheight="16" tilecount="72">
   <image source="tilesheet.png" width="192" height="96"/>
  </tileset>
- <layer name="Platform layer" width="150" height="16">
-  <data encoding="base64" compression="zlib">
-   eJztl1GOwyAMRH2cdL+TfqO9/6FWUWUJjWywwQnb1iOhRKTAgB+GEqVSqVQqlUqlUt+hx2oDDm308ssl9X91VO+rYmUdd6eXXy6peOHe/Rns51Deaz3gGa3euKxZrqLW7JOFa/x0tueYSVxhPA/htxGSPNRj1/UnE4UyX0VKyhPI1S/59qLEisYP1kflrZYHfMf5ngXzz7floXr+EXOW9i6WXv6ycIX5xJq3rPPtcVVL4kqqG8ndFmkMRzK9OdvX85+dMzMl9d3qH/9HWbjqPUe1GTzg7wut5Uob646xLZ7O86rHpMYtMoV9e+Z0N1f12bkrXrS+tZjOcuU5R1dzxV5rb9JdyJsvkSne89z3E77NnEFXcMVtpL2xiiuPrFzhPffK+5/kaYQt7JOfyFShmPvVCFfanZ7Xuxh9sVp3SS3WUmxnY2nl6s6c1pq/5UyU6kqj3uL9Kq6kb5rfXvuN2vHxxHo2lu/EFZdWzpS+a+2Kw/udXOF9yuKL27XW7Q9eYmBR
-  </data>
- </layer>
+ <tileset firstgid="73" name="special tiles" tilewidth="16" tileheight="16" tilecount="10">
+  <image source="special-tiles.png" width="80" height="32"/>
+  <tile id="6">
+   <properties>
+    <property name="special" value="spike"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="special" value="coin"/>
+   </properties>
+  </tile>
+ </tileset>
  <layer name="Decorative layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
    eJzt2EsOAiEMgOEudK9eQD0K97+UNLEZMgsdlJZH/i9pZgdT6BQyIgAAAOO59X6BSvccj3fA1ynHeeJ5Zqvtldl3+8xxyXF1nMv23XueCOW6Idas/SPJ1lNT53dZzQg1EXUuK803FWE9NVXGEZbX/inSJufaMcre22Lfa8eI3GcVeV5G9iXLa/8UaZOz97p9qoNf6nKFexH+7w/UQbwR7g/fHK2L6PMJcbROy39tGnYP8q5h+hIQb4azaXS2hvy3A/p6AZIlCkI=
   </data>
  </layer>
+ <layer name="Platform layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztWNFOwzAM9Od0PG97jngGUfj/j2HVsGSdbMdu0hZoTooaksY9x2cng2hgYGBgYOBceHu096NJ/GPMP+1s+Hy0r6NJDJhgTV4OZZHDRE++3NbgrPm4N26if5TGIt9dtHClJ19uA/2Bufuy0s7N6Etc4Ilozf/adxmtuuq1Z78JvWsv7vFdzH0E1nPMNF3x3AzjvWuExkFqSY4vmig06lVPaHUCdfVK9VyUdwtNK5Z+cDx6Xtb07XHAPvq7NKw/e9WhGfr8dySfM7ZrkP5LnzM25Lta7mK7k4+IrrCeROuW5W+GA0LTlTYmfY/ub+Q9S8OepjW73u+GiXI5If2vxbsG1pRm27OPv6Miuqo912IKcMD3C+V1JWHFMlpjrG9l87knJKflvKpp0tItagpto09eHm6lK+ub8uy8Glws21ZMM7rSkDlHe+iq5ZxkrpKbdhfytKXVStQU5zzbvsNcyxm0Rb1a1syk54anK+3/C710lUFUV3jP3fL+p3GK1K2aTX6ipgr1uV+t0ZV1p+f9LkFeDO8uacVai21rLKO62vOs9PyX/mp1chL9WYwV491CMe5b6Uqbs/jW1k/kxycT69ZY/iVdcfNqpjZvrSsJ7nvqCu9TEV68ztu3b8DobMc=
+  </data>
+ </layer>
  <objectgroup name="Object layer">
-  <object id="2" name="Spawner1" type="greenbot" x="155.5" y="216"/>
-  <object id="3" name="Spawner2" type="greenbot" x="343" y="182"/>
-  <object id="8" name="Spawner3" type="greenbot" x="504" y="151"/>
-  <object id="9" name="Spawner4" type="greenbot" x="1351" y="215"/>
-  <object id="10" name="Spawner5" type="greenbot" x="1418" y="84"/>
-  <object id="11" name="Spawner6" type="greenbot" x="2044" y="134"/>
+  <object id="2" name="badguy1" x="155.5" y="216">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="3" name="badguy2" x="343" y="182">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="8" name="badguy2" x="504" y="151">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="9" name="badguy1" x="1351" y="215">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="10" name="badguy2" x="1418" y="84">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="11" name="badguy2" x="2044" y="134">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="12" name="Goal" x="2359" y="-80.6667" width="42" height="143.667"/>
  </objectgroup>
 </map>
