@@ -3,6 +3,7 @@
  <properties>
   <property name="bgcolor" value="0,0,0"/>
   <property name="soundtrack" value="Castle-Theme.mp3"/>
+  <property name="soundtrack-delay" value="2"/>
  </properties>
  <tileset firstgid="1" name="castle" tilewidth="16" tileheight="16" tilecount="320">
   <image source="../../../../../Downloads/cave.png" width="320" height="256"/>
