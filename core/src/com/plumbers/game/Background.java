@@ -8,34 +8,32 @@ import com.badlogic.gdx.math.Matrix4;
 public final class Background {
 	private final TextureRegion textureRegion;
 	private final double scrollRateVsForeground;
-//	private final int scale;
-	private final int gameWidth;
-	
 	private final int scaledWidth;
 	private final int scaledHeight;
-	private final int numIterations;
-	private final Matrix4 projectionMatrix;
+	
+	private int gameWidth;
+	private int numIterations;
+	private Matrix4 projectionMatrix;
 	
 	public Background(TextureRegion textureRegion,
 	                  int scale,
-	                  double scrollRateVsForeground,
-	                  int gameGraphicalWidth,
-	                  int gameGraphicalHeight)
+	                  double scrollRateVsForeground)
 	{
 		this.textureRegion = textureRegion;
 		this.scrollRateVsForeground = scrollRateVsForeground;
-//		this.scale = scale;
-		this.gameWidth = gameGraphicalWidth;
-		
+
 		scaledWidth = scale * textureRegion.getRegionWidth();
 		scaledHeight = scale * textureRegion.getRegionHeight();
+	}
+	
+	public void setWindowDimensions(int gameGraphicalWidth, int gameGraphicalHeight) {
+		this.gameWidth = gameGraphicalWidth;
 		numIterations = gameWidth / scaledWidth + 2;
 		
 		OrthographicCamera camera = new OrthographicCamera();
 		camera.setToOrtho(true, gameGraphicalWidth, gameGraphicalHeight);
 		camera.update();
 		projectionMatrix = camera.combined;
-		System.out.println(projectionMatrix);
 	}
 	
 	public void render(Batch batch, int foregroundPosition) {
