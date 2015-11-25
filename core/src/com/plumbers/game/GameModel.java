@@ -35,6 +35,7 @@ public class GameModel{
 		occuringEvents.addAll( player1.getEvents() );
 		player1.fallingCheck( currentLevel.getBlocks() );
 		player1.collisionCheck( currentLevel.getBlocks() );
+		player1.hazardCollisionCheck( currentLevel.getHazards() );
 		occuringEvents.addAll(
 		      player1.coinCollectCheck( currentLevel.getCoins() ));
 		
@@ -53,7 +54,7 @@ public class GameModel{
 	public void reset() {
 		currentLevel.resetCoins();
 		gameTicks = 0;
-		player1.reset( new Vector(0, 256) );
+		player1.reset( new Vector(0, 0) );
 	}
 	
 	public int getTickNumber() {
