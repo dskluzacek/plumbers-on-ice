@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="20">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="36">
+ <properties>
+  <property name="bgcolor" value="0,0,0"/>
+  <property name="soundtrack" value="Castle-Theme.mp3"/>
+ </properties>
  <tileset firstgid="1" name="castle" tilewidth="16" tileheight="16" tilecount="320">
   <image source="../../../../../Downloads/cave.png" width="320" height="256"/>
  </tileset>
@@ -9,15 +13,97 @@
  <tileset firstgid="981" name="castle3" tilewidth="16" tileheight="16" tilecount="572">
   <image source="../../../../../Downloads/oppcastle-tiles.png" width="416" height="352"/>
  </tileset>
- <layer name="Platform layer" width="150" height="16">
-  <data encoding="base64" compression="zlib">
-   eJztlk1KA0EQhadmo2AS3LhQIboxp1Cv4e9t1HVc6AHUtV4hca2gF1DXegWN+EKlmabpGXt6Og7C++AxAyFdUPX61WQZIYQQQgghhBBCSBpOJcvORJ+GoajOoSfoUsr//1/o5HG/kTiu4Zkb0afhVlR3LflppZ2yJCHjma/GloceRPXo+Gop17vdhZadO96dw51P4a+yM9yM8mUWcyyeCbzz7fjqXVQfAXn1m5/suZ5IsXcN7s69SJCRVX5gFv4NE09eLeSqxQb31Te/Kyn2rmGeO9f2V2geheYbqcbnqz56uAFtJu7laFbnPmDn2tTJmLrzt8+md9Lh24Pb6O8OtBvR5yoPvKDGK/QWuXOn2N94PehZiv1qU+aRut9R9Focxld2Nh3i/Qg6TtzTT9T5Eq1pSLFzzX71QV+0w3TGbjbt4X0fOkg8k1WctwatW+du5apBg1ojJ2/LCPUYvdicH1GyPrA=
-  </data>
- </layer>
+ <tileset firstgid="1553" name="Special Tiles" tilewidth="16" tileheight="16" tilecount="10">
+  <image source="special-tiles.png" width="80" height="32"/>
+  <tile id="6">
+   <properties>
+    <property name="special" value="spike"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="special" value="coin"/>
+   </properties>
+  </tile>
+ </tileset>
  <layer name="Decorative layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJzt1cENwjAMQFEndJzuQheBRcoidBFYhM6Bz5EitcV2QvXfperFPvhLEbE1Vr7RM8pZR//RB7qCB7qCB7qCB7pC6ZpEpvTbDLpC6aZN3ekKxmZt6kFXMPbUppagrra8uXR1DpFd7XlzLW9NV/E8uqrZ8+Z63pqu/Fl2ZbkrsivYe+md3x12hf9m0VWPu9DWR++8Bt06chfaumSRIZ9vF+J9AcH4J5w=
+   eJzt1dsRgkAMheGAFGER9gKNaCPaiDaijUAd5pWdWTaQC7fzvzAokzzsN7NEtt0yz+gZ6ayl71NdDX7Xzsh9V/pvb8EVXHkEV3DlEVzBlUdwBVdpbUXUVboZcAVXaXc29YArcXAl68mmXnAlzsKVdvYeXL3Z1CfIleTOPbMr6U64GjfnztW4Ks3SuMoV6crqW888XOWac+dauirN9nRl0dldWe6KdGURXI378jn/NugKLetIrra4C61bz+c8BJ115C60bpeaqKmPtwvF9we+bS8c
   </data>
  </layer>
- <objectgroup name="Object layer"/>
+ <layer name="Platform layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztWUtOwzAUTLMAJFrEAgQFCdjAKYBr8L0Nn21ZlM+Wwhau0MIWJOAABLZwBQriWfUTg7EdJySkKR5plMRpneZ1PPOaBoGHRzp0K0EQEVvETqV33JH08PgNulJXEWwjrysPDaaGkp1Dr+pKevxvPCgauKfjHeIucY+4D+d5rEE8gPFI8ayW15WHBqdSG2fEc9AIj10QL4lNeQ69yvdX5cG0JZfyQFtq44p4DRrhsRviraKdJP2VLWdd8dc1SYO/+oxlqIXAo9TGE/FZyTsx9kJ8leM6z+pCju7C+xuQoXfEwwHwtWqY7lzemCzu0j96K8ab1MY78QNew2PDVK8RTc2wv+LMxF7rAjLUhCzXnpiLKVBkrfsFRdZA11+J74ZzUNWG6lnMM6XXujFk6GjYW9s14nj4dT2BWg5rPovamuZQPUrnWXE+1g/6z+MzmPorzkGdNvA1EXgd6upFyVAb4vSE942/Xxlq5jYdrhkHmx7y1oLNx4vWoSn3VJj6Kz7WaQM9qyV1pfqVyE9ThrpCV0P0V4ZL5qYF6svVj1z9bZCh66/EeuFjm+dwXup0NUc1nCcupKilbb2ivzJMmYtQv2vb79Sqks9xwLmz0k6evlS059nAnmXKwWWq7wpxNUWdbfeN/spIkrkC2OONhd+fDyNMGknaR5XZp4rQ4ASt50nwNvSmTdrfIm5nXFP0V0YWmcv5qgPqwtXDyvKcKS/o7p/H4p5p1un8jNSV6k1rtL9O3MhYV3Wab4Y4C/Muhj0u/eJa7Yrbfweu3lNmj8oCor8X+hFbZlM+xxTbI8mqzA6xfww8IX4CpLGxGA==
+  </data>
+ </layer>
+ <layer name="Decorative layer 2" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJzt0sENggAQRNEF6U8bwUakEWwEG4E63BZMdiUh790nmcOPAPi/+xDxGM5+wdXM2dRTVxR7ZVOLrii2ZlNvXVFMV3TQFR22bOqjK4rpig66osOeTR26opiu6KArOuiKDrqiw22MmMbfNl8QOBRW
+  </data>
+ </layer>
+ <objectgroup name="Object layer">
+  <object id="21" name="Goal" x="2368" y="0" width="31" height="240"/>
+  <object id="22" name="badguy1" x="1976" y="22.6667">
+   <properties>
+    <property name="spawndistance" value="0"/>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="25" name="badguy2" x="2184" y="-70.6667">
+   <properties>
+    <property name="spawndistance" value="0"/>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="27" name="badguy1" x="2310.67" y="177.333">
+   <properties>
+    <property name="spawndistance" value="48"/>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="28" name="badguy2" x="1801.33" y="52">
+   <properties>
+    <property name="spawndistance" value="0"/>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="29" name="badguy1" x="1366.67" y="9.33333">
+   <properties>
+    <property name="spawndistance" value="35"/>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="30" name="badguy1" x="793.333" y="197.333">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="31" name="badguy1" x="936" y="162.667">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="32" name="badguy2" x="665.333" y="53.3333">
+   <properties>
+    <property name="spawndistance" value="16"/>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="33" name="badguy1" x="584" y="149.333">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="34" name="badguy1" x="105.333" y="101.333">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="35" name="badguy2" x="1593.33" y="20">
+   <properties>
+    <property name="spawndistance" value="5"/>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>
