@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Player extends Character {
 	private int coinsCollected = 0;
 	private boolean jumped = false;
+	private boolean hurt = false;
 	
 	private static final float ACCELERATION = 0.25f,
 	                           DECELERATION = -0.75f,
@@ -47,6 +48,9 @@ public class Player extends Character {
 	
 	@Override
 	public void preVelocityLogic() {
+		if ( getState() == State.DYING ) {
+			return;
+		}
 		
 		if ( getState() == State.STANDING || getState() == State.RUNNING ) {
 			if ( Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ) {
@@ -69,6 +73,10 @@ public class Player extends Character {
 	
 	@Override
 	public void prePositionLogic() {
+		if ( getState() == State.DYING ) {
+			return;
+		}
+		
 		float Vx = getVelocity().getX();
 		
 		if (Vx > 5) {
@@ -83,17 +91,31 @@ public class Player extends Character {
 		if ( getState() == State.RUNNING && getVelocity().getX() == 0 ) {
 			setState( State.STANDING );
 		}
+		if ( getState() != State.DYING && Gdx.input.isKeyPressed(Input.Keys.K)) {
+			beKilled();
+		}
 	}
 	
 	public List<Event> getEvents() {
 		boolean jumped = this.jumped;
+		boolean hurt = this.hurt;
 		this.jumped = false;
+		this.hurt = false;
 		
-		if (jumped) {
+		if (hurt) {
+			return Collections.singletonList((Event) DamageEvent.instance());
+		} else if (jumped) {
 			return Collections.singletonList((Event) JumpEvent.instance());
 		} else {
 			return Collections.emptyList();
 		}
+	}
+	
+	public void beKilled() {
+		setState( State.DYING );
+		setAcceleration(0, GameModel.GRAVITY);
+		setVelocity(-1.0f, -7.0f);
+		hurt = true;
 	}
 	
 	public void reset(Vector position) {
@@ -104,7 +126,26 @@ public class Player extends Character {
 		setState(Character.State.FALLING);
 	}
 	
+	public Event hazardCollisionCheck(Iterable<Hazard> hazards) {
+		if ( getState() == State.DYING ) {
+			return null;
+		}
+		Rectangle rect = getRectangle();
+		
+		for (Hazard h : hazards) {
+			if ( rect.intersects(h.getRectangle()) ) {
+				beKilled();
+				return DamageEvent.instance();
+			}
+		}
+		return null;
+	}
+	
 	public List<Event> coinCollectCheck(Iterable<Coin> coins) {
+		if ( getState() == State.DYING ) {
+			return Collections.emptyList();
+		}
+		
 		Rectangle rect = getRectangle();
 		List<Event> events = new ArrayList<Event>();
 		
