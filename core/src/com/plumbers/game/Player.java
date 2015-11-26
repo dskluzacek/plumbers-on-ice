@@ -14,11 +14,15 @@ public class Player extends Character {
 	private int coinsCollected = 0;
 	private boolean jumped = false;
 	private boolean hurt = false;
+	private int jumpStarted;
 	
-	private static final float ACCELERATION = 0.25f,
-	                           DECELERATION = -0.75f,
-	                       	   JUMP_POWER = -10,
-	                           JUMP_ASSIST = 1;
+	private static final float ACCELERATION = 1/14f,
+	                           DECELERATION = -0.25f,
+	                           MAX_SPEED = 2.8f,//-0.75f,
+	                           JUMP_POWER = -2.75f,
+	                       	   JUMP_BOOST = -1/22f, //-10,
+	                           JUMP_FWD_ASSIST = 0.5f; //1;
+	private static final int JUMP_BOOST_DURATION = 24;
 	
 	public Player(String name, TextureAtlas textureAtlas) {
 		super(name);
@@ -47,18 +51,33 @@ public class Player extends Character {
 	}
 	
 	@Override
-	public void preVelocityLogic() {
+	public void preVelocityLogic(int tickNumber) {
 		if ( getState() == State.DYING ) {
 			return;
+		}
+		
+		if ( getState() == State.JUMPING ) {
+			if ( tickNumber <= jumpStarted + JUMP_BOOST_DURATION
+			      && Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ) {
+				// allow jump acceleration to continue
+			} else {
+				setYAccel(GameModel.GRAVITY);
+			}
+			
+			if ( Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
+				setXPosition( getPosition().getX() + JUMP_FWD_ASSIST );
+			}
 		}
 		
 		if ( getState() == State.STANDING || getState() == State.RUNNING ) {
 			if ( Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ) {
 				jumped = true;
+				jumpStarted = tickNumber;
 				setState( State.JUMPING );
 				setYVelocity(JUMP_POWER);
+				setYAccel(JUMP_BOOST);
 				setXAccel(0);
-				setYAccel(GameModel.GRAVITY);
+//				setYAccel(GameModel.GRAVITY);
 			} else if ( Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
     			setXAccel(ACCELERATION);
     			setState( State.RUNNING );
@@ -66,28 +85,25 @@ public class Player extends Character {
     			setXAccel(DECELERATION);
     		}
 		}
-		if ( getState() == State.JUMPING && Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
-			setXPosition( getPosition().getX() + JUMP_ASSIST );
-		}
 	}
 	
 	@Override
-	public void prePositionLogic() {
+	public void prePositionLogic(int tickNumber) {
 		if ( getState() == State.DYING ) {
 			return;
 		}
 		
 		float Vx = getVelocity().getX();
 		
-		if (Vx > 5) {
-			setXVelocity(5);
+		if (Vx > MAX_SPEED) {
+			setXVelocity(MAX_SPEED);
 		} else if (Vx < 0) {
 			setXVelocity(0);
 		}
 	}
 	
 	@Override
-	public void postMotionLogic() {
+	public void postMotionLogic(int tickNumber) {
 		if ( getState() == State.RUNNING && getVelocity().getX() == 0 ) {
 			setState( State.STANDING );
 		}
@@ -104,7 +120,7 @@ public class Player extends Character {
 		
 		if (hurt) {
 			return Collections.singletonList((Event) DamageEvent.instance());
-		} else if (jumped) {
+		} else if (jumped && getState() == State.JUMPING ) {
 			return Collections.singletonList((Event) JumpEvent.instance());
 		} else {
 			return Collections.emptyList();
@@ -114,7 +130,7 @@ public class Player extends Character {
 	public void beKilled() {
 		setState( State.DYING );
 		setAcceleration(0, GameModel.GRAVITY);
-		setVelocity(-1.0f, -7.0f);
+		setVelocity(-0.75f, -4.0f);
 		hurt = true;
 	}
 	

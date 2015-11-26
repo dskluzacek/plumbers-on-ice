@@ -71,15 +71,15 @@ public abstract class Motionable {
 		acceleration.setY(value);
 	}
 	
-	public void preVelocityLogic() {}
-	public void prePositionLogic() {}
-	public void postMotionLogic() {}
+	public void preVelocityLogic(int tick) {}
+	public void prePositionLogic(int tick) {}
+	public void postMotionLogic(int tick) {}
 	
-	public final void simulate() {
-		preVelocityLogic();
+	public final void simulate(int tickNumber) {
+		preVelocityLogic(tickNumber);
 		velocity.add( acceleration );
-		prePositionLogic();
+		prePositionLogic(tickNumber);
 		position.add( velocity );
-		postMotionLogic();
+		postMotionLogic(tickNumber);
 	}
 }
