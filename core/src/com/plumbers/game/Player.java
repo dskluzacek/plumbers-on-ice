@@ -18,10 +18,10 @@ public class Player extends Character {
 	
 	private static final float ACCELERATION = 1/14f,
 	                           DECELERATION = -0.25f,
-	                           MAX_SPEED = 2.8f,//-0.75f,
+	                           MAX_SPEED = 2.8f,
 	                           JUMP_POWER = -2.75f,
-	                       	   JUMP_BOOST = -1/22f, //-10,
-	                           JUMP_FWD_ASSIST = 0.5f; //1;
+	                       	   JUMP_BOOST = -1/20f,
+	                           JUMP_FWD_ASSIST = 0.5f;
 	private static final int JUMP_BOOST_DURATION = 24;
 	
 	public Player(String name, TextureAtlas textureAtlas) {
