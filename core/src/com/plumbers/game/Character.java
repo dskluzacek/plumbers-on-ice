@@ -8,12 +8,15 @@ import com.plumbers.game.MovementAnimation.Action;
 public abstract class Character extends Motionable implements Drawable {
 	private String characterName;
 	private Rectangle hitbox;
+	private float hitboxRelPosX, hitboxRelPosY;
 	private MovementAnimation movementAnim;
 	private State state = State.RUNNING;
 
 	public Character(String characterName) {
 		this.characterName = characterName;
 		hitbox = new Rectangle(0, 0, 20, 26);
+		hitboxRelPosX = 4;
+		hitboxRelPosY = 4;
 	}
 
 	public enum State {
@@ -38,8 +41,8 @@ public abstract class Character extends Motionable implements Drawable {
 	
 	private void updateHitbox() {
 		Vector position = getPosition();
-		hitbox.setX( MathUtils.round(position.getX()) + 4 );
-		hitbox.setY( MathUtils.round(position.getY()) + 4 );
+		hitbox.setX( MathUtils.round(position.getX()) + hitboxRelPosX );
+		hitbox.setY( MathUtils.round(position.getY()) + hitboxRelPosY );
 	}
 	
 	public void fallingCheck(Iterable<Block> blocks) {
