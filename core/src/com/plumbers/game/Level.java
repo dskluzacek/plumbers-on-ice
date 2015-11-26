@@ -45,8 +45,8 @@ public class Level {
 		width = blockLayer.getWidth();
 		height = blockLayer.getHeight();
 		
-		for (int row = 0; row < blockLayer.getTileWidth(); row++) {
-			for (int col = 0; col < blockLayer.getTileHeight(); col++) {
+		for (int row = 0; row < blockLayer.getWidth(); row++) {
+			for (int col = 0; col < blockLayer.getHeight(); col++) {
 				TiledMapTileLayer.Cell cell = blockLayer.getCell(row, col);
 				
 				if ( cell != null ) {
