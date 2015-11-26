@@ -144,12 +144,12 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		timeAccumulator += deltaTime;
 		int count = 0;	
 		
-		while (timeAccumulator > 1/60f) {
+		while (timeAccumulator > 1/120f) {
 			events.addAll( gameModel.gameTick() );
 			++count;
-			timeAccumulator -= 1/60f;
+			timeAccumulator -= 1/120f;
 		}
-		if (count > 1) {
+		if (count > 2) {
 			timeAccumulator = 0;
 		}
 		

@@ -13,7 +13,7 @@ public class GameModel{
 //  private List<Entity> entities;
     private int gameTicks = 0;
 	
-	public static final float GRAVITY = 0.3f;
+	public static final float GRAVITY = 0.1f;//0.3f;
 	public static final int TILE_SIZE = 32;
 
     public GameModel(Level level, Player p1) {
@@ -31,11 +31,11 @@ public class GameModel{
 		++gameTicks;
 		occuringEvents.clear();
 		
-		player1.simulate();
-		occuringEvents.addAll( player1.getEvents() );
+		player1.simulate(gameTicks);
 		player1.fallingCheck( currentLevel.getBlocks() );
 		player1.collisionCheck( currentLevel.getBlocks() );
 		player1.hazardCollisionCheck( currentLevel.getHazards() );
+		occuringEvents.addAll( player1.getEvents() );
 		occuringEvents.addAll(
 		      player1.coinCollectCheck( currentLevel.getCoins() ));
 		
