@@ -7,35 +7,26 @@ import java.util.List;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Music.OnCompletionListener;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 
-import sun.print.resources.serviceui;
-
-@SuppressWarnings("unused")
-public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
+public final class PlumbersOnIce
+            extends ApplicationAdapter implements EventContext
+{
+	// major fields for game simulation and rendering
 	private TextureAtlas textureAtlas;
 	private GameModel gameModel;
 	private Player player1;
@@ -43,27 +34,49 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 	private OrthogonalTiledMapRenderer mapRenderer;
 	private Background background;
 	private OrthographicCamera camera;
+	
+	// game viewport width and height
 	private int width, height;
 	
+	// background color to be set by the level in lieu of an image Background
+	private Color bgColor = Color.BLACK;
+	
+	// state fields needed by the View
 	private float timeAccumulator = 0;
 	private float elapsedTime = 0;
 	private float cameraPos = 0;
 	private List<Event> events = new ArrayList<Event>();
 	private boolean death = false;
 	
+	// objects used for the on-screen timer and coin count displays
 	private Matrix4 screenProjMatrix;
 	private BitmapFont mainFont;
 	private DecimalFormat secondsFormat;
 	private Animation coinAnimation;
 	
+	/* -- music and sounds -- */
+	// the background music track for the level
 	private Music music;
+	// time to wait after end of track before starting again
+	private float musicDelay;
+	// stores the elapsed time value at end of track
 	private float musicEndTime;
+	// whether we are currently in the delay between end and start of music
 	private boolean musicWait = false;
-	private Sound coinSound, jumpSound, damageSound, deathSound;
-	private long coinFrameNumber;
 	
-	private static final int MUSIC_DELAY = 2;
-	private static final float MUSIC_VOLUME = 0.5f;
+	// sound effects
+	private Sound coinSound, jumpSound, damageSound, deathSound;
+	// frame number at time of last coin sound start,
+	// used to provide minimum spacing between coin sounds
+	private long coinFrameNumber; 
+	
+	private static final float GAME_TICK_TIME = 1/120f;
+	private static final int TICK_PER_FRAME_LIMIT = 2,
+	                         COIN_SOUND_MIN_DELAY_IN_FRAMES = 3,
+	                         CAMERA_PLAYER_X = 300,
+	                         INFO_PADDING_IN_PIXELS = 5;
+	private static final float ON_DEATH_DELAY = 0.75f,
+	                           MUSIC_VOLUME = 0.5f;
 	
 	@Override
 	public void create () {	
@@ -99,16 +112,26 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		coinAnimation = Coin.getAnimation(textureAtlas);
 		Coin.createCoinTile(textureAtlas);
 		
-		Level level = new Level(textureAtlas);
-		background = level.getBackground();
-		if (background != null) {
+		Level level;
+		try {
+			level = new Level("castle.tmx", textureAtlas);
+		} catch (FileFormatException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		
+		if ( level.hasBackground() ) {
+			background = level.getBackground();
 			background.setWindowDimensions(width, height);
+		} else if ( level.hasBackgroundColor() ) {
+			bgColor = level.getBackgroundColor();
 		}
 		music = level.getSoundtrack();
 		mapRenderer = level.getRenderer();
 		mapRenderer.setView(camera);
 		
-		player1 = new Player("plumber-red", textureAtlas);
+		player1 = new Player("hero", textureAtlas);
 		player1.setPosition( new Vector(0, 0) );
 		gameModel = new GameModel(level, player1);
 
@@ -124,32 +147,25 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(20/255f, 12/255f, 28/255f, 1);
+		if (death) {
+			deathLoop();
+			return;
+		}
+		Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, 1);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		if (death) {
-			if (elapsedTime < 0.75) {
-				elapsedTime += Gdx.graphics.getDeltaTime();
-				return;
-			} else {
-				reset();
-				gameModel.reset();
-				death = false;
-			}
-		}
 		
 		float deltaTime = Gdx.graphics.getDeltaTime(); 
 		elapsedTime += deltaTime;
 		timeAccumulator += deltaTime;
 		int count = 0;	
 		
-		while (timeAccumulator > 1/120f) {
+		while (timeAccumulator > GAME_TICK_TIME) {
 			events.addAll( gameModel.gameTick() );
 			++count;
-			timeAccumulator -= 1/120f;
+			timeAccumulator -= GAME_TICK_TIME;
 		}
-		if (count > 2) {
+		if (count > TICK_PER_FRAME_LIMIT) {
 			timeAccumulator = 0;
 		}
 		
@@ -185,7 +201,7 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 	public void apply(CoinEvent e) {
 		long frameId = Gdx.graphics.getFrameId();
 		
-		if ( frameId - coinFrameNumber >= 3 ) {
+		if ( frameId - coinFrameNumber >= COIN_SOUND_MIN_DELAY_IN_FRAMES ) {
 			coinSound.play();
 			coinFrameNumber = frameId;
 		}
@@ -210,6 +226,20 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 		jumpSound.play(1);
 	}
 	
+	private void deathLoop() {
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		if (elapsedTime < ON_DEATH_DELAY) {
+			elapsedTime += Gdx.graphics.getDeltaTime();
+		} else {
+			reset();
+			gameModel.reset();
+			death = false;
+		}
+	}
+	
 	private void reset() {
 		camera.translate(- cameraPos, 0);
 		cameraPos = 0;
@@ -222,16 +252,23 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 	private void positionCamera() {
 		Vector position = player1.getPosition();
 		
-		if ( position.getX() - 350 < gameModel.getLevelWidth() - width ) {
-			if ( position.getX() - 350 > cameraPos ) {
-				float change = MathUtils.floor( position.getX() - cameraPos - 350 );
+		if ( position.getX()
+		        - CAMERA_PLAYER_X < gameModel.getLevelWidth() - width )
+		{
+			if ( position.getX() - CAMERA_PLAYER_X > cameraPos )
+			{
+				float change = MathUtils.floor(
+				        position.getX() - cameraPos - CAMERA_PLAYER_X );
 				
 				camera.translate(change, 0);
 				cameraPos += change;
 				camera.update();
 				mapRenderer.setView(camera);
 			}
-		} else if ( position.getX() - 350 > gameModel.getLevelWidth() - width ) {
+		}
+		else if ( position.getX()
+		            - CAMERA_PLAYER_X > gameModel.getLevelWidth() - width )
+		{
 			float change = (gameModel.getLevelWidth() - width) - cameraPos;
 			
 			camera.translate(change, 0);
@@ -244,8 +281,10 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 	private void renderTimer() {
 		batch.begin();
 		String str = getTimerString();
-		mainFont.draw(batch,
-		  str, width - 2 - str.length() * (mainFont.getSpaceWidth() + 2), 5);
+		mainFont.draw(
+		  batch,
+		  str, width - 2 - str.length() * (mainFont.getSpaceWidth() + 2),
+		  INFO_PADDING_IN_PIXELS );
 		batch.end();
 	}
 	
@@ -255,14 +294,16 @@ public class PlumbersOnIce extends ApplicationAdapter implements EventContext {
 	}
 	
 	private void renderCoinCounter() {
+		int p = INFO_PADDING_IN_PIXELS;
+		
 		batch.begin();
-		batch.draw( coinAnimation.getKeyFrame(elapsedTime, true), 5, 5, 20, 20 );
-		mainFont.draw(batch, "" + player1.getCoinsCollected(), 33, 5);
+		batch.draw(coinAnimation.getKeyFrame(elapsedTime, true), p, p, 20, 20);
+		mainFont.draw(batch, "" + player1.getCoinsCollected(), 33, p);
 		batch.end();
 	}
 	
 	private void musicCheck() {
-		if (musicWait && elapsedTime > musicEndTime + MUSIC_DELAY) {
+		if (musicWait && elapsedTime > musicEndTime + musicDelay) {
 			music.play();
 			musicWait = false;
 		}
