@@ -32,10 +32,10 @@ public final class Coin {
 		this.row = row;
 		this.column = col;
 		this.cell = cell;
-		hitbox = new Rectangle(row * GameModel.TILE_SIZE, 
-		                       col * GameModel.TILE_SIZE,
-		                       GameModel.TILE_SIZE,
-		                       GameModel.TILE_SIZE);
+		hitbox = new Rectangle(row * Block.SIZE,
+		                       col * Block.SIZE,
+		                       Block.SIZE,
+		                       Block.SIZE);
 		cell.setTile(coinTile);
 	}
 	
