@@ -131,10 +131,11 @@ public final class PlumbersOnIce
 			bgColor = level.getBackgroundColor();
 		}
 		music = level.getSoundtrack();
+		musicDelay = level.getSoundtrackDelay();
 		mapRenderer = level.getRenderer();
 		mapRenderer.setView(camera);
 		
-		player1 = new Player("hero", textureAtlas);
+		player1 = new Player("greenbot", textureAtlas);
 		player1.setPosition( level.getStartPosition() );
 		gameModel = new GameModel(level, player1);
 
