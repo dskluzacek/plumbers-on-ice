@@ -11,6 +11,7 @@ public abstract class Character extends Motionable implements Drawable {
 	private float hitboxRelPosX, hitboxRelPosY;
 	private MovementAnimation movementAnim;
 	private State state = State.RUNNING;
+	private boolean flipped = false;
 
 	public Character(String characterName) {
 		this.characterName = characterName;
@@ -35,6 +36,12 @@ public abstract class Character extends Motionable implements Drawable {
 		
 		TextureRegion frame = movementAnim.getFrame(time);
 		Vector position = getPosition();
+		
+		// if flipped and isFlipX() are different (XOR)
+		if ( flipped ^ frame.isFlipX() ) {
+			frame.flip(true, false);
+		}
+		
 		batch.draw(frame, MathUtils.floor( position.getX() ), position.getY(),
 				frame.getRegionWidth() * 2, frame.getRegionHeight() * 2);
 	}
@@ -134,6 +141,10 @@ public abstract class Character extends Motionable implements Drawable {
 
 	public void setState(State s) {
 		state = s;
+	}
+	
+	public void setFlipped(boolean flipped) {
+		this.flipped = flipped;
 	}
 
 	public final String getCharacterName() {
