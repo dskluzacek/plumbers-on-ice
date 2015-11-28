@@ -37,22 +37,22 @@
   </data>
  </layer>
  <objectgroup name="Object layer" width="0" height="0">
-  <object name="badguy1" x="128" y="216">
+  <object name="badguy1" x="128" y="212">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy2" x="343" y="182">
+  <object name="badguy2" x="344" y="180">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy2" x="504" y="151">
+  <object name="badguy2" x="504" y="148">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy1" x="1351" y="215">
+  <object name="badguy1" x="1336" y="228">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
@@ -62,7 +62,7 @@
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy2" x="2044" y="134">
+  <object name="badguy2" x="2032" y="132">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
