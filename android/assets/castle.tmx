@@ -1,20 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="150" height="16" tilewidth="16" tileheight="16">
  <properties>
-  <property name="bgcolor" value="0,0,0"/>
+  <property name="background-color" value="20, 12, 28"/>
+  <property name="ceiling" value="true"/>
   <property name="soundtrack" value="Castle-Theme.mp3"/>
-  <property name="soundtrack-delay" value="2"/>
+  <property name="soundtrack-delay" value="0"/>
  </properties>
  <tileset firstgid="1" name="castle" tilewidth="16" tileheight="16">
   <image source="cave.png" width="320" height="256"/>
  </tileset>
  <tileset firstgid="321" name="castle2" tilewidth="16" tileheight="16">
   <image source="oppcastle-mod-tiles.png" width="480" height="352"/>
+  <tile id="82">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="83">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="84">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="85">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="86">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="87">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="142">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="143">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="144">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="145">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="202">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="203">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="204">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="205">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="206">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
+  <tile id="207">
+   <properties>
+    <property name="height" value="8"/>
+   </properties>
+  </tile>
  </tileset>
- <tileset firstgid="981" name="castle3" tilewidth="16" tileheight="16">
-  <image source="oppcastle-tiles.png" width="416" height="352"/>
- </tileset>
- <tileset firstgid="1553" name="Special Tiles" tilewidth="16" tileheight="16">
+ <tileset firstgid="981" name="Special Tiles" tilewidth="16" tileheight="16">
   <image source="special-tiles.png" width="80" height="32"/>
   <tile id="6">
    <properties>
@@ -29,12 +107,12 @@
  </tileset>
  <layer name="Decorative layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJzt1dsRgkAMheGAFGER9gKNaCPaiDaijUAd5pWdWTaQC7fzvzAokzzsN7NEtt0yz+gZ6ayl71NdDX7Xzsh9V/pvb8EVXHkEV3DlEVzBlUdwBVdpbUXUVboZcAVXaXc29YArcXAl68mmXnAlzsKVdvYeXL3Z1CfIleTOPbMr6U64GjfnztW4Ks3SuMoV6crqW888XOWac+dauirN9nRl0dldWe6KdGURXI378jn/NugKLetIrra4C61bz+c8BJ115C60bpeaqKmPtwvF9we+bS8c
+   eJzt1cENwjAMhWG3YQiGYBdYBBaBRWARGAEOcIM58DWRQtLGfmrp+y+ItrIP+aSI2LbJ/KJnpLPG/v/V2uB564zcd6V3c4uu6MojuqIrj+iKrjyiK7pK23Yiu65tBl3RVdpeTR3oqjq6quuopk50VZ2Fq9bZc3B1VlMXkKuaO3fJrmp30lXckDu3xVVpVourXEhXVt965uEq15A719JVabanK4uW7spyF9KVRXQVd9Vzvk3QFRvXP7ma4i6G6x5EHiF+9tZz/oDOGrmL4XqqqVfiKvQiqx6zH7mL4fsC+gkylA==
   </data>
  </layer>
  <layer name="Platform layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztWUtOwzAUTLMAJFrEAgQFCdjAKYBr8L0Nn21ZlM+Wwhau0MIWJOAABLZwBQriWfUTg7EdJySkKR5plMRpneZ1PPOaBoGHRzp0K0EQEVvETqV33JH08PgNulJXEWwjrysPDaaGkp1Dr+pKevxvPCgauKfjHeIucY+4D+d5rEE8gPFI8ayW15WHBqdSG2fEc9AIj10QL4lNeQ69yvdX5cG0JZfyQFtq44p4DRrhsRviraKdJP2VLWdd8dc1SYO/+oxlqIXAo9TGE/FZyTsx9kJ8leM6z+pCju7C+xuQoXfEwwHwtWqY7lzemCzu0j96K8ab1MY78QNew2PDVK8RTc2wv+LMxF7rAjLUhCzXnpiLKVBkrfsFRdZA11+J74ZzUNWG6lnMM6XXujFk6GjYW9s14nj4dT2BWg5rPovamuZQPUrnWXE+1g/6z+MzmPorzkGdNvA1EXgd6upFyVAb4vSE942/Xxlq5jYdrhkHmx7y1oLNx4vWoSn3VJj6Kz7WaQM9qyV1pfqVyE9ThrpCV0P0V4ZL5qYF6svVj1z9bZCh66/EeuFjm+dwXup0NUc1nCcupKilbb2ivzJMmYtQv2vb79Sqks9xwLmz0k6evlS059nAnmXKwWWq7wpxNUWdbfeN/spIkrkC2OONhd+fDyNMGknaR5XZp4rQ4ASt50nwNvSmTdrfIm5nXFP0V0YWmcv5qgPqwtXDyvKcKS/o7p/H4p5p1un8jNSV6k1rtL9O3MhYV3Wab4Y4C/Muhj0u/eJa7Yrbfweu3lNmj8oCor8X+hFbZlM+xxTbI8mqzA6xfww8IX4CpLGxGA==
+   eJztWctOwkAUhbrQRDBuXKiJutGvUH/D59/42OICH1vBLf4C6BYTda1Wt/gLovFOmBuP48x0KC2lOCc5aTvFKb09c86lFgoeHvHQLRYKIbFGbBV7xy1JD49B0JW6CmEbel15aPA00d859KqupMf/xqOigQc6PiAeEo+Ix3CexyrEExgPFc+qeV15aHAptVEnXoFGeKxBvCZW5Tn0Kt9f5QfPllxKA02pjRviLWiEx9rEO0U7/fRXtpx1xbBrEgfD+o55qIXAi9TGK/FNyTsx1iG+y3GdZ3UhRw/h7yuQoffE0zHwtVIQ71zamMvu0n96K8aH1MYn8Qs+w2OTVK8pTc2wv+LMxF6rARlqQpJrT8zFFMiy1qOCLGug66/Es+EcVLWhehazrvRabUOGTge9tV0mzgY/1xMop7Dmk6itaQ7Vo3SeFeVjo6D/NL6Dqb/iHNRpAz8TgtehrjpKhtoQpSe8b/z9ylAzt+pwzSjY9JC2Fmw+nrUOTbmnwtRf8bFOG+hZNakr1a9Efpoy1BW6GqK/MlwyNy5QX65+5Opv4wxdfyXWCx/bPIfzUqerJarhMnElRi1t6xX9lWHKXIT6rG2/U0tKPkcB505KO2n6UtaeZwN7likH16m+G8TNGHW23Tf6K6OfzBXAHm8m+P1+GGHSSL99VJ59KksNsq7Qm3Zpf4+4n3BN0V8ZSWQu56sOqAtXD8vLe6a0oLt/HnN9pymesepNW7S/TdxJWFfzNN8CcRHmXQ16XBvgWs2i2/8OXL0nzx6VBER/L/QjtsyqfI8ptmeSJZkdYv8ceEH8Bixxw30=
   </data>
  </layer>
  <layer name="Decorative layer 2" width="150" height="16">
