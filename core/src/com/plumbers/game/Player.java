@@ -9,6 +9,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 
 public class Player extends Character {
 	private int coinsCollected = 0;
@@ -26,18 +27,22 @@ public class Player extends Character {
 	
 	public Player(String name, TextureAtlas textureAtlas) {
 		super(name);
-
-		TextureRegion[] walkFrames = new TextureRegion[] {
-				textureAtlas.findRegion(name+"-walk1"),
-				textureAtlas.findRegion(name+"-walk2"),
-				textureAtlas.findRegion(name+"-walk3") };
 		
+		Array<TextureRegion> walkFrames = new Array<TextureRegion>();
+		
+		for (int i = 0; i < 6; i++) {
+			TextureRegion region = textureAtlas.findRegion(name + "-walk" + i);
+			
+			if ( region != null ) {
+				walkFrames.add(region);
+			}
+		}
 		TextureRegion[] idleFrames = new TextureRegion[] {
 				textureAtlas.findRegion(name+"-idle1"),
 				textureAtlas.findRegion(name+"-idle2"),
 				textureAtlas.findRegion(name+"-idle3") };
 
-		Animation walkAnimation = new Animation(1/12f, walkFrames);
+		Animation walkAnimation = new Animation(1/10f, walkFrames);
 		Animation idleAnimation = new Animation(1/3f, idleFrames);
 		Animation jumpAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-jump") } );
 		Animation landAnimation = new Animation( 1, new TextureRegion[]{ textureAtlas.findRegion(name+"-land") } );
@@ -141,7 +146,55 @@ public class Player extends Character {
 		setState(Character.State.FALLING);
 	}
 	
-	public Event hazardCollisionCheck(Iterable<Hazard> hazards) {
+	@Override
+	public void respondToCollision(Block block, Rectangle.Collision info) {
+		State state = getState();
+		
+		if (info.getDirection() == Direction.TOP) {
+			setYAccel(0);
+			setYVelocity(0);
+			setYPosition( block.getRectangle().getY()
+					      - getRectangle().getH()
+					      - rectRelPosY() );
+			
+			if (state == State.JUMPING || state == State.FALLING) {
+				setState(State.RUNNING);
+			}
+		} else if (info.getDirection() == Direction.LEFT) {
+			setXAccel(0);
+			setXVelocity(0);
+			setXPosition( getPosition().getX() - info.getDistance() );
+			
+			if (state == State.JUMPING && getVelocity().getY() > 0) {
+				setState(State.FALLING);
+			}
+		} else if (info.getDirection() == Direction.BOTTOM) {
+			setYVelocity(0);
+			setYPosition( getPosition().getY() + info.getDistance() );
+			
+		} else if (info.getDirection() == Direction.RIGHT) {
+			setXAccel(0);
+			setXVelocity(0);
+			setXPosition( getPosition().getX() + info.getDistance() );
+		}
+	}
+	
+	@Override
+	public void respondToUnsupported() {
+		setState(State.FALLING);
+		setXAccel(0);
+		setYAccel(GameModel.GRAVITY);
+	}
+	
+	public void ceilingCheck() {
+		if ( getRectangle().getY() <= 0 ) {
+			setYAccel(GameModel.GRAVITY);
+			setYVelocity(0);
+			setYPosition( - rectRelPosY() );
+		}
+	}
+	
+	public Event hazardCollisionCheck(Iterable<? extends Hazard> hazards) {
 		if ( getState() == State.DYING ) {
 			return null;
 		}
