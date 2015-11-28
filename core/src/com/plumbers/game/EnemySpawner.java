@@ -28,9 +28,11 @@ public class EnemySpawner {
 		if (spawned || playerXPos + spawnDistance < x) {
 			return null;
 		}
-
-		return new Enemy(type,
-		                 x - type.relativeX - type.width / 2,
-		                 y - type.relativeY - type.height / 2);
+		spawned = true;
+		return new Enemy(type, x, y);
+	}
+	
+	public void reset() {
+		spawned = false;
 	}
 }
