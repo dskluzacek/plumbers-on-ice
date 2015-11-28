@@ -9,7 +9,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -19,22 +22,25 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 public final class Level { 
-	private List<Block> blocks = new ArrayList<Block>(); 
+    private OrthogonalTiledMapRenderer renderer;
+    private List<Block> blocks = new ArrayList<Block>(); 
 	private List<Decoration> decorations = new ArrayList<Decoration>();
 	private List<Coin> coins = new ArrayList<Coin>();
-//	private List<EnemySpawner> spawners;
+	private List<EnemySpawner> spawners = new ArrayList<EnemySpawner>();
 	private List<Hazard> hazards = new ArrayList<Hazard>();
 	private TiledMap tiledMap;
+	private Vector start;
+	private Rectangle finish;
 	private int widthInTiles, heightInTiles;
 	private boolean useCeiling;
-	private OrthogonalTiledMapRenderer renderer;
-	private static final String PLATFORM_LAYER_NAME = "Platform layer";
 	
 	private Music soundtrack;
 	private int soundtrackDelay = 0;
 	private Background background;
 	private Color backgroundColor;
-
+	private static final String PLATFORM_LAYER_NAME = "Platform layer",
+	                            OBJECT_LAYER_NAME = "Object layer";
+	
 	public Level(String filename, TextureAtlas atlas)
 		throws FileFormatException
 	{
@@ -65,6 +71,7 @@ public final class Level {
     			}
     		}
     		getMapProperties();
+    		getMapObjects();
 		} catch (NumberFormatException nfe) {
             throw new FileFormatException(
                     "Error trying to parse an integer in " + filename,
@@ -72,6 +79,14 @@ public final class Level {
 		}
 		renderer = new OrthogonalTiledMapRenderer(tiledMap, 2);
         
+	}
+	
+	public Vector getStartPosition() {
+		return start;
+	}
+	
+	public Rectangle getFinish() {
+		return finish;
 	}
 
 	public List<Block> getBlocks(){
@@ -134,6 +149,59 @@ public final class Level {
 		for (Coin c : coins) {
 			c.setCollected(false);
 		}
+	}
+	
+	private void getMapObjects()
+	{
+	    MapObjects objects = 
+	            tiledMap.getLayers().get(OBJECT_LAYER_NAME).getObjects();
+	    
+	    for (MapObject obj : objects)
+	    {
+	        if (obj instanceof RectangleMapObject)
+	        {
+	            RectangleMapObject rectObj = (RectangleMapObject) obj;
+	            
+	            if ( rectObj.getName().equalsIgnoreCase("Start") )
+	            {
+	                float x = rectObj.getRectangle().getX() * 2;
+	                float y = rectObj.getRectangle().getY() * 2;
+	                start = new Vector(x, y);
+	            
+	            }
+	            else if ( rectObj.getName().equalsIgnoreCase("Goal") )
+	            {
+	                com.badlogic.gdx.math.Rectangle rect = rectObj.getRectangle();
+	            	
+	            	finish = new Rectangle(rect.getX() * 2, rect.getY() * 2,
+	            	              rect.getWidth() * 2, rect.getHeight() * 2);
+	            }
+	            else if ( rectObj.getProperties().containsKey("type") )
+	            {
+	            	MapProperties props = rectObj.getProperties();
+	            	Enemy.Type type =
+	            			Enemy.Type.get( props.get("type", String.class) );
+	            	int x = 2 * (int) rectObj.getRectangle().getX();
+	            	int y = 2 * (int) rectObj.getRectangle().getY();
+	            	
+	            	if (type == null)
+	            		return;
+	            	
+	            	if ( props.containsKey("spawndistance") )
+	            	{
+	            		int spawnDistance = 2 * Integer.parseInt(
+	            		        props.get("spawndistance", String.class) );
+	            		
+	            		spawners.add( new EnemySpawner(x, y, type, spawnDistance) );
+	            	}
+	            	else
+	            	{
+	            		spawners.add( new EnemySpawner(x, y, type) );
+	            	}
+	            }
+	        }
+	    }
+	    
 	}
 	
 	private void getMapProperties() {
@@ -227,17 +295,4 @@ public final class Level {
 	private String nullToEmptyString(String str) {
 		return (str == null ? "" : str);
 	}
-
-//  public List<EnemySpawn> getEnemies(){
-//    return enemies; 
-//  }
-//  
-//  public Background getBackground(){
-//    return bg; 
-//  }
-//  
-//  public Soundtrack getSoundtrack(){
-//    return music; 
-//  }
-
 }

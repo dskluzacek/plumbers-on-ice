@@ -71,12 +71,15 @@ public final class PlumbersOnIce
 	private long coinFrameNumber; 
 	
 	private static final float GAME_TICK_TIME = 1/120f;
-	private static final int TICK_PER_FRAME_LIMIT = 2,
+	private static final int TICK_PER_FRAME_RESET_THRESHOLD = 2,
 	                         COIN_SOUND_MIN_DELAY_IN_FRAMES = 3,
 	                         CAMERA_PLAYER_X = 300,
 	                         INFO_PADDING_IN_PIXELS = 5;
 	private static final float ON_DEATH_DELAY = 0.75f,
 	                           MUSIC_VOLUME = 0.5f;
+	
+	private static final String TEXTURE_ATLAS_FILE = "sprites.atlas",
+	                            FONT_FILE = "DejaVuSansMono-Bold.ttf";
 	
 	@Override
 	public void create () {	
@@ -85,8 +88,8 @@ public final class PlumbersOnIce
 		
 		secondsFormat = new DecimalFormat("00.0");
 		secondsFormat.setRoundingMode(RoundingMode.DOWN);
-		FreeTypeFontGenerator generator= new FreeTypeFontGenerator(
-		                     Gdx.files.internal("DejaVuSansMono-Bold.ttf"));
+		FreeTypeFontGenerator generator =
+		        new FreeTypeFontGenerator( Gdx.files.internal(FONT_FILE) );
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		parameter.size = 28;
 		parameter.borderWidth = 2;
@@ -107,7 +110,7 @@ public final class PlumbersOnIce
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.combined);
 		textureAtlas =
-				new TextureAtlas(Gdx.files.internal("sprites.atlas"), true);
+		    new TextureAtlas(Gdx.files.internal(TEXTURE_ATLAS_FILE), true);
 		
 		coinAnimation = Coin.getAnimation(textureAtlas);
 		Coin.createCoinTile(textureAtlas);
@@ -132,7 +135,7 @@ public final class PlumbersOnIce
 		mapRenderer.setView(camera);
 		
 		player1 = new Player("hero", textureAtlas);
-		player1.setPosition( new Vector(0, 0) );
+		player1.setPosition( level.getStartPosition() );
 		gameModel = new GameModel(level, player1);
 
 		coinSound = Gdx.audio.newSound(Gdx.files.internal("coin.wav"));
@@ -165,7 +168,7 @@ public final class PlumbersOnIce
 			++count;
 			timeAccumulator -= GAME_TICK_TIME;
 		}
-		if (count > TICK_PER_FRAME_LIMIT) {
+		if (count > TICK_PER_FRAME_RESET_THRESHOLD) {
 			timeAccumulator = 0;
 		}
 		

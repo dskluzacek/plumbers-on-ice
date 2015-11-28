@@ -67,6 +67,7 @@
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="Goal" x="2360" y="0" width="40" height="64"/>
+  <object name="Goal" x="2360" y="-128" width="40" height="192"/>
+  <object name="Start" x="0" y="128"/>
  </objectgroup>
 </map>
