@@ -13,7 +13,7 @@ public final class GameModel {
 //  private List<Entity> entities;
 	private int gameTicks = 0;
 	
-	public static final float GRAVITY = 0.1f;//0.3f;
+	public static final float GRAVITY = 0.1f;
 
 	public GameModel(Level level, Player p1) {
 		currentLevel = level; 
@@ -57,7 +57,7 @@ public final class GameModel {
 	public void reset() {
 		currentLevel.resetCoins();
 		gameTicks = 0;
-		player1.reset( new Vector(0, 0) );
+		player1.reset( currentLevel.getStartPosition() );
 	}
 	
 	public int getTickNumber() {
