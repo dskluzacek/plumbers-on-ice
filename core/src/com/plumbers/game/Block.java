@@ -1,30 +1,38 @@
-public class Block {
-	int row;
-	int column;
-	Sprite sprite;
+package com.plumbers.game;
 
-	public Block(int r, int c, Sprite s) {
-	row = r;
-	column = c;
-	sprite = s;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+
+public class Block {
+	private final int row;
+	private final int column;
+	private TiledMapTileLayer layer;
+	private Cell cell;
+	private static final int SIZE = 32;
+	
+	public Block(int row, int column, Cell cell, TiledMapTileLayer layer) {
+        this.row = row;
+        this.column = column;
+        this.cell = cell;
+        this.layer = layer;
+	}
+	
+	public Rectangle getRectangle() {
+		return new Rectangle(SIZE * row, SIZE * column, SIZE, SIZE);
 	}
 
 	public int getRow() {
-	return row;
+		return row;
 	}
 	public int getColumn() {
-	return column;
+		return column;
 	}
-	public int getSprite() {
-	return sprite;
+	
+	public Cell getCell() {
+		return cell;
 	}
-	public void setRow(int r) {
-	row = r;
-	}
-	public void setColumn(int c) {
-	column = c;
-	}
-	public void setSprite(Sprite s) {
-	sprite = s;
+	
+	public TiledMapTileLayer getLayer() {
+		return layer;
 	}
 }

@@ -1,3 +1,4 @@
+package com.plumbers.game;
 
 public final class Coin implements Drawable {
 	private final int x;
