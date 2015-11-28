@@ -112,7 +112,7 @@
  </layer>
  <layer name="Platform layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztWctOwkAUhbrQRDBuXKiJutGvUH/D59/42OICH1vBLf4C6BYTda1Wt/gLovFOmBuP48x0KC2lOCc5aTvFKb09c86lFgoeHvHQLRYKIbFGbBV7xy1JD49B0JW6CmEbel15aPA00d859KqupMf/xqOigQc6PiAeEo+Ix3CexyrEExgPFc+qeV15aHAptVEnXoFGeKxBvCZW5Tn0Kt9f5QfPllxKA02pjRviLWiEx9rEO0U7/fRXtpx1xbBrEgfD+o55qIXAi9TGK/FNyTsx1iG+y3GdZ3UhRw/h7yuQoffE0zHwtVIQ71zamMvu0n96K8aH1MYn8Qs+w2OTVK8pTc2wv+LMxF6rARlqQpJrT8zFFMiy1qOCLGug66/Es+EcVLWhehazrvRabUOGTge9tV0mzgY/1xMop7Dmk6itaQ7Vo3SeFeVjo6D/NL6Dqb/iHNRpAz8TgtehrjpKhtoQpSe8b/z9ylAzt+pwzSjY9JC2Fmw+nrUOTbmnwtRf8bFOG+hZNakr1a9Efpoy1BW6GqK/MlwyNy5QX65+5Opv4wxdfyXWCx/bPIfzUqerJarhMnElRi1t6xX9lWHKXIT6rG2/U0tKPkcB505KO2n6UtaeZwN7likH16m+G8TNGHW23Tf6K6OfzBXAHm8m+P1+GGHSSL99VJ59KksNsq7Qm3Zpf4+4n3BN0V8ZSWQu56sOqAtXD8vLe6a0oLt/HnN9pymesepNW7S/TdxJWFfzNN8CcRHmXQ16XBvgWs2i2/8OXL0nzx6VBER/L/QjtsyqfI8ptmeSJZkdYv8ceEH8Bixxw30=
+   eJztWctOwkAULXWhiWDcuFATdaNfof6Gz7/xscUFPraCW/wF0C0m6lqtbvEXROOdMDceJjPDUFpKcU5y0naKU3p75pxLDQIPj3joFIIgIlaJzUL3uCnp4TEMOlJXEWwjrysPDV6mBjuHXtWR9PjfKIa9x0+kiSPiMfGEeAoa4bEy8QzGI8Wzql5XHhpcS23UiDegER6rE2+JFXkOvcr3V/nBqyWX0kBDauOOeA8a4bEW8UHRziD9lS1nXTHqmsTBqL5jHmoh8Ca18U78UPJOjLWJn3Jc51kdyNFj+PsyZOgj8XwCfE3tI1zPpY2F7C4dlOR9q/f/JbXxTfyBZ89j0/T5GU3NsL/izMReqw4ZakKSa0/MxRTIstbjgixroOuvxLPhHFS1oXoWs6b0Wi1Dhs6GXW0Lnc+Hf9cTKKWw5pOorWkOdY3qPKufj42D/tP4Dqb+inNQpw38TAReh7pqKxlqQz894X3j71eGmrkVh2v2g00PaWvB5uNZ69A17039FR/rtIGeVZW6Uv1K5KcpQ12hqyH6K8Mlc+MC6+jqR67+NsnQ9VdivfCxzXM4L3W6WqEarhLXYtTStl7RXxmmzEWoz9r2O7Wo5HM/4NxJaSdNX8ra82xgzzLl4CbVd4u4HaPOtvtGf2UMkrkC2OPNhb3vhxEmjQzaR+XZp7LUIOsKvWmf9g+IhwnXFP2VkUTmcr7qgLpw9bC8vGdKC7r75zHXd5riGavetEP7u8S9hHW1SPMtEZdh3vWwy40hrtUouP3vwNV78uxRSeC50NWP2DIr8j2m2F5IFmV2iP1L4BXxF48dwUA=
   </data>
  </layer>
  <layer name="Decorative layer 2" width="150" height="16">
@@ -122,28 +122,27 @@
  </layer>
  <objectgroup name="Object layer" width="0" height="0">
   <object name="Goal" x="2376" y="192" width="24" height="48"/>
-  <object name="badguy1" x="1976" y="0">
+  <object name="badguy2" x="2184" y="-16">
    <properties>
-    <property name="spawndistance" value="0"/>
-    <property name="type" value="badguy1"/>
-   </properties>
-  </object>
-  <object name="badguy2" x="2184" y="0">
-   <properties>
-    <property name="spawndistance" value="0"/>
+    <property name="spawndistance" value="80"/>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy1" x="936" y="0">
+  <object name="badguy1" x="800" y="196">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy1" x="584" y="0">
+  <object name="badguy1" x="584" y="148">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
   <object name="Start" x="0" y="96"/>
+  <object name="spawner" x="224" y="132">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
