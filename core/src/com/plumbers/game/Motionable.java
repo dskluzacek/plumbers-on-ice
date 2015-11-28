@@ -1,34 +1,60 @@
+package com.plumbers.game;
 
 public abstract class Motionable {
-	private Vector position;
-	private Vector velocity;
-	private Vector acceleration;
+	private Vector position = new Vector(0, 0);
+	private Vector velocity = new Vector(0, 0);
+	private Vector acceleration = new Vector(0, 0);
 	
-	public Vector getPosition() {
-		return position;
+	public final Vector getPosition() {
+		return new Vector(position);
 	}
 	
-	public void setPosition(Vector position) {
+	public final void setPosition(Vector position) {
 		this.position = position;
 	}
 	
-	public Vector getVelocity() {
-		return velocity;
+	public final Vector getVelocity() {
+		return new Vector(velocity);
 	}
 	
-	public void setVelocity(Vector velocity) {
+	public final void setVelocity(Vector velocity) {
 		this.velocity = velocity;
 	}
 	
-	public Vector getAcceleration() {
-		return acceleration;
+	public final Vector getAcceleration() {
+		return new Vector(acceleration);
 	}
 	
-	public void setAcceleration(Vector acceleration) {
+	public final void setAcceleration(Vector acceleration) {
 		this.acceleration = acceleration;
 	}
+	
+	public final void setXPosition(float value) {
+		position.setX(value);
+	}
+	
+	public final void setYPosition(float value) {
+		position.setY(value);
+	}
+	
+	public final void setXVelocity(float value) {
+		velocity.setX(value);
+	}
+	
+	public final void setYVelocity(float value) {
+		velocity.setY(value);
+	}
 
+	public final void setXAccel(float value) {
+		acceleration.setX(value);
+	}
+	
+	public final void setYAccel(float value) {
+		acceleration.setY(value);
+	}
+	
 	public void simulate() {
-		// to do
+		velocity.add( acceleration );
+		position.add( velocity );
 	}
 }

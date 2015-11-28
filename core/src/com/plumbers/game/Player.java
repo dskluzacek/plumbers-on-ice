@@ -1,32 +1,19 @@
+package com.plumbers.game;
+
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.plumbers.game.Rectangle.Collision;
+
 public class Player extends Character {
-	
-	private String name;
-	private Rectangle hitbox;
-	private MovementAnimation movementAnim;
-	private State state;
-	private enum State {STANDING, RUNNING, JUMPING, FALLING, DYING};
 
 	public Player(String name) {
-		this.name = name;
+		super(name);
 	}
+
 	
-	public State getState() {
-		return state;
-	}
-	
-	public void setState(State state) {
-		this.state = state;
-	}
-	
-	public void draw(Renderer rend) {
-		
-	}
-	
-	public void respondToCollision(Block b, Side s) {
-		
-	}
-	
-	public void respondToCollision(Enemy e, Side s) {
+
+	@Override
+	public void respondToCollision(Enemy e, Collision info) {
+		// TODO Auto-generated method stub
 		
 	}
 }

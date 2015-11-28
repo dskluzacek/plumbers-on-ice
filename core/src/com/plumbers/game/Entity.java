@@ -1,3 +1,4 @@
+package com.plumbers.game;
   public class Entity{
   private Sprite sprite; 
   
