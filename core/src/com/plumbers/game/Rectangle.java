@@ -1,7 +1,7 @@
 package com.plumbers.game;
 import java.util.Arrays;
 
-public class Rectangle {
+public final class Rectangle {
 	
 	private float x;
 	private float y;
