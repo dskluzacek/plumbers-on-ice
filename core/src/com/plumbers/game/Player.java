@@ -17,7 +17,7 @@ public class Player extends Character {
 	private int jumpStarted;
 	
 	private static final float ACCELERATION = 1/14f,
-	                           DECELERATION = -0.25f,
+	                           DECELERATION = -0.3f,
 	                           MAX_SPEED = 2.8f,
 	                           JUMP_POWER = -2.75f,
 	                       	   JUMP_BOOST = -1/20f,
@@ -77,7 +77,6 @@ public class Player extends Character {
 				setYVelocity(JUMP_POWER);
 				setYAccel(JUMP_BOOST);
 				setXAccel(0);
-//				setYAccel(GameModel.GRAVITY);
 			} else if ( Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
     			setXAccel(ACCELERATION);
     			setState( State.RUNNING );

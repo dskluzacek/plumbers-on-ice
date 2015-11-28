@@ -41,8 +41,18 @@ public abstract class Character extends Motionable implements Drawable {
 	
 	private void updateHitbox() {
 		Vector position = getPosition();
-		hitbox.setX( MathUtils.round(position.getX()) + hitboxRelPosX );
-		hitbox.setY( MathUtils.round(position.getY()) + hitboxRelPosY );
+		hitbox.setX( /*MathUtils.round(*/position.getX()/*)*/ + hitboxRelPosX );
+		hitbox.setY( /*MathUtils.round(*/position.getY()/*)*/ + hitboxRelPosY );
+	}
+	
+	public void ceilingCheck() {
+		updateHitbox();
+		
+		if (hitbox.getY() <= 0) {
+			setYAccel(GameModel.GRAVITY);
+			setYVelocity(0);
+			setYPosition(- hitboxRelPosY);
+		}
 	}
 	
 	public void fallingCheck(Iterable<Block> blocks) {
@@ -150,6 +160,4 @@ public abstract class Character extends Motionable implements Drawable {
 	public void setMovementAnim(MovementAnimation movementAnim) {
 		this.movementAnim = movementAnim;
 	}
-
-	
 }
