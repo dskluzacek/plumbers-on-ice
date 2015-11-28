@@ -3,22 +3,35 @@ package com.plumbers.game;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
-public class Block {
+public final class Block {
 	private final int row;
 	private final int column;
 	private TiledMapTileLayer layer;
 	private Cell cell;
-	private static final int SIZE = 32;
+	private Rectangle rectangle;
+	public static final int SIZE = 32;
 	
 	public Block(int row, int column, Cell cell, TiledMapTileLayer layer) {
         this.row = row;
         this.column = column;
         this.cell = cell;
         this.layer = layer;
+        this.rectangle = new Rectangle(SIZE * row, SIZE * column, SIZE, SIZE);
+	}
+	
+	public Block(int row, int column, Cell cell, TiledMapTileLayer layer,
+	             float hitboxRelativeX, float hitboxRelativeY,
+	             float hitboxWidth, float hitboxHeight)
+	{
+		this(row, column, cell, layer);
+		rectangle.setX( rectangle.getX() + hitboxRelativeX );
+		rectangle.setY( rectangle.getY() + hitboxRelativeY );
+		rectangle.setW(hitboxWidth);
+		rectangle.setH(hitboxHeight);
 	}
 	
 	public Rectangle getRectangle() {
-		return new Rectangle(SIZE * row, SIZE * column, SIZE, SIZE);
+		return new Rectangle(rectangle);
 	}
 
 	public int getRow() {
