@@ -23,103 +23,88 @@
  </tileset>
  <layer name="Decorative layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztmEkKgDAMRat7detwJV3o/Q9jFgpBnNtgTP6DDwoqMWPbEAAAAAA7VOw6I+VfGQLMUpBKdt+Tho9s0Uh1/YgL6sj3R9JEakjtImCDN7MJdfWcrZ9ja1I729mkDStrMmk/W8/TFHAf3YkHn6NdkOmniFs8d3qElT6SEg/rg5j6WnvE2Tee9nXkIZBgLw8lzxn+lsfcXk8zN2WPX/0mec6gbT9ylefa7JXAU72k5sh3EnmDONnBeizf/B+fN5J7co6HPRLQzwwdnwbx
+   eJztmEkKhEAMRcveq9tWr6QL+/6H6SwUgjhXgjH5Dz4oqMRUpqqUAAAAAD/U7LogfZ4yBLilJFXsvicND9likfr4kRB8M98fST9SQ2onAR/c6U3Iq+ss/Zybk9ZZ9iZreJnJtP3sPU4l4D46sx68j3ZJp55i3fI5UyO81BFJIswHOfk114i9b1yt64hDoMFaHGqeM7wtjrm9kXquZI2f/aZ5zmBtP3IU59bs1SBSvkiz5TvJuIkwx0XDe87d+T/ebzT35BzkFrDAH+lMBug=
   </data>
  </layer>
  <layer name="Platform layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztmF1qxDAMhH2Z7j5v+lz2CM39T1NMEYhh9GcnTVIyYEw2sSNbnyRvWru1Hm3ACXXvybweRxtwQt17Mqcel8vRRpxc30cbcEH1uKxw9d/rwwe57nv0PMCWMyviYGl3vhJ1hr6Me+/2y5e0q3O2Z36QXOVxtapnr6DqfvXnJSdZTDEhZ9iy78br1bm/hfauN7KPFlfW3lyFr0jCUpWnLbU3Q3uq24sxhEx5+epIjqJ47tJ8VOrTK3jnln4+w7kf/ZjxK9sDvdedoTdcLy3HlWcns20Pv1jyzkNaYstf5qhMfcRYH62nVbsyYrGw9b6hLV7+fhj9CGdenGeYwvFWjtpDGLdR/GaeH+Usc6bR/mJczzCl5+p9hQUZtxh9hS99ltZ1rZJvWOzjGHnPE8bpHpWtaVWurPEzsmKe3WPCGmcp4h3X4uUpNjbTRzbo/2Z9THZtI5Kc96lsW6DXYnFscVbhKqp9EcvsHBoJc1E0xrqf2SvxZdWm1vJcWfNL7rDYYX5ZGz/Le/Oz9QpX1fyC8+mW5QrPu973C29tTMxPlio1VnNu2b3FGV7mr/QoZIrVwYptzOdsraNcib0WP1muZsaKrP8DLA71/bVxnrwzFv4+a38UM7NciXTekjgY+bb9avn1VrjCOl1pOqZFI37BM+BiXKP9jBEmy2b2bWqLuPA0ylUmr0TftqU91ZwVv2e4qvL0A/45avM=
+   eJztmFGOgzAMRHOZLd9lv1c9Atz/NKto15I1Gjt2AgUqRkIRTRMc+9kJlHJrPdqAE+r2ybgeRxtwQt0+GVPNy/loI06u5WgDLqialxmuPn1/+CL31UfTAbacWS0O5nLXK1Fl6Mfoe5U/vuS6Omd71gepVR5Xq/rvFZT1V/2/1CSLKSbkDK/os/F+dfq30N77jfjR4sryzVX4aklYyvK0pfZmaE9VezGHkCmvXh3JUSufqzQfmf3p2Xjm1eLcEsYxElfmA+3rytAL7ucS48qzk9n2zrh45yEtseWdNSqyP2Ku9+6nWbsiYu/AW/sNbfHq98Noezjz3u8jTOF4q0btIczbVv5G/t/LWeRMo+PFuB5hSs9V2wwLMm422gxf+iyt97VMvWG5j2PkOROMW8p4rchyZY0fkZXzrI8J9zhLLV/hWrw6xcZG2pYN+t2sjomurUdS876VbTO0WiyPrZqa4Wp072Pn0JawFrXGWP0RX0ksW3Oz+hnlyppfaofFDovLWvhZ3pufrVe4ytYXnE9fUa7wvOt9v/DWxsTiZCnDs84ly+4tzvAyf6ZFIVNsH8zYxmLO1trLldhr8RPlamSsyHofYHmo+9fCefLOWPj7iP2RnBnlSqTrluRBz7ftZ4mvN8MV7tOZS+f08n9l44Jn4AJ9+h7tZ4wwWTazb1Nb5ZSlXq4idaX1bVuuSc2ZiXuEqyxPv+Z0bCU=
   </data>
  </layer>
  <objectgroup name="Object layer" width="0" height="0">
-  <object name="badguy1" x="272" y="128">
+  <object name="badguy1" x="272" y="132">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy2" x="329" y="196">
+  <object name="badguy2" x="328" y="196">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy2" x="469" y="231">
-   <properties>
-    <property name="type" value="badguy2"/>
-   </properties>
-  </object>
-  <object name="badguy1" x="824" y="168">
+  <object name="badguy1" x="816" y="164">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy2" x="837" y="227">
+  <object name="badguy2" x="837" y="228">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy1" x="1001" y="201">
+  <object name="badguy1" x="1000" y="196">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy2" x="1272" y="117">
+  <object name="badguy2" x="1200" y="212">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy1" x="1689" y="167">
+  <object name="badguy1" x="1688" y="164">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy2" x="1803" y="101">
+  <object name="badguy2" x="1804" y="100">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy1" x="1753" y="230">
+  <object name="badguy1" x="1752" y="228">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy1" x="1849" y="232">
+  <object name="badguy1" x="1848" y="228">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy2" x="1750" y="151">
+  <object name="badguy2" x="1750" y="148">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy2" x="2010" y="120">
+  <object name="badguy2" x="2000" y="116">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy2" x="2229" y="53">
+  <object name="badguy2" x="2240" y="52">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy1" x="2137" y="166">
+  <object name="badguy1" x="2264" y="164">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy1" x="2264" y="165">
+  <object name="badguy1" x="2008" y="180">
    <properties>
     <property name="type" value="badguy1"/>
-   </properties>
-  </object>
-  <object name="badguy1" x="2007" y="181">
-   <properties>
-    <property name="type" value="badguy1"/>
-   </properties>
-  </object>
-  <object name="badguy2" x="2104" y="53">
-   <properties>
-    <property name="type" value="badguy2"/>
    </properties>
   </object>
   <object name="Goal" x="2328" y="-128" width="72" height="320">
