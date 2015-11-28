@@ -27,7 +27,7 @@ public final class Level {
 	private List<Decoration> decorations = new ArrayList<Decoration>();
 	private List<Coin> coins = new ArrayList<Coin>();
 	private List<EnemySpawner> spawners = new ArrayList<EnemySpawner>();
-	private List<Hazard> hazards = new ArrayList<Hazard>();
+	private List<FixedHazard> hazards = new ArrayList<FixedHazard>();
 	private TiledMap tiledMap;
 	private Vector start;
 	private Rectangle finish;
@@ -97,8 +97,12 @@ public final class Level {
 		return coins;
 	}
 	
-	public List<Hazard> getHazards() {
+	public List<FixedHazard> getHazards() {
 		return hazards;
+	}
+	
+	public List<EnemySpawner> getSpawners() {
+		return spawners;
 	}
 	
 	public boolean hasBackground() {
@@ -259,7 +263,7 @@ public final class Level {
 		else if ( props.containsKey("special")
 				&& props.get("special").equals("spike") )
 		{
-			hazards.add( new Hazard(
+			hazards.add( new FixedHazard(
 			    new Rectangle(row * Block.SIZE + 4,
 			                  col * Block.SIZE + 20,
 		                      24, 12)) );
