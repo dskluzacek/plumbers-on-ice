@@ -3,7 +3,7 @@ package com.plumbers.game;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameModel{
+public final class GameModel {
 	private Player player1; 
 //  private Player p2; 
 	private Level currentLevel;
@@ -14,7 +14,6 @@ public class GameModel{
 	private int gameTicks = 0;
 	
 	public static final float GRAVITY = 0.1f;//0.3f;
-	public static final int TILE_SIZE = 32;
 
 	public GameModel(Level level, Player p1) {
 		currentLevel = level; 
@@ -32,6 +31,10 @@ public class GameModel{
 		occuringEvents.clear();
 		
 		player1.simulate(gameTicks);
+		
+		if ( currentLevel.useCeiling() ) {
+			player1.ceilingCheck();
+		}
 		player1.fallingCheck( currentLevel.getBlocks() );
 		player1.collisionCheck( currentLevel.getBlocks() );
 		player1.hazardCollisionCheck( currentLevel.getHazards() );
@@ -62,7 +65,7 @@ public class GameModel{
 	}
 	
 	public int getLevelWidth() {
-		return currentLevel.getWidthInTiles() * TILE_SIZE;
+		return currentLevel.getWidthInTiles() * Block.SIZE;
 	}
 	
 	@SuppressWarnings("unused")
