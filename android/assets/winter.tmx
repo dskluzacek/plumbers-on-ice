@@ -3,7 +3,7 @@
  <properties>
   <property name="background" value="winter.png"/>
   <property name="soundtrack" value="Iceland-Theme.mp3"/>
-  <property name="soundtrack-delay" value="2"/>
+  <property name="soundtrack-delay" value="0"/>
  </properties>
  <tileset firstgid="1" name="Seasonal tiles" tilewidth="16" tileheight="16">
   <image source="tilesheet.png" width="192" height="96"/>
