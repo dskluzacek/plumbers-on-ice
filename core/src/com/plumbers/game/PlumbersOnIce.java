@@ -114,15 +114,15 @@ public final class PlumbersOnIce
 		
 		coinAnimation = Coin.getAnimation(textureAtlas);
 		Coin.createCoinTile(textureAtlas);
+		Enemy.setTextureAtlas(textureAtlas);
 		
 		Level level;
 		try {
-			level = new Level("castle.tmx", textureAtlas);
+			level = new Level("winter.tmx", textureAtlas);
 		} catch (FileFormatException e) {
 			e.printStackTrace();
 			return;
 		}
-		
 		
 		if ( level.hasBackground() ) {
 			background = level.getBackground();
