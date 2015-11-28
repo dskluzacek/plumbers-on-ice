@@ -134,38 +134,9 @@
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="badguy1" x="0" y="0">
-   <properties>
-    <property name="spawndistance" value="48"/>
-    <property name="type" value="badguy1"/>
-   </properties>
-  </object>
-  <object name="badguy2" x="0" y="52">
-   <properties>
-    <property name="spawndistance" value="0"/>
-    <property name="type" value="badguy2"/>
-   </properties>
-  </object>
-  <object name="badguy1" x="0" y="0">
-   <properties>
-    <property name="spawndistance" value="35"/>
-    <property name="type" value="badguy1"/>
-   </properties>
-  </object>
-  <object name="badguy1" x="0" y="0">
-   <properties>
-    <property name="type" value="badguy1"/>
-   </properties>
-  </object>
   <object name="badguy1" x="936" y="0">
    <properties>
     <property name="type" value="badguy1"/>
-   </properties>
-  </object>
-  <object name="badguy2" x="0" y="0">
-   <properties>
-    <property name="spawndistance" value="16"/>
-    <property name="type" value="badguy2"/>
    </properties>
   </object>
   <object name="badguy1" x="584" y="0">
@@ -173,16 +144,6 @@
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="badguy1" x="0" y="0">
-   <properties>
-    <property name="type" value="badguy1"/>
-   </properties>
-  </object>
-  <object name="badguy2" x="0" y="20">
-   <properties>
-    <property name="spawndistance" value="5"/>
-    <property name="type" value="badguy2"/>
-   </properties>
-  </object>
+  <object name="Start" x="0" y="96"/>
  </objectgroup>
 </map>
