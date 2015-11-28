@@ -1,5 +1,7 @@
 package com.plumbers.game;
 
+import com.badlogic.gdx.math.MathUtils;
+
 public class Vector {
 	private float x;
 	private float y;
@@ -28,6 +30,14 @@ public class Vector {
 
 	public float getY() {
 		return y;
+	}
+	
+	public float magnitude() {
+		return (float) Math.sqrt(x * x + y * y);
+	}
+	
+	public boolean isZero() {
+		return MathUtils.isZero(x) && MathUtils.isZero(y);
 	}
 
 	public void add(Vector r) {
