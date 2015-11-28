@@ -19,10 +19,20 @@ public abstract class Character extends Motionable implements Drawable {
 		hitboxRelPosX = 4;
 		hitboxRelPosY = 4;
 	}
+	
+	public Character(String name, float relX, float relY, float w, float h) {
+		characterName = name;
+		hitbox = new Rectangle(0, 0, w, h);
+		hitboxRelPosX = relX;
+		hitboxRelPosY = relY;
+	}
 
 	public enum State {
 		STANDING, RUNNING, JUMPING, FALLING, DYING;
 	}
+	
+	public abstract void respondToCollision(Block b, Rectangle.Collision info);
+	public abstract void respondToUnsupported();
 	
 	@Override
 	public void draw(Batch batch, float time) {
@@ -52,16 +62,6 @@ public abstract class Character extends Motionable implements Drawable {
 		hitbox.setY( /*MathUtils.round(*/position.getY()/*)*/ + hitboxRelPosY );
 	}
 	
-	public void ceilingCheck() {
-		updateHitbox();
-		
-		if (hitbox.getY() <= 0) {
-			setYAccel(GameModel.GRAVITY);
-			setYVelocity(0);
-			setYPosition(- hitboxRelPosY);
-		}
-	}
-	
 	public void fallingCheck(Iterable<Block> blocks) {
 		if (state != State.STANDING && state != State.RUNNING) {
 			return;
@@ -77,10 +77,8 @@ public abstract class Character extends Motionable implements Drawable {
 				break;
 			}
 		}	
-		if (! flag) { 
-			state = State.FALLING;
-			setXAccel(0);
-			setYAccel(GameModel.GRAVITY);
+		if (! flag) {
+			respondToUnsupported();
 		}
 	}
 	
@@ -106,41 +104,16 @@ public abstract class Character extends Motionable implements Drawable {
 		}
 	}
 	
-	public void respondToCollision(Block b, Rectangle.Collision info) {
-		if (info.getDirection() == Direction.TOP) {
-			setYAccel(0);
-			setYVelocity(0);
-			setYPosition( getPosition().getY() - info.getDistance() );
-			
-			if (state == State.JUMPING || state == State.FALLING) {
-				state = State.RUNNING;
-				
-			}
-		} else if (info.getDirection() == Direction.LEFT) {
-			setXAccel(0);
-			setXVelocity(0);
-			setXPosition( getPosition().getX() - info.getDistance() );
-			
-			if (state == State.JUMPING && getVelocity().getY() > 0) {
-				state = State.FALLING;
-			}
-		} else if (info.getDirection() == Direction.BOTTOM) {
-			setYVelocity(0);
-			setYPosition( getPosition().getY() + info.getDistance() );
-			
-		} else if (info.getDirection() == Direction.RIGHT) {
-			setXAccel(0);
-			setXVelocity(0);
-			setXPosition( getPosition().getX() + info.getDistance() );
-		}
-	}
-	
 	public State getState() {
 		return state;
 	}
 
 	public void setState(State s) {
 		state = s;
+	}
+	
+	public boolean isFlipped() {
+		return flipped;
 	}
 	
 	public void setFlipped(boolean flipped) {
@@ -163,7 +136,15 @@ public abstract class Character extends Motionable implements Drawable {
 	public void setRectangle(Rectangle hitbox) {
 		this.hitbox = hitbox;
 	}
-
+	
+	public float rectRelPosX() {
+		return hitboxRelPosX;
+	}
+	
+	public float rectRelPosY() {
+		return hitboxRelPosY;
+	}	
+	
 	public MovementAnimation getMovementAnim() {
 		return movementAnim;
 	}
