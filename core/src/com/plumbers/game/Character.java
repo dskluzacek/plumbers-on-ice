@@ -3,6 +3,7 @@ package com.plumbers.game;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Pools;
 import com.plumbers.game.MovementAnimation.Action;
 
 public abstract class Character extends Motionable implements Drawable {
@@ -54,12 +55,18 @@ public abstract class Character extends Motionable implements Drawable {
 		
 		batch.draw(frame, MathUtils.floor( position.getX() ), position.getY(),
 				frame.getRegionWidth() * 2, frame.getRegionHeight() * 2);
+		
+		/* ---- */
+		Pools.free(position);
 	}
 	
 	private void updateHitbox() {
 		Vector position = getPosition();
 		hitbox.setX( /*MathUtils.round(*/position.getX()/*)*/ + hitboxRelPosX );
 		hitbox.setY( /*MathUtils.round(*/position.getY()/*)*/ + hitboxRelPosY );
+		
+		/* ---- */
+		Pools.free(position);
 	}
 	
 	public void fallingCheck(Iterable<Block> blocks) {
@@ -70,12 +77,18 @@ public abstract class Character extends Motionable implements Drawable {
 		boolean flag = false;
 		
 		for (Block b : blocks) {
-			Rectangle.Collision coll = hitbox.staticCollisionInfo( b.getRectangle() );
+		    Rectangle rect = b.getRectangle();
+			Rectangle.Collision coll = hitbox.staticCollisionInfo(rect);
 			
 			if (coll != null && coll.getDirection() == Direction.TOP) {
 				flag = true;
 				break;
 			}
+			/* ---- */
+            if (coll != null) {
+                Pools.free(coll);
+            }
+            Pools.free(rect);
 		}	
 		if (! flag) {
 			respondToUnsupported();
@@ -88,20 +101,30 @@ public abstract class Character extends Motionable implements Drawable {
 		}
 		
 		updateHitbox();
+		Vector velocity = getVelocity();
 		boolean flag = false;
 		
 		for (Block b : blocks) {
-			Rectangle.Collision coll = hitbox.collisionInfo( b.getRectangle(), getVelocity() );
+		    Rectangle rect = b.getRectangle();
+			Rectangle.Collision coll = hitbox.collisionInfo(rect, velocity);
 			
 			if (coll != null) {
 				respondToCollision(b, coll);
 				updateHitbox();
 				flag = true;
-			}	
+			}
+			/* ---- */
+            if (coll != null) {
+                Pools.free(coll);
+            }
+            Pools.free(rect);
 		}
 		if (flag) {
 			fallingCheck(blocks);
 		}
+		
+		/* ---- */
+		Pools.free(velocity);
 	}
 	
 	public State getState() {

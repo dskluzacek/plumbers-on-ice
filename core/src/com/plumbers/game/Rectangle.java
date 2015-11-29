@@ -1,12 +1,17 @@
 package com.plumbers.game;
-import java.util.Arrays;
 
-public final class Rectangle {
+import java.util.Arrays;
+import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.utils.Pools;
+
+public final class Rectangle implements Pool.Poolable {
 	
 	private float x;
 	private float y;
 	private float w;
 	private float h;
+	
+	public Rectangle() {}
 
 	public Rectangle(float x, float y, float w, float h) {
 		this.x = x;
@@ -15,13 +20,22 @@ public final class Rectangle {
 		this.h = h;
 	}
 	
-	public Rectangle(Rectangle copied) {
-		this.x = copied.x;
-		this.y = copied.y;
-		this.w = copied.w;
-		this.h = copied.h;
+	@Override
+	public void reset() {
+	    this.x = 0;
+	    this.y = 0;
+	    this.w = 0;
+	    this.h = 0;
 	}
- 
+	
+	public Rectangle set(Rectangle r) {
+	    this.x = r.x;
+	    this.y = r.y;
+	    this.w = r.w;
+	    this.h = r.h;
+	    return this;
+	}
+	
 	public float getX() {
 		return x;
 	}
@@ -73,11 +87,16 @@ public final class Rectangle {
 		}
 		Collision coll = staticCollisionInfo(other);
 		
-		if ( myVelocity.getX() < 2.0f || myVelocity.getY() < 2.0f )
+//		if ( myVelocity.getX() < 2.0f || myVelocity.getY() < 2.0f ) {
 			return coll;
-		else
-			return resolveCollision(other, this, myVelocity);
+//		} else {
+//		    Pools.free(coll);
+//		    
+//			return resolveCollision(other, this, myVelocity);
+//		}
 	}
+	
+	private float[] arr = new float[4];
 	
 	public Collision staticCollisionInfo(Rectangle other) {
 		if ( ! this.intersects(other) ) {
@@ -89,7 +108,10 @@ public final class Rectangle {
 		float leftDistance = (this.x + this.w) - other.x;
 		float rightDistance = (other.x + other.w) - this.x;
 
-		float[] arr = new float[] { topDistance, bottomDistance, leftDistance, rightDistance };
+		arr[0] = topDistance;
+		arr[1] = bottomDistance;
+		arr[2] = leftDistance;
+		arr[3] = rightDistance;
 		Arrays.sort(arr);
 		
 		float lowest = 0;
@@ -116,21 +138,11 @@ public final class Rectangle {
 		else
 			throw new IllegalStateException();
 		
-		return new Collision() {
-			@Override
-			public Direction getDirection() {
-				return direction;
-			}
-
-			@Override
-			public float getDistance() {
-				return distance;
-			}
-		};
+		return Pools.get(CollisionImpl.class).obtain().set(direction, distance);
 	}
 
 	public static Collision resolveCollision(Rectangle permanent, Rectangle moving, Vector velocity) {
- 		Rectangle solution = new Rectangle(moving);
+ 		Rectangle solution = Pools.get(Rectangle.class).obtain().set(moving);
 		boolean xAxis = resolve(permanent, solution, velocity.getX() / 10, velocity.getY() / 10, false);
 		
 		final Direction direction;
@@ -151,18 +163,12 @@ public final class Rectangle {
 			}
 			distance = Math.abs(moving.y - solution.y);
 		}
+		
+		/* ---- */
+		Pools.free(solution);
+		/* ---- */
 
-		return new Collision() {
-			@Override
-			public Direction getDirection() {
-				return direction;
-			}
-
-			@Override
-			public float getDistance() {
-				return distance;
-			}
-		};
+		return Pools.get(CollisionImpl.class).obtain().set(direction, distance);
 	}
 	
 	private static boolean resolve(Rectangle permanent, Rectangle moving, float Vx, float Vy, boolean onXAxis) {
@@ -185,8 +191,37 @@ public final class Rectangle {
 		}
 	}
 	
-	public interface Collision {
+	public static interface Collision {
 		Direction getDirection();
 		float getDistance();
+	}
+	
+	private static class CollisionImpl implements Collision, Pool.Poolable {
+	    private Direction direction;
+	    private float distance;
+	    
+	    private CollisionImpl() {}
+	    
+	    public Collision set(Direction dir, float dist) {
+	        direction = dir;
+	        distance = dist;
+	        return this;
+	    }
+	    
+	    @Override
+	    public void reset() {
+	        direction = null;
+	        distance = 0;
+	    }
+	    
+        @Override
+        public Direction getDirection() {
+            return direction;
+        }
+
+        @Override
+        public float getDistance() {
+            return distance;
+        }
 	}
 }

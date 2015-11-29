@@ -22,6 +22,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.utils.Pools;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public final class GameView
             extends ApplicationAdapter implements EventContext
@@ -33,6 +35,8 @@ public final class GameView
 	private SpriteBatch batch;
 	private OrthogonalTiledMapRenderer mapRenderer;
 	private Background background;
+	private Viewport viewport;
+	private Controller controller;
 	private OrthographicCamera camera;
 	
 	// game viewport width and height
@@ -70,6 +74,9 @@ public final class GameView
 	// used to provide minimum spacing between coin sounds
 	private long coinFrameNumber; 
 	
+	// stores the level file filename or path
+	private final String levelFilePath;
+	
 	private static final float GAME_TICK_TIME = 1/120f;
 	private static final int TICK_PER_FRAME_RESET_THRESHOLD = 2,
 	                         COIN_SOUND_MIN_DELAY_IN_FRAMES = 3,
@@ -81,10 +88,18 @@ public final class GameView
 	private static final String TEXTURE_ATLAS_FILE = "sprites.atlas",
 	                            FONT_FILE = "DejaVuSansMono-Bold.ttf";
 	
+	public GameView(String levelFilePath, Viewport viewport, Controller c) {
+	    this.levelFilePath = levelFilePath;
+	    this.viewport = viewport;
+	    this.controller = c;
+	}
+	
 	@Override
 	public void create () {	
-		width = Gdx.graphics.getWidth();
-		height = Gdx.graphics.getHeight();
+		width = 853;
+		height = 512;
+		
+		Gdx.input.setInputProcessor(controller);
 		
 		secondsFormat = new DecimalFormat("00.0");
 		secondsFormat.setRoundingMode(RoundingMode.DOWN);
@@ -97,15 +112,13 @@ public final class GameView
 		parameter.flip = true;
 		mainFont = generator.generateFont(parameter);
 		generator.dispose();
-
+		
 		camera = new OrthographicCamera();
 		camera.setToOrtho(true, width, height);
-		camera.update();
+		viewport.setCamera(camera);
+		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
-		OrthographicCamera staticCamera = new OrthographicCamera();
-		staticCamera.setToOrtho(true, width, height);
-		staticCamera.update();
-		screenProjMatrix = staticCamera.combined;
+		screenProjMatrix = new Matrix4(camera.combined);
 		
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.combined);
@@ -118,7 +131,7 @@ public final class GameView
 		
 		Level level;
 		try {
-			level = new Level("winter.tmx", textureAtlas);
+			level = new Level(levelFilePath, textureAtlas);
 		} catch (FileFormatException e) {
 			e.printStackTrace();
 			return;
@@ -135,7 +148,7 @@ public final class GameView
 		mapRenderer = level.getRenderer();
 		mapRenderer.setView(camera);
 		
-		player1 = new Player("greenbot", textureAtlas);
+		player1 = new Player("hero", textureAtlas, controller);
 		player1.setPosition( level.getStartPosition() );
 		gameModel = new GameModel(level, player1);
 
@@ -280,6 +293,9 @@ public final class GameView
 			camera.update();
 			mapRenderer.setView(camera);
 		}
+		
+		/* ---- */
+        Pools.free(position);
 	}
 	
 	private void renderTimer() {
