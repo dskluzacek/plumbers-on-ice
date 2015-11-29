@@ -2,14 +2,13 @@ package com.plumbers.game;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.utils.Pools;
 
 public final class Block {
 	private final int row;
 	private final int column;
-	private TiledMapTileLayer layer;
-	private Cell cell;
-	private Rectangle rectangle;
+	private final TiledMapTileLayer layer;
+	private final Cell cell;
+	private final Rectangle rectangle;
 	public static final int SIZE = 32;
 	
 	public Block(int row, int column, Cell cell, TiledMapTileLayer layer) {
@@ -32,7 +31,7 @@ public final class Block {
 	}
 	
 	public Rectangle getRectangle() {
-		return Pools.get(Rectangle.class).obtain().set(rectangle);
+		return rectangle;
 	}
 
 	public int getRow() {

@@ -1,6 +1,7 @@
 package com.plumbers.game;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -45,7 +46,7 @@ public class Enemy extends Character implements Hazard {
 	}
     
     @Override
-    public void fallingCheck(Iterable<Block> blocks) {
+    public void fallingCheck(List<Block> blocks) {
     	Vector position = getPosition();
     	Vector velocity = getVelocity();
     	
@@ -83,19 +84,15 @@ public class Enemy extends Character implements Hazard {
 	    
 	    if (info.getDirection() == Direction.TOP)
 		{
-			Rectangle rect = block.getRectangle();
-	        
 	        setYAccel(0);
 			setYVelocity(0);
-			setYPosition( rect.getY() - getRectangle().getH() - rectRelPosY() );
+			setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectRelPosY() );
 			
 			if ( getState() != State.RUNNING ) {
     			setState(State.RUNNING);
     			setXVelocity(- walkSpeed);
     			setFlipped(true);
 			}
-			/* ---- */
-	        Pools.free(rect);
 		}
 		else if (info.getDirection() == Direction.RIGHT)
 		{

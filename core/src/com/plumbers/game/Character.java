@@ -1,5 +1,6 @@
 package com.plumbers.game;
 
+import java.util.List;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -69,33 +70,30 @@ public abstract class Character extends Motionable implements Drawable {
 		Pools.free(position);
 	}
 	
-	public void fallingCheck(Iterable<Block> blocks) {
+	public void fallingCheck(List<Block> blocks) {
 		if (state != State.STANDING && state != State.RUNNING) {
 			return;
 		}
 		updateHitbox();		
 		boolean flag = false;
 		
-		for (Block b : blocks) {
-		    Rectangle rect = b.getRectangle();
-			Rectangle.Collision coll = hitbox.staticCollisionInfo(rect);
+		for (int i = 0; i < blocks.size(); i++) {
+			Rectangle.Collision coll
+			    = hitbox.staticCollisionInfo( blocks.get(i).getRectangle() );
 			
 			if (coll != null && coll.getDirection() == Direction.TOP) {
 				flag = true;
 				break;
 			}
 			/* ---- */
-            if (coll != null) {
-                Pools.free(coll);
-            }
-            Pools.free(rect);
+            Rectangle.disposeOf(coll);
 		}	
 		if (! flag) {
 			respondToUnsupported();
 		}
 	}
 	
-	public void collisionCheck(Iterable<Block> blocks) {
+	public void collisionCheck(List<Block> blocks) {
 		if (state == State.DYING) {
 			return;
 		}
@@ -104,20 +102,17 @@ public abstract class Character extends Motionable implements Drawable {
 		Vector velocity = getVelocity();
 		boolean flag = false;
 		
-		for (Block b : blocks) {
-		    Rectangle rect = b.getRectangle();
-			Rectangle.Collision coll = hitbox.collisionInfo(rect, velocity);
+		for (int i = 0; i < blocks.size(); i++) {
+			Rectangle.Collision coll
+			   = hitbox.collisionInfo(blocks.get(i).getRectangle(), velocity);
 			
 			if (coll != null) {
-				respondToCollision(b, coll);
+				respondToCollision(blocks.get(i), coll);
 				updateHitbox();
 				flag = true;
 			}
 			/* ---- */
-            if (coll != null) {
-                Pools.free(coll);
-            }
-            Pools.free(rect);
+            Rectangle.disposeOf(coll);
 		}
 		if (flag) {
 			fallingCheck(blocks);

@@ -40,6 +40,7 @@ public final class Background {
 		int position = ((int)(foregroundPosition * scrollRateVsForeground)) % scaledWidth;
 		
 		batch.setProjectionMatrix(projectionMatrix);
+		batch.disableBlending();
 		batch.begin();
 		
 		for (int n = 0; n < numIterations; n++) {
@@ -50,5 +51,6 @@ public final class Background {
 			           scaledHeight);
 		}
 		batch.end();
+		batch.enableBlending();
 	}
 }

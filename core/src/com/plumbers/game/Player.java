@@ -170,18 +170,13 @@ public class Player extends Character {
 		Vector position = getPosition();
 		
 		if (info.getDirection() == Direction.TOP) {
-		    Rectangle rect = block.getRectangle();
-		    
 		    setYAccel(0);
 			setYVelocity(0);
-			setYPosition( rect.getY() - getRectangle().getH() - rectRelPosY() );
+			setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectRelPosY() );
 			
 			if (state == State.JUMPING || state == State.FALLING) {
 				setState(State.RUNNING);
-			}
-			/* ---- */
-            Pools.free(rect);
-            
+			}     
 		} else if (info.getDirection() == Direction.LEFT) {
 			setXAccel(0);
 			setXVelocity(0);
@@ -224,14 +219,14 @@ public class Player extends Character {
 		}
 	}
 	
-	public Event hazardCollisionCheck(Iterable<? extends Hazard> hazards) {
+	public Event hazardCollisionCheck(List<? extends Hazard> hazards) {
 		if ( getState() == State.DYING ) {
 			return null;
 		}
 		Rectangle rect = getRectangle();
 		
-		for (Hazard h : hazards) {
-			if ( rect.intersects(h.getRectangle()) ) {
+		for (int i = 0; i < hazards.size(); i++) {
+			if (rect.intersects( hazards.get(i).getRectangle() )) {
 				beKilled();
 				return DamageEvent.instance();
 			}
@@ -239,7 +234,7 @@ public class Player extends Character {
 		return null;
 	}
 	
-	public List<Event> coinCollectCheck(Iterable<Coin> coins) {
+	public List<Event> coinCollectCheck(List<Coin> coins) {
 		if ( getState() == State.DYING ) {
 			return Collections.emptyList();
 		}
@@ -247,8 +242,10 @@ public class Player extends Character {
 		Rectangle rect = getRectangle();
 		coinEvents.clear();
 		
-		for (Coin coin : coins) {
-			if (! coin.isCollected() && rect.intersects(coin.getRectangle())) {
+		for (int i = 0; i < coins.size(); i++) {
+			Coin coin = coins.get(i);
+		    
+		    if (! coin.isCollected() && rect.intersects(coin.getRectangle())) {
 				coin.setCollected(true);
 				++coinsCollected;
 				coinEvents.add( CoinEvent.instance() );

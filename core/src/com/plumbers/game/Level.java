@@ -52,6 +52,13 @@ public final class Level {
 		for ( TiledMapTileSet tileset : tiledMap.getTileSets() ) {
 			for (TiledMapTile tile : tileset) {
 				tile.getTextureRegion().flip(false, true);
+				
+				if ( nullToEmptyString(
+				        tile.getProperties().get("opaque", String.class)
+				        ).equals("true") )
+		        {
+				    tile.setBlendMode(TiledMapTile.BlendMode.NONE);
+		        }
 			}
 		}
 		

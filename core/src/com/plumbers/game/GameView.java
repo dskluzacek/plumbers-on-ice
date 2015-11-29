@@ -101,7 +101,7 @@ public final class GameView
 		
 		Gdx.input.setInputProcessor(controller);
 		
-		secondsFormat = new DecimalFormat("00.0");
+		secondsFormat = new DecimalFormat(":00.0");
 		secondsFormat.setRoundingMode(RoundingMode.DOWN);
 		FreeTypeFontGenerator generator =
 		        new FreeTypeFontGenerator( Gdx.files.internal(FONT_FILE) );
@@ -169,7 +169,7 @@ public final class GameView
 			return;
 		}
 		Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, 1);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		float deltaTime = Gdx.graphics.getDeltaTime(); 
@@ -186,8 +186,8 @@ public final class GameView
 			timeAccumulator = 0;
 		}
 		
-		for (Event e : events) {
-			e.applyTo(this);
+		for (int i = 0; i < events.size(); i++) {
+			events.get(i).applyTo(this);
 		}
 		events.clear();
 		
@@ -202,14 +202,15 @@ public final class GameView
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		
-		for (Drawable drawable : gameModel.getDrawables()) {
-			drawable.draw(batch, elapsedTime);
+		List<Drawable> drawables = gameModel.getDrawables();
+		
+		for (int i = 0; i < drawables.size(); i++) {
+			drawables.get(i).draw(batch, elapsedTime);
 		}
 		
 		batch.end();
 		
 		batch.setProjectionMatrix(screenProjMatrix);
-
 		renderTimer();
 		renderCoinCounter();
 	}
@@ -245,7 +246,7 @@ public final class GameView
 	
 	private void deathLoop() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		if (elapsedTime < ON_DEATH_DELAY) {
@@ -310,7 +311,7 @@ public final class GameView
 	
 	private String getTimerString() {
 		int minutes = ((int) elapsedTime) / 60;
-		return (minutes == 0 ? "" : minutes) + ":" + secondsFormat.format(elapsedTime % 60);
+		return (minutes == 0 ? "" : minutes) + secondsFormat.format(elapsedTime % 60);
 	}
 	
 	private void renderCoinCounter() {

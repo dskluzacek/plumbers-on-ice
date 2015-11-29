@@ -138,7 +138,11 @@ public final class Rectangle implements Pool.Poolable {
 		else
 			throw new IllegalStateException();
 		
-		return Pools.get(CollisionImpl.class).obtain().set(direction, distance);
+		if (direction == Direction.TOP && distance == 0) {
+		    return TOP_0;
+		} else {
+		    return Pools.get(CollisionImpl.class).obtain().set(direction, distance);
+		}
 	}
 
 	public static Collision resolveCollision(Rectangle permanent, Rectangle moving, Vector velocity) {
@@ -191,10 +195,32 @@ public final class Rectangle implements Pool.Poolable {
 		}
 	}
 	
+	public static void disposeOf(Collision obj) {
+	    if (obj == null || obj == TOP_0) {
+	        return;
+	    }
+	    
+	    if (obj instanceof CollisionImpl) {
+	        Pools.free(obj);
+	    }
+	}
+	
 	public static interface Collision {
 		Direction getDirection();
 		float getDistance();
 	}
+	
+	private static final Collision TOP_0 = new Collision() {
+        @Override
+        public Direction getDirection() {
+            return Direction.TOP;
+        }
+
+        @Override
+        public float getDistance() {
+            return 0;
+        }
+	};
 	
 	private static class CollisionImpl implements Collision, Pool.Poolable {
 	    private Direction direction;
