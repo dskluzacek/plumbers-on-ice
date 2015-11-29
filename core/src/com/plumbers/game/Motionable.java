@@ -1,12 +1,14 @@
 package com.plumbers.game;
 
+import com.badlogic.gdx.utils.Pools;
+
 public abstract class Motionable {
 	private final Vector position = new Vector(0, 0);
 	private final Vector velocity = new Vector(0, 0);
 	private final Vector acceleration = new Vector(0, 0);
 	
 	public final Vector getPosition() {
-		return new Vector(position);
+		return Pools.get(Vector.class).obtain().set(position);
 	}
 	
 	public final void setPosition(Vector position) {
@@ -20,7 +22,7 @@ public abstract class Motionable {
 	}
 	
 	public final Vector getVelocity() {
-		return new Vector(velocity);
+		return Pools.get(Vector.class).obtain().set(velocity);
 	}
 	
 	public final void setVelocity(Vector velocity) {
@@ -34,7 +36,7 @@ public abstract class Motionable {
 	}
 	
 	public final Vector getAcceleration() {
-		return new Vector(acceleration);
+		return Pools.get(Vector.class).obtain().set(acceleration);
 	}
 	
 	public final void setAcceleration(Vector acceleration) {

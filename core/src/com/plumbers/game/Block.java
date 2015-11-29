@@ -2,6 +2,7 @@ package com.plumbers.game;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.utils.Pools;
 
 public final class Block {
 	private final int row;
@@ -31,7 +32,7 @@ public final class Block {
 	}
 	
 	public Rectangle getRectangle() {
-		return new Rectangle(rectangle);
+		return Pools.get(Rectangle.class).obtain().set(rectangle);
 	}
 
 	public int getRow() {

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pools;
 
 public class Enemy extends Character implements Hazard {
 	private final float walkSpeed;
@@ -45,54 +46,72 @@ public class Enemy extends Character implements Hazard {
     
     @Override
     public void fallingCheck(Iterable<Block> blocks) {
-    	float realXPosition = getPosition().getX();
+    	Vector position = getPosition();
+    	Vector velocity = getVelocity();
     	
     	setXPosition(
-    		realXPosition
-    		+ Math.copySign( getRectangle().getW(), getVelocity().getX() )
+    		position.getX()
+    		+ Math.copySign( getRectangle().getW(), velocity.getX() )
     	);
     	super.fallingCheck(blocks);
     	
-    	setXPosition(realXPosition);
+    	setXPosition( position.getX() );
+    	
+    	/* ---- */
+        Pools.free(position);
+        Pools.free(velocity);
     }
 	
 	@Override
 	public void respondToUnsupported() {
-		float Vx = getVelocity().getX();
+		Vector v = getVelocity();
+		Vector pos = getPosition();
+	    float Vx = v.getX();
 		
 		setXVelocity( -Vx );
-		setXPosition( getPosition().getX() - Vx );
+		setXPosition( pos.getX() - Vx );
 		setFlipped( (Vx > 0) );
+		
+		/* ---- */
+        Pools.free(v);
+        Pools.free(pos);
 	}
 
 	@Override
 	public void respondToCollision(Block block, Rectangle.Collision info) {
-		if (info.getDirection() == Direction.TOP)
+		Vector position = getPosition();
+	    
+	    if (info.getDirection() == Direction.TOP)
 		{
-			setYAccel(0);
+			Rectangle rect = block.getRectangle();
+	        
+	        setYAccel(0);
 			setYVelocity(0);
-			setYPosition( block.getRectangle().getY()
-			              - getRectangle().getH()
-			              - rectRelPosY() );
+			setYPosition( rect.getY() - getRectangle().getH() - rectRelPosY() );
 			
 			if ( getState() != State.RUNNING ) {
     			setState(State.RUNNING);
     			setXVelocity(- walkSpeed);
     			setFlipped(true);
 			}
+			/* ---- */
+	        Pools.free(rect);
 		}
 		else if (info.getDirection() == Direction.RIGHT)
 		{
 			setXVelocity(walkSpeed);
 			setFlipped(false);
-			setXPosition( getPosition().getX() + info.getDistance() );
+			setXPosition( position.getX() + info.getDistance() );
 		}
 		else if (info.getDirection() == Direction.LEFT)
 		{
 			setXVelocity(- walkSpeed);
 			setFlipped(true);
-			setXPosition( getPosition().getX() - info.getDistance() );
+			setXPosition( position.getX() - info.getDistance() );
 		}
+	    
+	    /* ---- */
+        Pools.free(position);
 	}
 	
 	public enum Type {

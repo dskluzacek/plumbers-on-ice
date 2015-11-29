@@ -4,18 +4,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pools;
 
 public class Player extends Character {
-	private int coinsCollected = 0;
+	private Controller controller;
+    private int coinsCollected = 0;
 	private boolean jumped = false;
 	private boolean hurt = false;
 	private int jumpStarted;
+	
+	/* ---- */
+	private List<Event> coinEvents = new ArrayList<Event>();
+	/* ---- */
 	
 	private static final float ACCELERATION = 1/14f,
 	                           DECELERATION = -0.3f,
@@ -25,8 +29,9 @@ public class Player extends Character {
 	                           JUMP_FWD_ASSIST = 0.5f;
 	private static final int JUMP_BOOST_DURATION = 24;
 	
-	public Player(String name, TextureAtlas textureAtlas) {
+	public Player(String name, TextureAtlas textureAtlas, Controller controller) {
 		super(name);
+		this.controller = controller;
 		
 		Array<TextureRegion> walkFrames = new Array<TextureRegion>();
 		
@@ -63,26 +68,30 @@ public class Player extends Character {
 		
 		if ( getState() == State.JUMPING ) {
 			if ( tickNumber <= jumpStarted + JUMP_BOOST_DURATION
-			      && Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ) {
+			      && controller.pollJumpInput() ) {
 				// allow jump acceleration to continue
 			} else {
 				setYAccel(GameModel.GRAVITY);
 			}
 			
-			if ( Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
-				setXPosition( getPosition().getX() + JUMP_FWD_ASSIST );
+			if ( controller.pollRunInput() ) {
+			    Vector position = getPosition();
+				setXPosition( position.getX() + JUMP_FWD_ASSIST );
+				
+				/* ---- */
+				Pools.free(position);
 			}
 		}
 		
 		if ( getState() == State.STANDING || getState() == State.RUNNING ) {
-			if ( Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ) {
+			if ( controller.pollJumpInput() ) {
 				jumped = true;
 				jumpStarted = tickNumber;
 				setState( State.JUMPING );
 				setYVelocity(JUMP_POWER);
 				setYAccel(JUMP_BOOST);
 				setXAccel(0);
-			} else if ( Gdx.input.isKeyPressed(Input.Keys.SPACE) ) {
+			} else if ( controller.pollRunInput() ) {
     			setXAccel(ACCELERATION);
     			setState( State.RUNNING );
     		} else {
@@ -97,23 +106,32 @@ public class Player extends Character {
 			return;
 		}
 		
-		float Vx = getVelocity().getX();
+		Vector velocity = getVelocity();
+		float Vx = velocity.getX();
 		
 		if (Vx > MAX_SPEED) {
 			setXVelocity(MAX_SPEED);
 		} else if (Vx < 0) {
 			setXVelocity(0);
 		}
+		
+		/* ---- */
+        Pools.free(velocity);
 	}
 	
 	@Override
 	public void postMotionLogic(int tickNumber) {
-		if ( getState() == State.RUNNING && getVelocity().getX() == 0 ) {
+		Vector velocity = getVelocity();
+	    
+	    if ( getState() == State.RUNNING && velocity.getX() == 0 ) {
 			setState( State.STANDING );
 		}
-		if ( getState() != State.DYING && Gdx.input.isKeyPressed(Input.Keys.K)) {
+		if ( getState() != State.DYING && controller.pollKillKey() ) {
 			beKilled();
 		}
+		
+		/* ---- */
+        Pools.free(velocity);
 	}
 	
 	public List<Event> getEvents() {
@@ -149,34 +167,46 @@ public class Player extends Character {
 	@Override
 	public void respondToCollision(Block block, Rectangle.Collision info) {
 		State state = getState();
+		Vector position = getPosition();
 		
 		if (info.getDirection() == Direction.TOP) {
-			setYAccel(0);
+		    Rectangle rect = block.getRectangle();
+		    
+		    setYAccel(0);
 			setYVelocity(0);
-			setYPosition( block.getRectangle().getY()
-					      - getRectangle().getH()
-					      - rectRelPosY() );
+			setYPosition( rect.getY() - getRectangle().getH() - rectRelPosY() );
 			
 			if (state == State.JUMPING || state == State.FALLING) {
 				setState(State.RUNNING);
 			}
+			/* ---- */
+            Pools.free(rect);
+            
 		} else if (info.getDirection() == Direction.LEFT) {
 			setXAccel(0);
 			setXVelocity(0);
-			setXPosition( getPosition().getX() - info.getDistance() );
+			setXPosition( position.getX() - info.getDistance() );
 			
-			if (state == State.JUMPING && getVelocity().getY() > 0) {
+			Vector velocity = getVelocity();
+			
+			if (state == State.JUMPING && velocity.getY() > 0) {
 				setState(State.FALLING);
 			}
+			/* ---- */
+	        Pools.free(velocity);
+	        
 		} else if (info.getDirection() == Direction.BOTTOM) {
 			setYVelocity(0);
-			setYPosition( getPosition().getY() + info.getDistance() );
+			setYPosition( position.getY() + info.getDistance() );
 			
 		} else if (info.getDirection() == Direction.RIGHT) {
 			setXAccel(0);
 			setXVelocity(0);
-			setXPosition( getPosition().getX() + info.getDistance() );
+			setXPosition( position.getX() + info.getDistance() );
 		}
+		
+	    /* ---- */
+        Pools.free(position);
 	}
 	
 	@Override
@@ -215,20 +245,24 @@ public class Player extends Character {
 		}
 		
 		Rectangle rect = getRectangle();
-		List<Event> events = new ArrayList<Event>();
+		coinEvents.clear();
 		
 		for (Coin coin : coins) {
 			if (! coin.isCollected() && rect.intersects(coin.getRectangle())) {
 				coin.setCollected(true);
 				++coinsCollected;
-				events.add( CoinEvent.instance() );
+				coinEvents.add( CoinEvent.instance() );
 			}
 		}
-		return events;
+		return coinEvents;
 	}
 	
 	public boolean fallingDeathCheck(float bottom) {
-		return (getPosition().getY() > bottom);
+		Vector position = getPosition();
+		float y = position.getY();
+		Pools.free(position);
+		
+	    return (y > bottom);
 	}
 
 }

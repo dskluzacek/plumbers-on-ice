@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.badlogic.gdx.utils.Pools;
+
 public final class GameModel {
 	private Player player1; 
 //  private Player p2; 
 	private Level currentLevel;
 	private List<Event> occuringEvents = new ArrayList<Event>(); 
 	private List<Enemy> enemies = new ArrayList<Enemy>(); 
-//  private List<Entity> entities;
+	private List<Drawable> drawables = new ArrayList<Drawable>();
 	private int gameTicks = 0;
 	
 	public static final float GRAVITY = 0.1f;
@@ -46,9 +48,12 @@ public final class GameModel {
 		if ( player1.fallingDeathCheck(512) ) {
 			occuringEvents.add( new DeathEvent(player1) );
 		}
+		Vector playerPos = player1.getPosition();
+		float playerX = playerPos.getX();
+		Pools.free(playerPos);
 		
 		for (EnemySpawner spawner : currentLevel.getSpawners()) {
-			addNotNull(enemies, spawner.spawn( player1.getPosition().getX() ));
+			addNotNull( enemies, spawner.spawn(playerX) );
 		}
 		
 		for (Enemy enemy : enemies) {
@@ -61,10 +66,10 @@ public final class GameModel {
 	}
 
 	public Iterable<Drawable> getDrawables() {
-		List<Drawable> list = new ArrayList<Drawable>();
-		list.add(player1);
-		list.addAll(enemies);
-		return list;
+		drawables.clear();
+	    drawables.add(player1);
+		drawables.addAll(enemies);
+		return drawables;
 	}
 	
 	public void reset() {
