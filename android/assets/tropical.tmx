@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="36">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="16" tilewidth="16" tileheight="16" nextobjectid="51">
  <properties>
-  <property name="bgcolor" value="0,0,0"/>
-  <property name="soundtrack" value="Castle-Theme.mp3"/>
+  <property name="bgcolor" value="tropical.png"/>
+  <property name="soundtrack" value="Tropical-Theme.mp3"/>
   <property name="soundtrack-delay" value="2"/>
  </properties>
  <tileset firstgid="1" name="Special Tiles" tilewidth="16" tileheight="16" tilecount="10">
@@ -23,18 +23,79 @@
  </tileset>
  <layer name="Decorative layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20Hb6AAAAAAAAAAAAB4DCWAAAE=
+   eJztzrEKwCAQREGLWGgde/3/n/RK24BwEGbgse2WAgAAAHDPG41j4YYZrWMBAPjuiWr2CX6nRT37BAAk2z/7APE=
   </data>
  </layer>
  <layer name="Platform layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJzt1kEKgCAQBVB3daLa2wG6/21CMJKBqDBo0XvwGQRxNcyYEgAAANwz1cCbcg30aueTvuINYzjrK3pMoe5KT63p+GfFwJk4o1r5IhCdzaiW/gG+UObS3PnGECqUfbY8uN/uybvhfzaOdQsI
+   eJztmEsOhCAMhtnJkXTW6gHm/oeZYUGCnb4Ay2DSL2mQh4jlp4IhOI7jOE4fUcg7Tg2cflxbTi8bUe7asiUG2sdc3azk8VJ6cn6JQtrSlyVRac79YL4d6e81XNc2vKbqrJDenYutCY9TdSR/LUKqAfp//9pBtD1AHdaOi51Zs8leinJuvLV1GkauX2x+pGdviEF/YbF/BfdgfWXy/FN2CmOk4HTVSznmU1GuiY215SOw0ued82xB+c7Q/6Wuynaa/z6bkNbqisJKS2ldS/Hyn31rdEXFfmr/2rMGOA1AZopXo9kbno/51kqfrfFqIfILKCvz5T6G2tusRXtpTSffvgP+LadMy5N1NcM5tUVXcG9193zOwJN1hVFz3qgF08PI/ZVGe64rHZyusG+b5bilc9ks/pqBJ+sKqxutqw9AyUFN
   </data>
  </layer>
  <layer name="Decorative layer 2" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20Hb6AAAAAAAAAAAAB4DCWAAAE=
+   eJzt1UEOgCAMRNE5hO4r9z+kHIAAQYpa/ktY1RBSyyABAAAAgJ8jr3OgBtRYXtdArUdrLplbH9H7airPZWrUI0rtT6Yx1fu68ix/MbMn0e813mGak5c7zyfZ58e0z3v+BDNY5plLHns/+Y87Z/BqJr9c8tx7hOlb54mE3AaAPjev/wU1
   </data>
  </layer>
- <objectgroup name="Object layer"/>
+ <objectgroup name="Object layer">
+  <object id="36" name="Badguy1" x="183" y="165">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="37" name="Badguy2" x="280" y="133">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="38" name="Badguy2" x="327" y="134">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="39" name="Badguy1" x="475" y="216">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="42" name="Badguy2" x="536" y="216">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="43" name="Badguy1" x="822" y="181">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="44" name="Badguy2" x="874" y="185">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="45" name="Badguy2" x="950" y="182">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="46" name="Badguy2" x="1158" y="119">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object id="47" name="Badguy1" x="1258" y="117">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="49" name="Badguy1" x="1993" y="198">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object id="50" name="Badguy2" x="2150" y="149">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>
