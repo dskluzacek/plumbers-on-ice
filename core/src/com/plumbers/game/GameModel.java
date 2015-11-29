@@ -52,12 +52,15 @@ public final class GameModel {
 		float playerX = playerPos.getX();
 		Pools.free(playerPos);
 		
-		for (EnemySpawner spawner : currentLevel.getSpawners()) {
-			addNotNull( enemies, spawner.spawn(playerX) );
+		List<EnemySpawner> spawners = currentLevel.getSpawners();
+		
+		for (int i = 0; i < spawners.size(); i++) {
+			addNotNull( enemies, spawners.get(i).spawn(playerX) );
 		}
 		
-		for (Enemy enemy : enemies) {
-			enemy.simulate(gameTicks);
+		for (int i = 0; i < enemies.size(); i++) {
+			Enemy enemy = enemies.get(i);
+		    enemy.simulate(gameTicks);
 			enemy.fallingCheck( currentLevel.getBlocks() );
 			enemy.collisionCheck( currentLevel.getBlocks() );
 		}
@@ -65,7 +68,7 @@ public final class GameModel {
 		return occuringEvents;
 	}
 
-	public Iterable<Drawable> getDrawables() {
+	public List<Drawable> getDrawables() {
 		drawables.clear();
 	    drawables.add(player1);
 		drawables.addAll(enemies);
@@ -73,9 +76,11 @@ public final class GameModel {
 	}
 	
 	public void reset() {
-		for (EnemySpawner spawner : currentLevel.getSpawners()) {
-			spawner.reset();
-		}
+	    List<EnemySpawner> spawners = currentLevel.getSpawners();
+        
+        for (int i = 0; i < spawners.size(); i++) {
+            spawners.get(i).reset();
+        }
 		
 		enemies.clear();
 		currentLevel.resetCoins();
