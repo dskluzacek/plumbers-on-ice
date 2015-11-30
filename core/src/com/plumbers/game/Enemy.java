@@ -1,14 +1,12 @@
 package com.plumbers.game;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pools;
 
 public class Enemy extends Character implements Hazard {
 	private final float walkSpeed;
@@ -46,42 +44,27 @@ public class Enemy extends Character implements Hazard {
 	}
     
     @Override
-    public void fallingCheck(List<Block> blocks) {
-    	Vector position = getPosition();
-    	Vector velocity = getVelocity();
-    	
+    public void fallingCheck(Block[][] blocks) {
+        float x = getXPosition();
     	setXPosition(
-    		position.getX()
-    		+ Math.copySign( getRectangle().getW(), velocity.getX() )
+    		x + Math.copySign( getRectangle().getW(), getXVelocity() )
     	);
     	super.fallingCheck(blocks);
     	
-    	setXPosition( position.getX() );
-    	
-    	/* ---- */
-        Pools.free(position);
-        Pools.free(velocity);
+    	setXPosition(x);
     }
 	
 	@Override
 	public void respondToUnsupported() {
-		Vector v = getVelocity();
-		Vector pos = getPosition();
-	    float Vx = v.getX();
+	    float Vx = getXVelocity();
 		
 		setXVelocity( -Vx );
-		setXPosition( pos.getX() - Vx );
+		setXPosition( getXPosition() - Vx );
 		setFlipped( (Vx > 0) );
-		
-		/* ---- */
-        Pools.free(v);
-        Pools.free(pos);
 	}
 
 	@Override
-	public void respondToCollision(Block block, Rectangle.Collision info) {
-		Vector position = getPosition();
-	    
+	public void respondToCollision(Block block, Rectangle.Collision info) {	    
 	    if (info.getDirection() == Direction.TOP)
 		{
 	        setYAccel(0);
@@ -98,17 +81,14 @@ public class Enemy extends Character implements Hazard {
 		{
 			setXVelocity(walkSpeed);
 			setFlipped(false);
-			setXPosition( position.getX() + info.getDistance() );
+			setXPosition( getXPosition() + info.getDistance() );
 		}
 		else if (info.getDirection() == Direction.LEFT)
 		{
 			setXVelocity(- walkSpeed);
 			setFlipped(true);
-			setXPosition( position.getX() - info.getDistance() );
+			setXPosition( getXPosition() - info.getDistance() );
 		}
-	    
-	    /* ---- */
-        Pools.free(position);
 	}
 	
 	public enum Type {

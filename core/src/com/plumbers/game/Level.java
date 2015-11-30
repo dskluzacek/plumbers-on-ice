@@ -22,22 +22,24 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 public final class Level { 
-    private OrthogonalTiledMapRenderer renderer;
-    private List<Block> blocks = new ArrayList<Block>(); 
-	private List<Decoration> decorations = new ArrayList<Decoration>();
-	private List<Coin> coins = new ArrayList<Coin>();
-	private List<EnemySpawner> spawners = new ArrayList<EnemySpawner>();
-	private List<FixedHazard> hazards = new ArrayList<FixedHazard>();
-	private TiledMap tiledMap;
+    private final OrthogonalTiledMapRenderer renderer;
+    private final List<Block> blocks = new ArrayList<Block>();
+    private final Block[][] blockArray;
+	private final List<Decoration> decorations = new ArrayList<Decoration>();
+	private final List<Coin> coins = new ArrayList<Coin>();
+	private final List<EnemySpawner> spawners = new ArrayList<EnemySpawner>();
+	private final List<FixedHazard> hazards = new ArrayList<FixedHazard>();
+	private final TiledMap tiledMap;
 	private Vector start;
 	private Rectangle finish;
-	private int widthInTiles, heightInTiles;
+	private final int widthInTiles, heightInTiles;
 	private boolean useCeiling;
 	
 	private Music soundtrack;
 	private int soundtrackDelay = 0;
 	private Background background;
 	private Color backgroundColor;
+    
 	private static final String PLATFORM_LAYER_NAME = "Platform layer",
 	                            OBJECT_LAYER_NAME = "Object layer";
 	
@@ -66,14 +68,15 @@ public final class Level {
 		    (TiledMapTileLayer) tiledMap.getLayers().get(PLATFORM_LAYER_NAME);
 		widthInTiles = blockLayer.getWidth();
 		heightInTiles = blockLayer.getHeight();
+		blockArray = new Block[widthInTiles][heightInTiles];
 		try
 		{
-    		for (int row = 0; row < blockLayer.getWidth(); row++) {
-    			for (int col = 0; col < blockLayer.getHeight(); col++) {
-    				Cell cell = blockLayer.getCell(row, col);
+    		for (int column = 0; column < blockLayer.getWidth(); column++) {
+    			for (int row = 0; row < blockLayer.getHeight(); row++) {
+    				Cell cell = blockLayer.getCell(column, row);
     				
     				if ( cell != null ) {
-						getTileProperties(row, col, cell, blockLayer);
+						getTileProperties(column, row, cell, blockLayer);
     				}
     			}
     		}
@@ -85,7 +88,6 @@ public final class Level {
                     nfe);
 		}
 		renderer = new OrthogonalTiledMapRenderer(tiledMap, 2);
-        
 	}
 	
 	public Vector getStartPosition() {
@@ -98,6 +100,10 @@ public final class Level {
 
 	public List<Block> getBlocks(){
 		return blocks; 
+	}
+	
+	public Block[][] getBlockArray() {
+	    return blockArray;
 	}
 	
 	public List<Coin> getCoins() {
@@ -256,7 +262,7 @@ public final class Level {
         }
 	}
 	
-	private void getTileProperties(int row, int col,
+	private void getTileProperties(int column, int row,
 	                               Cell cell, TiledMapTileLayer blockLayer)
 		throws NumberFormatException
 	{
@@ -265,14 +271,14 @@ public final class Level {
 		if ( props.containsKey("special")
 				&& props.get("special").equals("coin") )
 		{
-			coins.add( new Coin(row, col, cell) );
+			coins.add( new Coin(column, row, cell) );
 		}
 		else if ( props.containsKey("special")
 				&& props.get("special").equals("spike") )
 		{
 			hazards.add( new FixedHazard(
-			    new Rectangle(row * Block.SIZE + 4,
-			                  col * Block.SIZE + 20,
+			    new Rectangle(column * Block.SIZE + 4,
+			                  row * Block.SIZE + 20,
 		                      24, 12)) );
 		}
 		else if ( props.containsKey("relativeX")
@@ -294,12 +300,16 @@ public final class Level {
 			int height = (hStr == null ?
 			        Block.SIZE : Integer.parseInt(hStr.trim()) * 2);
 			
-			blocks.add( new Block(row, col, cell, blockLayer,
-			             relativeX, relativeY, width, height) );
+			Block b = new Block(column, row, cell, blockLayer,
+                    relativeX, relativeY, width, height);
+			blocks.add(b);
+			blockArray[column][row] = b;
 		}
 		else
 		{
-			blocks.add( new Block(row, col, cell, blockLayer) );
+			Block b =  new Block(column, row, cell, blockLayer);
+		    blocks.add(b);
+		    blockArray[column][row] = b;
 		}
 	}
 	

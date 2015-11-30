@@ -1,6 +1,5 @@
 package com.plumbers.game;
 
-import java.util.List;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -14,6 +13,10 @@ public abstract class Character extends Motionable implements Drawable {
 	private MovementAnimation movementAnim;
 	private State state = State.RUNNING;
 	private boolean flipped = false;
+	
+	/* ---- */
+	private int columnBegin, columnEnd, rowBegin, rowEnd;
+	/* ---- */
 
 	public Character(String characterName) {
 		this.characterName = characterName;
@@ -47,80 +50,120 @@ public abstract class Character extends Motionable implements Drawable {
 		}
 		
 		TextureRegion frame = movementAnim.getFrame(time);
-		Vector position = getPosition();
 		
 		// if flipped and isFlipX() are different (XOR)
 		if ( flipped ^ frame.isFlipX() ) {
 			frame.flip(true, false);
 		}
 		
-		batch.draw(frame, MathUtils.floor( position.getX() ), position.getY(),
+		batch.draw(frame, MathUtils.floor( getXPosition() ), getYPosition(),
 				frame.getRegionWidth() * 2, frame.getRegionHeight() * 2);
-		
-		/* ---- */
-		Pools.free(position);
 	}
 	
 	private void updateHitbox() {
-		Vector position = getPosition();
-		hitbox.setX( /*MathUtils.round(*/position.getX()/*)*/ + hitboxRelPosX );
-		hitbox.setY( /*MathUtils.round(*/position.getY()/*)*/ + hitboxRelPosY );
-		
-		/* ---- */
-		Pools.free(position);
+		hitbox.setX( getXPosition() + hitboxRelPosX );
+		hitbox.setY( getYPosition() + hitboxRelPosY );
 	}
 	
-	public void fallingCheck(List<Block> blocks) {
+	public void fallingCheck(Block[][] blocks) {
+	    if (state != State.STANDING && state != State.RUNNING) {
+            return;
+        }
+	    updateHitbox();
+        hitboxToColumnsAndRows();
+        columnEnd = MathUtils.clamp(columnEnd, 0, blocks.length - 1);
+        rowEnd = MathUtils.clamp(rowEnd, 0, blocks[0].length - 1);
+        
+        doFallingCheck(blocks);
+	}
+	
+	private void doFallingCheck(Block[][] blocks) {
 		if (state != State.STANDING && state != State.RUNNING) {
 			return;
 		}
-		updateHitbox();		
 		boolean flag = false;
 		
-		for (int i = 0; i < blocks.size(); i++) {
-			Rectangle.Collision coll
-			    = hitbox.staticCollisionInfo( blocks.get(i).getRectangle() );
-			
-			if (coll != null && coll.getDirection() == Direction.TOP) {
-				flag = true;
-				break;
-			}
+		for (int x = columnBegin; x <= columnEnd; x++) {
+            for (int y = rowBegin; y <= rowEnd; y++) {
+                Block b = blocks[x][y];
+                
+                if (b == null) {
+                    continue;
+                }
+    			Rectangle.Collision coll
+    			    = hitbox.staticCollisionInfo( b.getRectangle() );
+    			
+    			if (coll != null && coll.getDirection() == Direction.TOP) {
+    				flag = true;
+    				break;
+    			}
 			/* ---- */
             Rectangle.disposeOf(coll);
+            }
 		}	
 		if (! flag) {
 			respondToUnsupported();
 		}
 	}
 	
-	public void collisionCheck(List<Block> blocks) {
+	public void collisionCheck(Block[][] blocks) {
 		if (state == State.DYING) {
 			return;
 		}
-		
 		updateHitbox();
+		hitboxToColumnsAndRows();
+		columnEnd = MathUtils.clamp(columnEnd, 0, blocks.length - 1);
+        rowEnd = MathUtils.clamp(rowEnd, 0, blocks[0].length - 1);
+        
 		Vector velocity = getVelocity();
 		boolean flag = false;
 		
-		for (int i = 0; i < blocks.size(); i++) {
-			Rectangle.Collision coll
-			   = hitbox.collisionInfo(blocks.get(i).getRectangle(), velocity);
-			
-			if (coll != null) {
-				respondToCollision(blocks.get(i), coll);
-				updateHitbox();
-				flag = true;
-			}
+		for (int x = columnBegin; x <= columnEnd; x++) {
+            for (int y = rowBegin; y <= rowEnd; y++) {
+                Block b = blocks[x][y];
+                
+                if (b == null) {
+                    continue;
+                }
+    			Rectangle.Collision coll
+    			   = hitbox.collisionInfo(b.getRectangle(), velocity);
+    			
+    			if (coll != null && (coll.getDirection() != Direction.TOP
+    			                     || coll.getDistance() != 0.0f) )
+    			{
+    				respondToCollision(blocks[x][y], coll);
+    				updateHitbox();
+    				flag = true;
+    			}
 			/* ---- */
             Rectangle.disposeOf(coll);
+            }
 		}
 		if (flag) {
 			fallingCheck(blocks);
 		}
-		
 		/* ---- */
 		Pools.free(velocity);
 	}
+	
+	private void hitboxToColumnsAndRows() {
+        float x1 = hitbox.getX();
+        float y1 = hitbox.getY();
+        int x2 = MathUtils.ceil(hitbox.getW() + x1);
+        int y2 = MathUtils.ceil(hitbox.getH() + y1);
+        
+        columnBegin = ((int) x1) / 32;
+        rowBegin = ((int) y1) / 32;
+        columnEnd = x2 / 32;
+        rowEnd = y2 / 32;
+        
+        if (this.columnBegin < 0) {
+            this.columnBegin = 0;
+        }
+        if (this.rowBegin < 0) {
+            this.rowBegin = 0;
+        }
+    }
 	
 	public State getState() {
 		return state;

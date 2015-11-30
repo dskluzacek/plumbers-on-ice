@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.badlogic.gdx.utils.Pools;
-
 public final class GameModel {
 	private Player player1; 
 //  private Player p2; 
@@ -37,8 +35,8 @@ public final class GameModel {
 		if ( currentLevel.useCeiling() ) {
 			player1.ceilingCheck();
 		}
-		player1.fallingCheck( currentLevel.getBlocks() );
-		player1.collisionCheck( currentLevel.getBlocks() );
+		player1.fallingCheck( currentLevel.getBlockArray() );
+		player1.collisionCheck( currentLevel.getBlockArray() );
 		player1.hazardCollisionCheck( currentLevel.getHazards() );
 		player1.hazardCollisionCheck(enemies);
 		occuringEvents.addAll( player1.getEvents() );
@@ -48,9 +46,7 @@ public final class GameModel {
 		if ( player1.fallingDeathCheck(512) ) {
 			occuringEvents.add( new DeathEvent(player1) );
 		}
-		Vector playerPos = player1.getPosition();
-		float playerX = playerPos.getX();
-		Pools.free(playerPos);
+		float playerX = player1.getXPosition();
 		
 		List<EnemySpawner> spawners = currentLevel.getSpawners();
 		
@@ -61,8 +57,8 @@ public final class GameModel {
 		for (int i = 0; i < enemies.size(); i++) {
 			Enemy enemy = enemies.get(i);
 		    enemy.simulate(gameTicks);
-			enemy.fallingCheck( currentLevel.getBlocks() );
-			enemy.collisionCheck( currentLevel.getBlocks() );
+			enemy.fallingCheck( currentLevel.getBlockArray() );
+			enemy.collisionCheck( currentLevel.getBlockArray() );
 		}
 		
 		return occuringEvents;

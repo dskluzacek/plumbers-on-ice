@@ -4,19 +4,19 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
 public final class Block {
-	private final int row;
 	private final int column;
+	private final int row;
 	private final TiledMapTileLayer layer;
 	private final Cell cell;
 	private final Rectangle rectangle;
 	public static final int SIZE = 32;
 	
-	public Block(int row, int column, Cell cell, TiledMapTileLayer layer) {
-        this.row = row;
+	public Block(int column, int row, Cell cell, TiledMapTileLayer layer) {
         this.column = column;
+        this.row = row;
         this.cell = cell;
         this.layer = layer;
-        this.rectangle = new Rectangle(SIZE * row, SIZE * column, SIZE, SIZE);
+        this.rectangle = new Rectangle(SIZE * column, SIZE * row, SIZE, SIZE);
 	}
 	
 	public Block(int row, int column, Cell cell, TiledMapTileLayer layer,
@@ -34,11 +34,12 @@ public final class Block {
 		return rectangle;
 	}
 
-	public int getRow() {
-		return row;
-	}
 	public int getColumn() {
 		return column;
+	}
+	
+	public int getRow() {
+		return row;
 	}
 	
 	public Cell getCell() {

@@ -7,10 +7,20 @@ public abstract class Motionable {
 	private final Vector velocity = new Vector(0, 0);
 	private final Vector acceleration = new Vector(0, 0);
 	
-	public final Vector getPosition() {
-		return Pools.get(Vector.class).obtain().set(position);
+//	public final Vector getPosition() {
+//		return Pools.get(Vector.class).obtain().set(position);
+//	}
+	
+	public final float getXPosition()
+	{
+	    return position.getX();
 	}
 	
+	public final float getYPosition()
+	{
+	    return position.getY();
+	}
+
 	public final void setPosition(Vector position) {
 		this.position.setX( position.getX() );
 		this.position.setY( position.getY() );
@@ -23,6 +33,16 @@ public abstract class Motionable {
 	
 	public final Vector getVelocity() {
 		return Pools.get(Vector.class).obtain().set(velocity);
+	}
+	
+	public final float getXVelocity()
+	{
+	    return velocity.getX();
+	}
+
+	public final float getYVelocity()
+	{
+	    return velocity.getY();
 	}
 	
 	public final void setVelocity(Vector velocity) {
