@@ -1,12 +1,9 @@
 package com.plumbers.game;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Music.OnCompletionListener;
 import com.badlogic.gdx.audio.Sound;
@@ -22,11 +19,9 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public final class GameView
-            extends ApplicationAdapter implements EventContext
+public final class GameView implements Screen, EventContext
 {
 	// major fields for game simulation and rendering
 	private TextureAtlas textureAtlas;
@@ -38,9 +33,6 @@ public final class GameView
 	private Viewport viewport;
 	private Controller controller;
 	private OrthographicCamera camera;
-	
-	// game viewport width and height
-	private int width, height;
 	
 	// background color to be set by the level in lieu of an image Background
 	private Color bgColor = Color.BLACK;
@@ -55,14 +47,16 @@ public final class GameView
 	// objects used for the on-screen timer and coin count displays
 	private Matrix4 screenProjMatrix;
 	private BitmapFont mainFont;
-	private DecimalFormat secondsFormat;
 	private Animation coinAnimation;
+	private final StringBuilder builder = new StringBuilder();
 	
 	/* -- music and sounds -- */
 	// the background music track for the level
 	private Music music;
+	// the music volume, from 0 to 1
+	private final float musicVolume;
 	// time to wait after end of track before starting again
-	private float musicDelay;
+	private int musicDelay;
 	// stores the elapsed time value at end of track
 	private float musicEndTime;
 	// whether we are currently in the delay between end and start of music
@@ -76,33 +70,42 @@ public final class GameView
 	
 	// stores the level file filename or path
 	private final String levelFilePath;
+    private final String player1CharacterName;
 	
 	private static final float GAME_TICK_TIME = 1/120f;
-	private static final int TICK_PER_FRAME_RESET_THRESHOLD = 2,
-	                         COIN_SOUND_MIN_DELAY_IN_FRAMES = 3,
-	                         CAMERA_PLAYER_X = 300,
-	                         INFO_PADDING_IN_PIXELS = 5;
-	private static final float ON_DEATH_DELAY = 0.75f,
-	                           MUSIC_VOLUME = 0.5f;
+	private static final int TICK_PER_FRAME_RESET_THRESHOLD = 3;
+	private static final int COIN_SOUND_MIN_DELAY_IN_FRAMES = 3;
+	private static final int CAMERA_PLAYER_X = 300;
+	private static final int INFO_PADDING_IN_PIXELS = 5;
+	private static final float ON_DEATH_DELAY = 0.75f;
 	
-	private static final String TEXTURE_ATLAS_FILE = "sprites.atlas",
-	                            FONT_FILE = "DejaVuSansMono-Bold.ttf";
+	private static final String TEXTURE_ATLAS_FILE = "sprites.atlas";
+	private static final String FONT_FILE = "DejaVuSansMono-Bold.ttf";
+	private static final String JUMP_SOUND_FILE = "jump.wav";
+	private static final String COIN_SOUND_FILE = "coin.wav";
+	private static final String DAMAGE_SOUND_FILE = "hurt.wav";
+	private static final String DEATH_SOUND_FILE = "death.wav";
 	
-	public GameView(String levelFilePath, Viewport viewport, Controller c) {
+   // game viewport width and height
+	public static final int VIRTUAL_WIDTH = 853,
+	                        VIRTUAL_HEIGHT = 512;  
+	
+	public GameView(String levelFilePath,
+	                String player1CharacterName,
+	                Viewport viewport,
+	                Controller c,
+	                float musicVolume) {
 	    this.levelFilePath = levelFilePath;
+	    this.player1CharacterName = player1CharacterName;
 	    this.viewport = viewport;
 	    this.controller = c;
+	    this.musicVolume = musicVolume;
 	}
 	
 	@Override
-	public void create () {	
-		width = 853;
-		height = 512;
-		
+	public void show() {	
 		Gdx.input.setInputProcessor(controller);
 		
-		secondsFormat = new DecimalFormat(":00.0");
-		secondsFormat.setRoundingMode(RoundingMode.DOWN);
 		FreeTypeFontGenerator generator =
 		        new FreeTypeFontGenerator( Gdx.files.internal(FONT_FILE) );
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
@@ -114,7 +117,7 @@ public final class GameView
 		generator.dispose();
 		
 		camera = new OrthographicCamera();
-		camera.setToOrtho(true, width, height);
+		camera.setToOrtho(true, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 		viewport.setCamera(camera);
 		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
@@ -139,7 +142,7 @@ public final class GameView
 		
 		if ( level.hasBackground() ) {
 			background = level.getBackground();
-			background.setWindowDimensions(width, height);
+			background.setWindowDimensions(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 		} else if ( level.hasBackgroundColor() ) {
 			bgColor = level.getBackgroundColor();
 		}
@@ -148,31 +151,29 @@ public final class GameView
 		mapRenderer = level.getRenderer();
 		mapRenderer.setView(camera);
 		
-		player1 = new Player("hero", textureAtlas, controller);
+		player1 = new Player(player1CharacterName, textureAtlas, controller);
 		player1.setPosition( level.getStartPosition() );
 		gameModel = new GameModel(level, player1);
 
-		coinSound = Gdx.audio.newSound(Gdx.files.internal("coin.wav"));
-		jumpSound = Gdx.audio.newSound(Gdx.files.internal("jump.wav"));
-		damageSound = Gdx.audio.newSound(Gdx.files.internal("hurt.wav"));
-		deathSound = Gdx.audio.newSound(Gdx.files.internal("death.wav"));
+		coinSound = Gdx.audio.newSound(Gdx.files.internal(COIN_SOUND_FILE));
+		jumpSound = Gdx.audio.newSound(Gdx.files.internal(JUMP_SOUND_FILE));
+		damageSound = Gdx.audio.newSound(Gdx.files.internal(DAMAGE_SOUND_FILE));
+		deathSound = Gdx.audio.newSound(Gdx.files.internal(DEATH_SOUND_FILE));
 		
 		music.setOnCompletionListener( new MusicListener() );
-		music.setVolume(MUSIC_VOLUME);
+		music.setVolume(musicVolume);
 		music.play();
 	}
 
 	@Override
-	public void render () {
+	public void render(float deltaTime) {
 		if (death) {
 			deathLoop();
 			return;
 		}
 		Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, 1);
-//		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		float deltaTime = Gdx.graphics.getDeltaTime(); 
 		elapsedTime += deltaTime;
 		timeAccumulator += deltaTime;
 		int count = 0;	
@@ -182,7 +183,7 @@ public final class GameView
 			++count;
 			timeAccumulator -= GAME_TICK_TIME;
 		}
-		if (count > TICK_PER_FRAME_RESET_THRESHOLD) {
+		if (count >= TICK_PER_FRAME_RESET_THRESHOLD) {
 			timeAccumulator = 0;
 		}
 		
@@ -211,8 +212,10 @@ public final class GameView
 		batch.end();
 		
 		batch.setProjectionMatrix(screenProjMatrix);
+		batch.begin();
 		renderTimer();
 		renderCoinCounter();
+		batch.end();
 	}
 
 	@Override
@@ -232,6 +235,10 @@ public final class GameView
 	
 	@Override
 	public void apply(DeathEvent e) {
+	    if (death) {
+	        return;
+	    }
+	    
 		death = true;
 		elapsedTime = 0;
 		timeAccumulator = 0;
@@ -246,7 +253,6 @@ public final class GameView
 	
 	private void deathLoop() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
-//		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		if (elapsedTime < ON_DEATH_DELAY) {
@@ -254,6 +260,7 @@ public final class GameView
 		} else {
 			reset();
 			gameModel.reset();
+			System.gc();
 			death = false;
 		}
 	}
@@ -268,15 +275,15 @@ public final class GameView
 	}
 	
 	private void positionCamera() {
-		Vector position = player1.getPosition();
-		
-		if ( position.getX()
-		        - CAMERA_PLAYER_X < gameModel.getLevelWidth() - width )
+	    float playerX = player1.getXPosition();
+	    
+		if ( playerX
+		        - CAMERA_PLAYER_X < gameModel.getLevelWidth() - VIRTUAL_WIDTH )
 		{
-			if ( position.getX() - CAMERA_PLAYER_X > cameraPos )
+			if ( playerX - CAMERA_PLAYER_X > cameraPos )
 			{
 				float change = MathUtils.floor(
-				        position.getX() - cameraPos - CAMERA_PLAYER_X );
+				    playerX - cameraPos - CAMERA_PLAYER_X );
 				
 				camera.translate(change, 0);
 				cameraPos += change;
@@ -284,43 +291,47 @@ public final class GameView
 				mapRenderer.setView(camera);
 			}
 		}
-		else if ( position.getX()
-		            - CAMERA_PLAYER_X > gameModel.getLevelWidth() - width )
+		else if ( playerX
+		            - CAMERA_PLAYER_X > gameModel.getLevelWidth() - VIRTUAL_WIDTH )
 		{
-			float change = (gameModel.getLevelWidth() - width) - cameraPos;
+			float change = (gameModel.getLevelWidth() - VIRTUAL_WIDTH) - cameraPos;
 			
 			camera.translate(change, 0);
 			cameraPos += change;
 			camera.update();
 			mapRenderer.setView(camera);
 		}
-		
-		/* ---- */
-        Pools.free(position);
 	}
 	
 	private void renderTimer() {
-		batch.begin();
-		String str = getTimerString();
+		CharSequence str = getTimerString();
 		mainFont.draw(
 		  batch,
-		  str, width - 2 - str.length() * (mainFont.getSpaceWidth() + 2),
+		  str, VIRTUAL_WIDTH - 2 - str.length() * (mainFont.getSpaceWidth() + 2),
 		  INFO_PADDING_IN_PIXELS );
-		batch.end();
 	}
 	
-	private String getTimerString() {
-		int minutes = ((int) elapsedTime) / 60;
-		return (minutes == 0 ? "" : minutes) + secondsFormat.format(elapsedTime % 60);
+	private CharSequence getTimerString() {
+	    builder.setLength(0);
+	    
+	    int minutes = ((int) elapsedTime) / 60;
+	    float seconds = elapsedTime % 60.0f;
+	    
+	    if (minutes > 0) { builder.append(minutes); }
+	    builder.append(':');
+	    if (seconds < 10) { builder.append('0'); }
+	    builder.append(seconds);
+	    int index = builder.lastIndexOf(".");
+	    this.builder.setLength(index + 2);
+	    return builder;
 	}
 	
 	private void renderCoinCounter() {
 		int p = INFO_PADDING_IN_PIXELS;
+		builder.setLength(0);
 		
-		batch.begin();
 		batch.draw(coinAnimation.getKeyFrame(elapsedTime, true), p, p, 20, 20);
-		mainFont.draw(batch, "" + player1.getCoinsCollected(), 33, p);
-		batch.end();
+		mainFont.draw(batch, builder.append(player1.getCoinsCollected()), 33, p);
 	}
 	
 	private void musicCheck() {
@@ -337,5 +348,38 @@ public final class GameView
 			musicWait = true;
 		}
 	}
+
+    @Override
+    public void resize(int width, int height) {
+        
+    }
+
+    @Override
+    public void pause() {
+        music.pause();
+    }
+
+    @Override
+    public void resume() {
+        music.play();
+    }
+
+    @Override
+    public void hide() {
+        music.stop();
+        
+    }
+
+    @Override
+    public void dispose() {
+        music.dispose();
+        coinSound.dispose();
+        jumpSound.dispose();
+        damageSound.dispose();
+        deathSound.dispose();
+        mapRenderer.dispose();
+        batch.dispose();
+        textureAtlas.dispose();
+    }
 	
 }

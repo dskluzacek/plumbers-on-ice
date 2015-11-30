@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pools;
 
 public class Player extends Character {
 	private Controller controller;
@@ -75,11 +74,7 @@ public class Player extends Character {
 			}
 			
 			if ( controller.pollRunInput() ) {
-			    Vector position = getPosition();
-				setXPosition( position.getX() + JUMP_FWD_ASSIST );
-				
-				/* ---- */
-				Pools.free(position);
+				setXPosition( getXPosition() + JUMP_FWD_ASSIST );
 			}
 		}
 		
@@ -105,33 +100,23 @@ public class Player extends Character {
 		if ( getState() == State.DYING ) {
 			return;
 		}
-		
-		Vector velocity = getVelocity();
-		float Vx = velocity.getX();
+		float Vx = getXVelocity();
 		
 		if (Vx > MAX_SPEED) {
 			setXVelocity(MAX_SPEED);
 		} else if (Vx < 0) {
 			setXVelocity(0);
 		}
-		
-		/* ---- */
-        Pools.free(velocity);
 	}
 	
 	@Override
 	public void postMotionLogic(int tickNumber) {
-		Vector velocity = getVelocity();
-	    
-	    if ( getState() == State.RUNNING && velocity.getX() == 0 ) {
+	    if ( getState() == State.RUNNING && getXVelocity() == 0 ) {
 			setState( State.STANDING );
 		}
 		if ( getState() != State.DYING && controller.pollKillKey() ) {
 			beKilled();
 		}
-		
-		/* ---- */
-        Pools.free(velocity);
 	}
 	
 	public List<Event> getEvents() {
@@ -167,7 +152,6 @@ public class Player extends Character {
 	@Override
 	public void respondToCollision(Block block, Rectangle.Collision info) {
 		State state = getState();
-		Vector position = getPosition();
 		
 		if (info.getDirection() == Direction.TOP) {
 		    setYAccel(0);
@@ -180,28 +164,20 @@ public class Player extends Character {
 		} else if (info.getDirection() == Direction.LEFT) {
 			setXAccel(0);
 			setXVelocity(0);
-			setXPosition( position.getX() - info.getDistance() );
+			setXPosition( getXPosition() - info.getDistance() );
 			
-			Vector velocity = getVelocity();
-			
-			if (state == State.JUMPING && velocity.getY() > 0) {
+			if (state == State.JUMPING && getYVelocity() > 0) {
 				setState(State.FALLING);
-			}
-			/* ---- */
-	        Pools.free(velocity);
-	        
+			}        
 		} else if (info.getDirection() == Direction.BOTTOM) {
 			setYVelocity(0);
-			setYPosition( position.getY() + info.getDistance() );
+			setYPosition( getYPosition() + info.getDistance() );
 			
 		} else if (info.getDirection() == Direction.RIGHT) {
 			setXAccel(0);
 			setXVelocity(0);
-			setXPosition( position.getX() + info.getDistance() );
+			setXPosition( getXPosition() + info.getDistance() );
 		}
-		
-	    /* ---- */
-        Pools.free(position);
 	}
 	
 	@Override
@@ -255,11 +231,7 @@ public class Player extends Character {
 	}
 	
 	public boolean fallingDeathCheck(float bottom) {
-		Vector position = getPosition();
-		float y = position.getY();
-		Pools.free(position);
-		
-	    return (y > bottom);
+	    return (getYPosition() > bottom);
 	}
 
 }
