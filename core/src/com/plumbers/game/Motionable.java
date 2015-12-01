@@ -50,6 +50,14 @@ public abstract class Motionable {
 		this.velocity.setY(y);
 	}
 	
+	public final float getXAcceleration() {
+        return velocity.getX();
+    }
+
+    public final float getYAcceleration() {
+        return acceleration.getY();
+    }
+	
 	public final void setAcceleration(Vector acceleration) {
 		this.acceleration.setX( acceleration.getX() );
 		this.acceleration.setY( acceleration.getY() );

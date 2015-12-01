@@ -72,16 +72,20 @@ public final class GameModel {
         p.hazardCollisionCheck(enemies);
         addNotNull( occuringEvents, p.getEvent() );
         occuringEvents.addAll(
-              p.coinCollectCheck( currentLevel.getCoins() ));
+              p.coinCollectCheck( currentLevel.getCoins(), gameTicks ));
         
         if ( p.fallingDeathCheck(levelBottom) ) {
-            occuringEvents.add( new DeathEvent(p) );
+            if (p == player1)
+                occuringEvents.add( DeathEvent.playerOneInstance() );
+            else
+                occuringEvents.add( DeathEvent.playerTwoInstance() );
         }
 	}
 
 	public List<Drawable> getDrawables() {
 		drawables.clear();
 	    drawables.add(player1);
+	    addNotNull(drawables, player2);
 		drawables.addAll(enemies);
 		return drawables;
 	}
