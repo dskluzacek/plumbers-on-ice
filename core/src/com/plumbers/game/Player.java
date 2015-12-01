@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.plumbers.game.server.EventMessage;
 import com.plumbers.game.server.GameConnection;
+import com.plumbers.game.server.StateMessage;
 
 public class Player extends Character {
 	private Controller controller;
@@ -74,7 +75,6 @@ public class Player extends Character {
     
     public final void setGameConnection(GameConnection connection) {
         this.connection = connection;
-        controller.setGameConnection(connection);
     }
 	
 	public final void setController(Controller c) {
@@ -86,7 +86,6 @@ public class Player extends Character {
 		if ( getState() == State.DYING ) {
 			return;
 		}
-		controller.setTickNumber(tickNumber);
 		
 		if ( getState() == State.JUMPING ) {
 			if ( tickNumber <= jumpStarted + JUMP_BOOST_DURATION
@@ -139,6 +138,13 @@ public class Player extends Character {
 		}
 		if ( getState() != State.DYING && controller.pollKillKey() ) {
 			beKilled();
+		}
+		
+		if (twoPlayerMode && tickNumber % 8 == 0) {
+		    System.out.println("creating state message");
+		    StateMessage msg = StateMessage.obtain();
+		    msg.setValues(this, tickNumber);
+		    connection.enqueue(msg);
 		}
 	}
 	

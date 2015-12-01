@@ -1,6 +1,8 @@
 package com.plumbers.game;
 
-public class TouchscreenController extends Controller
+import com.badlogic.gdx.InputAdapter;
+
+public class TouchscreenController extends InputAdapter implements Controller
 {
     private final int screenMidpoint;
     
@@ -16,12 +18,10 @@ public class TouchscreenController extends Controller
         if (x < screenMidpoint) {
             if (runInputPointerNum == -1) {
                 runInputPointerNum = pointer;
-                runInputDown();
             }
         } else {
             if (jumpInputPointerNum == -1) {
                 jumpInputPointerNum = pointer;
-                jumpInputDown();
             }
         }
         return true;
@@ -31,10 +31,8 @@ public class TouchscreenController extends Controller
     public boolean touchUp(int x, int y, int pointer, int button) {
         if (pointer == runInputPointerNum) {
             runInputPointerNum = -1;
-            runInputUp();
         } else if (pointer == jumpInputPointerNum) {
             jumpInputPointerNum = -1;
-            jumpInputUp();
         }
         return true;
     }
@@ -53,35 +51,4 @@ public class TouchscreenController extends Controller
     public boolean pollKillKey() {
         return false;
     }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
-    }
-
 }
