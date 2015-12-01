@@ -12,11 +12,11 @@
 		</li>
 		<li><a href="recipes.php">Highscores</a>
 			<ul>
-				<li><a href="highscore.php?shop=chroma">Map 1</a></li>
-				<li><a href="highscore.php?shop=character">Map 2</a></li>
-				<li><a href="highscore.php?shop=level	">Map 3</a></li>
-				<li><a href="highscore.php?shop=character">Map 4</a></li>
-				<li><a href="highscore.php?shop=level	">Map 5</a></li>
+				<li><a href="highscore.php?level=grassy">Grassy Level</a></li>
+				<li><a href="highscore.php?level=tropical">Tropical Level</a></li>
+				<li><a href="highscore.php?level=fall">Fall Level</a></li>
+				<li><a href="highscore.php?level=icy">Icy Level</a></li>
+				<li><a href="highscore.php?level=castle">Castle Level</a></li>
 			</ul>
 		</li>
 		<li><a href="shopcart.php">Shopping Cart</a></li>
