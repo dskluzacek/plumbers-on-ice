@@ -141,7 +141,6 @@ public class Player extends Character {
 		}
 		
 		if (twoPlayerMode && tickNumber % 8 == 0) {
-		    System.out.println("creating state message");
 		    StateMessage msg = StateMessage.obtain();
 		    msg.setValues(this, tickNumber);
 		    connection.enqueue(msg);

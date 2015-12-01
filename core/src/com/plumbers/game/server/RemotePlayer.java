@@ -29,7 +29,6 @@ public class RemotePlayer extends Player {
     }
 
     public void pushEventMessage(EventMessage m) {
-        System.out.println("Pushing: " + m);
         messageQueue.offer(m);
     }
 

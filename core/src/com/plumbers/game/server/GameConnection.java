@@ -47,20 +47,16 @@ public class GameConnection
     }
     
     public void handshake() throws IOException {
-        System.out.println("sending...");
         out.write( myCharName );
         out.write("\n");
         out.flush();
         
-        System.out.println("receiving...");
         String[] arr = input.nextLine().split(" ");
         levelFile = arr[0].trim();
         oppCharName = arr[1].trim();
-        System.out.println("receivied!");
     }
     
     public void ready() {
-        System.out.println("ready...");
         input.nextLine();
         
         Thread writerThread = new Thread( new MessageWriter() );
@@ -95,10 +91,8 @@ public class GameConnection
             while ( socket.isConnected() ) {
                 try {
                     m = outgoing.take();
-                    System.out.println(m);
                     m.write(builder);
                     out.append(builder);
-                    System.out.println( builder.toString() );
                     out.flush();
                     Pools.free(m);
                 }
@@ -126,7 +120,6 @@ public class GameConnection
                         state = StateMessage.obtain();
                         state.read(input);
                         remotePlayer.putStateMessage(state);
-                        System.out.println("Read: " + state);
                     } else {
                         event = EventMessage.obtain();
                         event.read(input);
@@ -137,7 +130,6 @@ public class GameConnection
                             localPlayer.incrementCoins();
                         }
                         remotePlayer.pushEventMessage(event);
-                        System.out.println("Read: " + event);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

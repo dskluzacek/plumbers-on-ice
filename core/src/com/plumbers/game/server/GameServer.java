@@ -22,11 +22,8 @@ public class GameServer {
                 RemoteClient client2 = new RemoteClient(accepted);
                 waiting.ready(level, client2.getMyCharacter(), client2.myQueue);
                 client2.ready(level, waiting.getMyCharacter(), waiting.myQueue);
-                System.out.println("Starting thread 1");
                 new Thread(waiting).start();
-                System.out.println("Starting thread 2");
                 new Thread(client2).start();
-                System.out.println("go()");
                 waiting.go();
                 client2.go();
                 
