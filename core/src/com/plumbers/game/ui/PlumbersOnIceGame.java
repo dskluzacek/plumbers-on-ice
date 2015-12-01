@@ -22,16 +22,19 @@ public class PlumbersOnIceGame extends Game {
     
     private Viewport viewport;
     private Controller controller;
+    private static String hostname;
     
     public static PlumbersOnIceGame createAndroidInstance(int displayWidth) {
         Viewport viewport = new FitViewport(GameView.VIRTUAL_WIDTH,
                 GameView.VIRTUAL_HEIGHT);
         Controller controller = new TouchscreenController(displayWidth);
         
+        hostname = "192.168.0.3";
         return new PlumbersOnIceGame(viewport, controller);
     }
     
     public static PlumbersOnIceGame createDefaultInstance() {
+        hostname = "localhost";
         return new PlumbersOnIceGame( new ScreenViewport(), new KeyboardController() );
     }
     
@@ -43,13 +46,12 @@ public class PlumbersOnIceGame extends Game {
     @Override
     public void create() {
         try {
-            GameConnection connection = new GameConnection("localhost", 7684, "hero");
+            GameConnection connection = new GameConnection(hostname, 7684, "hero");
             gameView = new GameView(connection, "hero", viewport, controller, 0.5f);
             connection.handshake();
             gameView.load();
             System.gc();
             connection.ready();
-            System.out.println("starting...");
             setScreen(gameView);
         }
         catch (IOException e) {

@@ -65,14 +65,11 @@ public class RemoteClient implements Runnable {
             while (! start) {
             }
             
-            System.out.println("signaling...");
             out.write("NOW\n");
             out.flush();
             
-            System.out.println("starting...");
             write.start();
             read.start();
-            
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -94,7 +91,6 @@ public class RemoteClient implements Runnable {
                     out.append(builder);
                     out.flush();
                     Pools.free(m);
-                    System.out.println("Wrote:\n" + builder);
                 }
                 catch (InterruptedException e) {
                 }
@@ -130,7 +126,6 @@ public class RemoteClient implements Runnable {
                             continue;
                         }
                         oppositeQueue.add(eventMessage);
-                        System.out.println("Read:\n" + eventMessage);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
