@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Music.OnCompletionListener;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -102,66 +103,67 @@ public final class GameView implements Screen, EventContext
 	    this.musicVolume = musicVolume;
 	}
 	
+	public void load() {
+	    FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator( Gdx.files.internal(FONT_FILE) );
+        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        parameter.size = 28;
+        parameter.borderWidth = 2;
+        parameter.borderColor = Color.BLACK;
+        parameter.flip = true;
+        mainFont = generator.generateFont(parameter);
+        generator.dispose();
+        
+        textureAtlas =
+                new TextureAtlas(Gdx.files.internal(TEXTURE_ATLAS_FILE), true);
+        batch = new SpriteBatch();
+        camera = new OrthographicCamera();
+        
+        coinAnimation = Coin.getAnimation(textureAtlas);
+        Coin.createCoinTile(textureAtlas);
+        Enemy.setTextureAtlas(textureAtlas);
+        
+        Level level;
+        try {
+            level = new Level(levelFilePath, textureAtlas);
+        } catch (FileFormatException e) {
+            e.printStackTrace();
+            return;
+        }
+        
+        if ( level.hasBackground() ) {
+            background = level.getBackground();
+            background.setWindowDimensions(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+        } else if ( level.hasBackgroundColor() ) {
+            bgColor = level.getBackgroundColor();
+        }
+        music = level.getSoundtrack();
+        musicDelay = level.getSoundtrackDelay();
+        mapRenderer = level.getRenderer();
+        
+        player1 = new Player(player1CharacterName, textureAtlas, controller);
+        player1.setPosition( level.getStartPosition() );
+        gameModel = new GameModel(level, player1);
+
+        coinSound = Gdx.audio.newSound(Gdx.files.internal(COIN_SOUND_FILE));
+        jumpSound = Gdx.audio.newSound(Gdx.files.internal(JUMP_SOUND_FILE));
+        damageSound = Gdx.audio.newSound(Gdx.files.internal(DAMAGE_SOUND_FILE));
+        deathSound = Gdx.audio.newSound(Gdx.files.internal(DEATH_SOUND_FILE));
+        
+        music.setOnCompletionListener( new MusicListener() );
+        music.setVolume(musicVolume);
+	}
+	
 	@Override
-	public void show() {	
-		Gdx.input.setInputProcessor(controller);
-		
-		FreeTypeFontGenerator generator =
-		        new FreeTypeFontGenerator( Gdx.files.internal(FONT_FILE) );
-		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-		parameter.size = 28;
-		parameter.borderWidth = 2;
-		parameter.borderColor = Color.BLACK;
-		parameter.flip = true;
-		mainFont = generator.generateFont(parameter);
-		generator.dispose();
-		
-		camera = new OrthographicCamera();
+	public void show() {
 		camera.setToOrtho(true, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 		viewport.setCamera(camera);
 		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		screenProjMatrix = new Matrix4(camera.combined);
-		
-		batch = new SpriteBatch();
-		batch.setProjectionMatrix(camera.combined);
-		textureAtlas =
-		    new TextureAtlas(Gdx.files.internal(TEXTURE_ATLAS_FILE), true);
-		
-		coinAnimation = Coin.getAnimation(textureAtlas);
-		Coin.createCoinTile(textureAtlas);
-		Enemy.setTextureAtlas(textureAtlas);
-		
-		Level level;
-		try {
-			level = new Level(levelFilePath, textureAtlas);
-		} catch (FileFormatException e) {
-			e.printStackTrace();
-			return;
-		}
-		
-		if ( level.hasBackground() ) {
-			background = level.getBackground();
-			background.setWindowDimensions(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-		} else if ( level.hasBackgroundColor() ) {
-			bgColor = level.getBackgroundColor();
-		}
-		music = level.getSoundtrack();
-		musicDelay = level.getSoundtrackDelay();
-		mapRenderer = level.getRenderer();
 		mapRenderer.setView(camera);
 		
-		player1 = new Player(player1CharacterName, textureAtlas, controller);
-		player1.setPosition( level.getStartPosition() );
-		gameModel = new GameModel(level, player1);
-
-		coinSound = Gdx.audio.newSound(Gdx.files.internal(COIN_SOUND_FILE));
-		jumpSound = Gdx.audio.newSound(Gdx.files.internal(JUMP_SOUND_FILE));
-		damageSound = Gdx.audio.newSound(Gdx.files.internal(DAMAGE_SOUND_FILE));
-		deathSound = Gdx.audio.newSound(Gdx.files.internal(DEATH_SOUND_FILE));
-		
-		music.setOnCompletionListener( new MusicListener() );
-		music.setVolume(musicVolume);
+		Gdx.input.setInputProcessor(controller);
 		music.play();
 	}
 
@@ -216,7 +218,10 @@ public final class GameView implements Screen, EventContext
 		renderTimer();
 		renderCoinCounter();
 		batch.end();
+		
+//		logger.log();
 	}
+//	FPSLogger logger = new FPSLogger();
 
 	@Override
 	public void apply(CoinEvent e) {
@@ -226,6 +231,7 @@ public final class GameView implements Screen, EventContext
 			coinSound.play();
 			coinFrameNumber = frameId;
 		}
+		player1.incrementCoins();
 	}
 	
 	@Override
@@ -351,7 +357,10 @@ public final class GameView implements Screen, EventContext
 
     @Override
     public void resize(int width, int height) {
-        
+        System.out.println("resize!");
+        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        screenProjMatrix = new Matrix4(camera.combined);
+        background.setWindowDimensions(width, height);
     }
 
     @Override
@@ -367,7 +376,6 @@ public final class GameView implements Screen, EventContext
     @Override
     public void hide() {
         music.stop();
-        
     }
 
     @Override
@@ -378,6 +386,7 @@ public final class GameView implements Screen, EventContext
         damageSound.dispose();
         deathSound.dispose();
         mapRenderer.dispose();
+        mainFont.dispose();
         batch.dispose();
         textureAtlas.dispose();
     }

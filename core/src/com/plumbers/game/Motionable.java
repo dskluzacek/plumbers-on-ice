@@ -1,15 +1,14 @@
 package com.plumbers.game;
 
-import com.badlogic.gdx.utils.Pools;
-
 public abstract class Motionable {
 	private final Vector position = new Vector(0, 0);
 	private final Vector velocity = new Vector(0, 0);
 	private final Vector acceleration = new Vector(0, 0);
 	
-//	public final Vector getPosition() {
-//		return Pools.get(Vector.class).obtain().set(position);
-//	}
+	private final Vector velocityModifier = new Vector(0, 0);
+	private final Vector effectiveVelocity = new Vector(0, 0);
+	
+	private final Vector previousPosition = new Vector(0, 0);
 	
 	public final float getXPosition()
 	{
@@ -31,10 +30,6 @@ public abstract class Motionable {
 		this.position.setY(y);
 	}
 	
-	public final Vector getVelocity() {
-		return Pools.get(Vector.class).obtain().set(velocity);
-	}
-	
 	public final float getXVelocity()
 	{
 	    return velocity.getX();
@@ -53,10 +48,6 @@ public abstract class Motionable {
 	public final void setVelocity(float x, float y) {
 		this.velocity.setX(x);
 		this.velocity.setY(y);
-	}
-	
-	public final Vector getAcceleration() {
-		return Pools.get(Vector.class).obtain().set(acceleration);
 	}
 	
 	public final void setAcceleration(Vector acceleration) {
@@ -93,15 +84,46 @@ public abstract class Motionable {
 		acceleration.setY(value);
 	}
 	
+	public final void addXVelocityModifier(float amount) {
+	    velocityModifier.setX( velocityModifier.getX() + amount );
+	}
+
+	public final void addYVelocityModifier(float amount) {
+	    velocityModifier.setY( velocityModifier.getY() + amount );
+	}
+	
+	public float getEffectiveXVelocity() {
+	    return effectiveVelocity.getX();
+	}
+	
+	public float getEffectiveYVelocity() {
+        return effectiveVelocity.getY();
+    }
+	
+	public float getPreviousX() {
+	    return previousPosition.getX();
+	}
+	
+	public float getPreviousY() {
+	    return previousPosition.getY();
+	}
+	
 	public void preVelocityLogic(int tick) {}
 	public void prePositionLogic(int tick) {}
 	public void postMotionLogic(int tick) {}
 	
 	public final void simulate(int tickNumber) {
 		preVelocityLogic(tickNumber);
+		
 		velocity.add( acceleration );
+		
 		prePositionLogic(tickNumber);
-		position.add( velocity );
+		effectiveVelocity.set(velocity);
+		effectiveVelocity.add(velocityModifier);
+		velocityModifier.set(0, 0);
+		previousPosition.set(position);
+		
+		position.add( effectiveVelocity );
 		postMotionLogic(tickNumber);
 	}
 }

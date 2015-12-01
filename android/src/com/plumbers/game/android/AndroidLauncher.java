@@ -5,7 +5,6 @@ import android.util.DisplayMetrics;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.plumbers.game.ui.Platform;
 import com.plumbers.game.ui.PlumbersOnIceGame;
 
 public class AndroidLauncher extends AndroidApplication {
@@ -23,6 +22,6 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useWakelock = true;
 		config.numSamples = 2;
 		
-		initialize( new PlumbersOnIceGame(Platform.ANDROID, width), config );
+		initialize( PlumbersOnIceGame.createAndroidInstance(width), config );
 	}
 }

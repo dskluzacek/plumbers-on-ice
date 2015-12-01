@@ -25,7 +25,6 @@ public final class Level {
     private final OrthogonalTiledMapRenderer renderer;
     private final List<Block> blocks = new ArrayList<Block>();
     private final Block[][] blockArray;
-	private final List<Decoration> decorations = new ArrayList<Decoration>();
 	private final List<Coin> coins = new ArrayList<Coin>();
 	private final List<EnemySpawner> spawners = new ArrayList<EnemySpawner>();
 	private final List<FixedHazard> hazards = new ArrayList<FixedHazard>();
@@ -132,10 +131,6 @@ public final class Level {
 	
 	public Color getBackgroundColor() {
 		return backgroundColor;
-	}
-
-	public List<Decoration> getDecorations(){
-		return decorations; 
 	}
 	
 	public Music getSoundtrack() {

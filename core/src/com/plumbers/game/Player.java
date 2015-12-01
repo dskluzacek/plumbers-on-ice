@@ -55,8 +55,12 @@ public class Player extends Character {
 		setMovementAnim( new MovementAnimation(idleAnimation, walkAnimation, jumpAnimation, landAnimation, knockbackAnimation) );
 	}
 	
-	public int getCoinsCollected() {
+	public final int getCoinsCollected() {
 		return coinsCollected;
+	}
+	
+	public final void setController(Controller c) {
+	    controller = c;
 	}
 	
 	@Override
@@ -74,7 +78,7 @@ public class Player extends Character {
 			}
 			
 			if ( controller.pollRunInput() ) {
-				setXPosition( getXPosition() + JUMP_FWD_ASSIST );
+				addXVelocityModifier(JUMP_FWD_ASSIST);
 			}
 		}
 		
@@ -119,18 +123,18 @@ public class Player extends Character {
 		}
 	}
 	
-	public List<Event> getEvents() {
+	public Event getEvent() {
 		boolean jumped = this.jumped;
 		boolean hurt = this.hurt;
 		this.jumped = false;
 		this.hurt = false;
 		
 		if (hurt) {
-			return Collections.singletonList((Event) DamageEvent.instance());
-		} else if (jumped && getState() == State.JUMPING ) {
-			return Collections.singletonList((Event) JumpEvent.instance());
+			return DamageEvent.instance();
+		} else if (jumped && getState() == State.JUMPING) {
+			return JumpEvent.instance();
 		} else {
-			return Collections.emptyList();
+			return null;
 		}
 	}
 	
@@ -223,11 +227,14 @@ public class Player extends Character {
 		    
 		    if (! coin.isCollected() && rect.intersects(coin.getRectangle())) {
 				coin.setCollected(true);
-				++coinsCollected;
 				coinEvents.add( CoinEvent.instance() );
 			}
 		}
 		return coinEvents;
+	}
+	
+	public void incrementCoins() {
+        ++coinsCollected;
 	}
 	
 	public boolean fallingDeathCheck(float bottom) {

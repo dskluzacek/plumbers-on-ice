@@ -5,54 +5,50 @@ import java.util.Collection;
 import java.util.List;
 
 public final class GameModel {
-	private Player player1; 
-//  private Player p2; 
-	private Level currentLevel;
-	private List<Event> occuringEvents = new ArrayList<Event>(); 
-	private List<Enemy> enemies = new ArrayList<Enemy>(); 
-	private List<Drawable> drawables = new ArrayList<Drawable>();
+	private final Player player1; 
+	private final Player player2; 
+	private final Level currentLevel;
+	private final SpawnStrategy spawnStrategy;
+	private final List<Event> occuringEvents = new ArrayList<Event>(); 
+	private final List<Enemy> enemies = new ArrayList<Enemy>(); 
+	private final List<Drawable> drawables = new ArrayList<Drawable>();
+	private final int levelBottom;
+	private final boolean twoPlayer;
 	private int gameTicks = 0;
 	
 	public static final float GRAVITY = 0.1f;
 
 	public GameModel(Level level, Player p1) {
-		currentLevel = level; 
-		player1 = p1; 
+		currentLevel = level;
+		levelBottom = level.getHeightInTiles() * Block.SIZE;
+		player1 = p1;
+		player2 = null;
+		twoPlayer = false;
+		spawnStrategy = new SinglePlayerSpawner();
 	}
 	
-//	public GameModel(Level level, Player p1, Player p2) {
-//		player1 = p1; 
-//		player2 = p2; 
-//		currentLevel = level; 
-//	}
+	public GameModel(Level level,
+	                 Player p1, Player p2,
+	                 SpawnStrategy spawnStrategy)
+	{
+	    currentLevel = level;
+	    levelBottom = level.getHeightInTiles() * Block.SIZE;
+	    player1 = p1; 
+		player2 = p2; 
+		twoPlayer = true;
+		this.spawnStrategy = spawnStrategy;
+	}
 
 	public List<Event> gameTick() {
 		++gameTicks;
 		occuringEvents.clear();
 		
-		player1.simulate(gameTicks);
+		simulate(player1);
 		
-		if ( currentLevel.useCeiling() ) {
-			player1.ceilingCheck();
+		if (twoPlayer) {
+		    simulate(player2);
 		}
-		player1.fallingCheck( currentLevel.getBlockArray() );
-		player1.collisionCheck( currentLevel.getBlockArray() );
-		player1.hazardCollisionCheck( currentLevel.getHazards() );
-		player1.hazardCollisionCheck(enemies);
-		occuringEvents.addAll( player1.getEvents() );
-		occuringEvents.addAll(
-		      player1.coinCollectCheck( currentLevel.getCoins() ));
-		
-		if ( player1.fallingDeathCheck(512) ) {
-			occuringEvents.add( new DeathEvent(player1) );
-		}
-		float playerX = player1.getXPosition();
-		
-		List<EnemySpawner> spawners = currentLevel.getSpawners();
-		
-		for (int i = 0; i < spawners.size(); i++) {
-			addNotNull( enemies, spawners.get(i).spawn(playerX) );
-		}
+		enemies.addAll( spawnStrategy.spawnEnemies() );
 		
 		for (int i = 0; i < enemies.size(); i++) {
 			Enemy enemy = enemies.get(i);
@@ -63,6 +59,25 @@ public final class GameModel {
 		
 		return occuringEvents;
 	}
+	
+	private void simulate(Player p) {
+	    p.simulate(gameTicks);
+	    
+	    if ( currentLevel.useCeiling() ) {
+            p.ceilingCheck();
+        }
+        p.fallingCheck( currentLevel.getBlockArray() );
+        p.collisionCheck( currentLevel.getBlockArray() );
+        p.hazardCollisionCheck( currentLevel.getHazards() );
+        p.hazardCollisionCheck(enemies);
+        addNotNull( occuringEvents, p.getEvent() );
+        occuringEvents.addAll(
+              p.coinCollectCheck( currentLevel.getCoins() ));
+        
+        if ( p.fallingDeathCheck(levelBottom) ) {
+            occuringEvents.add( new DeathEvent(p) );
+        }
+	}
 
 	public List<Drawable> getDrawables() {
 		drawables.clear();
@@ -72,6 +87,10 @@ public final class GameModel {
 	}
 	
 	public void reset() {
+	    if (twoPlayer) {
+	        throw new IllegalStateException();
+	    }
+	    
 	    List<EnemySpawner> spawners = currentLevel.getSpawners();
         
         for (int i = 0; i < spawners.size(); i++) {
@@ -97,4 +116,21 @@ public final class GameModel {
 			c.add(obj);
 		}
 	}
+	
+	private class SinglePlayerSpawner implements SpawnStrategy {
+	    private List<Enemy> list = new ArrayList<Enemy>();
+
+	    @Override
+	    public List<Enemy> spawnEnemies() {
+	        list.clear();
+	        List<EnemySpawner> spawners = currentLevel.getSpawners();
+	        float playerX = player1.getXPosition();
+
+	        for (int i = 0; i < spawners.size(); i++) {
+	            addNotNull( list, spawners.get(i).spawn(playerX) );
+	        }
+	        return list;
+	    }
+	}
+
 }
