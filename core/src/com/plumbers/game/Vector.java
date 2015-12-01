@@ -37,6 +37,10 @@ public class Vector implements Pool.Poolable {
 	public boolean isZero() {
 		return MathUtils.isZero(x) && MathUtils.isZero(y);
 	}
+	
+	public boolean isExactlyZero() {
+	    return x == 0.0f && y == 0.0f;
+	}
 
 	public void add(Vector r) {
 		this.x = this.x + r.x;
@@ -63,6 +67,12 @@ public class Vector implements Pool.Poolable {
 		float a = this.x + r.x;
 		float b = this.y + r.y;
 		return new Vector(a, b);
+	}
+	
+	public Vector set(float x, float y) {
+	    this.x = x;
+	    this.y = y;
+	    return this;
 	}
 	
 	public Vector set(Vector v) {

@@ -3,7 +3,6 @@ package com.plumbers.game;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Pools;
 import com.plumbers.game.MovementAnimation.Action;
 
 public abstract class Character extends Motionable implements Drawable {
@@ -115,7 +114,6 @@ public abstract class Character extends Motionable implements Drawable {
 		columnEnd = MathUtils.clamp(columnEnd, 0, blocks.length - 1);
         rowEnd = MathUtils.clamp(rowEnd, 0, blocks[0].length - 1);
         
-		Vector velocity = getVelocity();
 		boolean flag = false;
 		
 		for (int x = columnBegin; x <= columnEnd; x++) {
@@ -126,7 +124,7 @@ public abstract class Character extends Motionable implements Drawable {
                     continue;
                 }
     			Rectangle.Collision coll
-    			   = hitbox.collisionInfo(b.getRectangle(), velocity);
+    			   = hitbox.collisionInfo(b.getRectangle(), getPreviousX() + hitboxRelPosX, getPreviousY() + hitboxRelPosY);
     			
     			if (coll != null && (coll.getDirection() != Direction.TOP
     			                     || coll.getDistance() != 0.0f) )
@@ -142,8 +140,6 @@ public abstract class Character extends Motionable implements Drawable {
 		if (flag) {
 			fallingCheck(blocks);
 		}
-		/* ---- */
-		Pools.free(velocity);
 	}
 	
 	private void hitboxToColumnsAndRows() {

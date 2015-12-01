@@ -1,17 +1,14 @@
 package com.plumbers.game;
 
-import java.util.Arrays;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 
-public final class Rectangle implements Pool.Poolable {
+public final class Rectangle {
 	
 	private float x;
 	private float y;
 	private float w;
 	private float h;
-	
-	public Rectangle() {}
 
 	public Rectangle(float x, float y, float w, float h) {
 		this.x = x;
@@ -20,20 +17,11 @@ public final class Rectangle implements Pool.Poolable {
 		this.h = h;
 	}
 	
-	@Override
-	public void reset() {
-	    this.x = 0;
-	    this.y = 0;
-	    this.w = 0;
-	    this.h = 0;
-	}
-	
-	public Rectangle set(Rectangle r) {
+	public Rectangle(Rectangle r) {
 	    this.x = r.x;
 	    this.y = r.y;
 	    this.w = r.w;
 	    this.h = r.h;
-	    return this;
 	}
 	
 	public float getX() {
@@ -73,66 +61,92 @@ public final class Rectangle implements Pool.Poolable {
 			    || this.y + this.h < other.y || other.y + other.h < this.y );
 	}
 	
-	private boolean intersectsX(Rectangle other) {
-		return !( this.x + this.w <= other.x || other.x + other.w <= this.x );
+	private static boolean intersectsX(Rectangle other, float x, float w) {
+		return !( x + w <= other.x || other.x + other.w <= x );
 	}
 	
-	private boolean intersectsY(Rectangle other) {
-		return !( this.y + this.h <= other.y || other.y + other.h <= this.y );
+	private static boolean intersectsY(Rectangle other, float y, float h) {
+		return !( y + h <= other.y || other.y + other.h <= y );
 	}
 	
-	public Collision collisionInfo(Rectangle other, Vector myVelocity) {
+	public Collision collisionInfo(Rectangle other, float prevX, float prevY) {
 		if ( ! this.intersects(other) ) {
 			return null;
 		}
 		Collision coll = staticCollisionInfo(other);
 		
-//		if ( myVelocity.getX() < 2.0f || myVelocity.getY() < 2.0f ) {
-			return coll;
-//		} else {
-//		    Pools.free(coll);
-//		    
-//			return resolveCollision(other, this, myVelocity);
-//		}
+		if (coll == TOP_0) {
+		    return TOP_0;
+		} else {
+		    float distance = Float.NaN;
+		    Direction direction = resolveCollision(other, prevX, prevY);
+		    
+		    if (direction == null)
+		        return coll;
+		    
+		    switch (direction) {
+		        case TOP: distance = topDistance(other); break;
+		        case BOTTOM: distance = bottomDistance(other); break;
+		        case LEFT: distance = leftDistance(other); break;
+		        case RIGHT: distance = rightDistance(other); break;
+		    }
+		    
+		    ((CollisionImpl) coll).set(direction, distance);
+		    return coll;
+		}
 	}
 	
-	private float[] arr = new float[4];
+	private float topDistance(Rectangle other) {
+	    return (this.y + this.h) - other.y;
+	}
+	
+	private float bottomDistance(Rectangle other) {
+	    return (other.y + other.h) - this.y;
+	}
+	
+	private float leftDistance(Rectangle other) {
+	    return (this.x + this.w) - other.x;
+	}
+	
+	private float rightDistance(Rectangle other) {
+        return (other.x + other.w) - this.x;
+    }
 	
 	public Collision staticCollisionInfo(Rectangle other) {
 		if ( ! this.intersects(other) ) {
 			return null;
 		}
 		
-		float topDistance = (this.y + this.h) - other.y;
-		float bottomDistance = (other.y + other.h) - this.y;
-		float leftDistance = (this.x + this.w) - other.x;
-		float rightDistance = (other.x + other.w) - this.x;
-
-		arr[0] = topDistance;
-		arr[1] = bottomDistance;
-		arr[2] = leftDistance;
-		arr[3] = rightDistance;
-		Arrays.sort(arr);
+		float topDistance = topDistance(other);
+		float bottomDistance = bottomDistance(other);
+		float leftDistance = leftDistance(other);
+		float rightDistance = rightDistance(other);
 		
 		float lowest = 0;
 		
-		for (float dist : arr)
-		{
-			if (dist >= 0) {
-				lowest = dist;
-				break;
-			}
+		if (topDistance > 0) {
+		    lowest = topDistance;
 		}
+		if (bottomDistance > 0 && bottomDistance < lowest) {
+		    lowest = bottomDistance;
+		}
+		if (leftDistance > 0 && leftDistance < lowest) {
+		    lowest = leftDistance;
+		}
+		if (rightDistance > 0 && rightDistance < lowest) {
+		    lowest = rightDistance;
+		}
+		
 		final float distance = lowest;
 		final Direction direction;
 		
-		if (lowest == topDistance) {
+		if (distance == topDistance) {
 			direction = Direction.TOP;
-		} else if (lowest == bottomDistance) {
+		} else if (distance == bottomDistance) {
 			direction = Direction.BOTTOM;
-		} else if (lowest == leftDistance) {
+		} else if (distance == leftDistance) {
 			direction = Direction.LEFT;
-		}  else if (lowest == rightDistance) {
+		}  else if (distance == rightDistance) {
 			direction = Direction.RIGHT;
 		}
 		else
@@ -145,54 +159,27 @@ public final class Rectangle implements Pool.Poolable {
 		}
 	}
 
-	public static Collision resolveCollision(Rectangle permanent, Rectangle moving, Vector velocity) {
- 		Rectangle solution = Pools.get(Rectangle.class).obtain().set(moving);
-		boolean xAxis = resolve(permanent, solution, velocity.getX() / 10, velocity.getY() / 10, false);
-		
+	public Direction resolveCollision(Rectangle other, float prevX, float prevY)
+	{
 		final Direction direction;
-		final float distance;
 		
-		if (xAxis) {
-			if (velocity.getX() > 0) {
-				direction = Direction.LEFT;
-			} else {
-				direction = Direction.RIGHT;
-			}
-			distance = Math.abs(moving.x - solution.x);
-		} else {
-			if (velocity.getY() > 0) {
-				direction = Direction.TOP;
-			} else {
-				direction = Direction.BOTTOM;
-			}
-			distance = Math.abs(moving.y - solution.y);
-		}
+		if ( intersectsX(other, prevX, w) ) {
+            if (prevY + h < other.y + other.h) {
+                direction = Direction.TOP;
+            } else {
+                direction = Direction.BOTTOM;
+            }
+        } else if ( intersectsY(other, prevY, h) ) {
+            if (prevX + w <= other.x) {
+                direction = Direction.LEFT;
+            } else {
+                direction = Direction.RIGHT;
+            }
+        } else {
+            direction = null;
+        }
 		
-		/* ---- */
-		Pools.free(solution);
-		/* ---- */
-
-		return Pools.get(CollisionImpl.class).obtain().set(direction, distance);
-	}
-	
-	private static boolean resolve(Rectangle permanent, Rectangle moving, float Vx, float Vy, boolean onXAxis) {
-		if (onXAxis) {
-			moving.x -= Vx;
-			
-			if ( ! moving.intersectsX(permanent) ) {
-				return true;
-			} else {
-				return resolve(permanent, moving, Vx, Vy, false);
-			}
-		} else {
-			moving.y -= Vy;
-			
-			if ( ! moving.intersectsY(permanent) ) {
-				return false;
-			} else {
-				return resolve(permanent, moving, Vx, Vy, true);
-			}
-		}
+		return direction;
 	}
 	
 	public static void disposeOf(Collision obj) {
