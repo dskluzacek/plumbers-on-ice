@@ -1,22 +1,25 @@
-package com.plumbers.game;
+package com.plumbers.game.server;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.badlogic.gdx.InputAdapter;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Pools;
-import com.plumbers.game.server.Message;
-import com.plumbers.game.server.Message.MsgType;
-import com.plumbers.game.server.StatePacket;
+import com.plumbers.game.Coin;
+import com.plumbers.game.Controller;
+import com.plumbers.game.DamageEvent;
+import com.plumbers.game.Event;
+import com.plumbers.game.Hazard;
+import com.plumbers.game.JumpEvent;
+import com.plumbers.game.Player;
+import com.plumbers.game.server.EventMessage.MsgType;
 
 public class RemotePlayer extends Player {
-    private Map<Integer, StatePacket> stateMsgMap = new ConcurrentHashMap<Integer, StatePacket>();
-    private BlockingQueue<Message> messageQueue = new ArrayBlockingQueue<Message>(20);
+    private Map<Integer, StateMessage> stateMsgMap = new ConcurrentHashMap<Integer, StateMessage>();
+    private Queue<EventMessage> messageQueue = new ConcurrentLinkedQueue<EventMessage>();
     private NetworkController controller;
     private int internalTickNum;
     private boolean dead = false;
@@ -25,21 +28,22 @@ public class RemotePlayer extends Player {
         super(name, textureAtlas, null);
         controller = new NetworkController();
         setController(controller);
+        set2PlayerMode(true);
     }
     
-    public Map<Integer, StatePacket> getStateMsgMap() {
-        return stateMsgMap;
+    public void putStateMessage(StateMessage m) {
+        stateMsgMap.put(m.getTickNumber(), m);
     }
 
-    public BlockingQueue<Message> getMessageQueue() {
-        return messageQueue;
+    public void pushEventMessage(EventMessage m) {
+        messageQueue.add(m);
     }
 
     @Override
     public void preVelocityLogic(int tickNumber) {
         internalTickNum = tickNumber - 36000;
         
-        Message message = messageQueue.peek();
+        EventMessage message = messageQueue.peek();
         
         while (message != null && message.getTickBegin() == internalTickNum)
         {
@@ -51,19 +55,19 @@ public class RemotePlayer extends Player {
             {
                 controller.runInputStarted = -1;
             }
-            else if (message.getType() == MsgType.JUMP)
+            else if (message.getType() == MsgType.JUMP_INPUT)
             {
                 controller.jumpInputStarted = internalTickNum;
             }
-            else if (message.getType() == MsgType.JUMP_END)
+            else if (message.getType() == MsgType.JUMP_INPUT_END)
             {
                 controller.jumpInputStarted = -1;
             }
             else if (message.getType() == MsgType.COIN)
             {
                 // means the coin was not gotten by the local player
-                // so it was the remote player
-                if ( ! message.isForMyPlayer() ) {
+                // so it was the other/remote player
+                if ( ! message.appliesToLocalPlayer() ) {
                     incrementCoins();
                 }
             }
@@ -81,7 +85,7 @@ public class RemotePlayer extends Player {
             message = messageQueue.peek();
         }
         
-        StatePacket stateMsg = stateMsgMap.remove(internalTickNum);
+        StateMessage stateMsg = stateMsgMap.remove(internalTickNum);
         
         if (stateMsg != null) {
             stateMsg.updatePosition(this);
@@ -105,12 +109,27 @@ public class RemotePlayer extends Player {
     }
 
     @Override
-    public Event hazardCollisionCheck(List<? extends Hazard> hazards) {
-        return null;
+    public Event getEvent() {
+        boolean jumped = this.jumped;
+        boolean hurt = this.hurt;
+        this.jumped = false;
+        this.hurt = false;
+        
+        if (hurt) {
+            return DamageEvent.playerTwoInstance();
+        } else if (jumped && getState() == State.JUMPING) {
+            return JumpEvent.playerTwoInstance();
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public List<Event> coinCollectCheck(List<Coin> coins) {
+    public void hazardCollisionCheck(List<? extends Hazard> hazards) {
+    }
+
+    @Override
+    public List<Event> coinCollectCheck(List<Coin> coins, int tickNum) {
         return Collections.emptyList();
     }
 
@@ -121,7 +140,7 @@ public class RemotePlayer extends Player {
         return died;
     }
 
-    private class NetworkController extends InputAdapter implements Controller
+    private class NetworkController extends Controller
     {
         int runInputStarted = -1;
         int jumpInputStarted = -1;
@@ -135,9 +154,49 @@ public class RemotePlayer extends Player {
         public boolean pollJumpInput() {
             return jumpInputStarted != -1;
         }
-
+        
         @Override
         public boolean pollKillKey() {
+            return false;
+        }
+        /* ------------------------------ */
+        
+        @Override
+        public boolean keyDown(int keycode) {
+            return false;
+        }
+
+        @Override
+        public boolean keyUp(int keycode) {
+            return false;
+        }
+
+        @Override
+        public boolean keyTyped(char character) {
+            return false;
+        }
+
+        @Override
+        public boolean touchDown(int screenX, int screenY, int pointer, int button)
+        {    return false; }
+
+        @Override
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            return false;
+        }
+
+        @Override
+        public boolean touchDragged(int screenX, int screenY, int pointer) {
+            return false;
+        }
+
+        @Override
+        public boolean mouseMoved(int screenX, int screenY) {
+            return false;
+        }
+
+        @Override
+        public boolean scrolled(int amount) {
             return false;
         }
     }

@@ -8,16 +8,21 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.plumbers.game.server.EventMessage;
+import com.plumbers.game.server.GameConnection;
 
 public class Player extends Character {
 	private Controller controller;
+	private GameConnection connection;
     private int coinsCollected = 0;
-	private boolean jumped = false;
-	private boolean hurt = false;
+	protected boolean jumped = false;
+	protected boolean hurt = false;
 	private int jumpStarted;
 	
 	/* ---- */
-	private List<Event> coinEvents = new ArrayList<Event>();
+	private boolean twoPlayerMode;
+	/* ---- */
+	private final List<Event> coinEvents = new ArrayList<Event>();
 	/* ---- */
 	
 	private static final float ACCELERATION = 1/14f,
@@ -58,6 +63,19 @@ public class Player extends Character {
 	public final int getCoinsCollected() {
 		return coinsCollected;
 	}
+	  
+    public final void incrementCoins() {
+        ++coinsCollected;
+    }
+    
+    public final void set2PlayerMode(boolean twoPlayer) {
+        twoPlayerMode = twoPlayer;
+    }
+    
+    public final void setGameConnection(GameConnection connection) {
+        this.connection = connection;
+        controller.setGameConnection(connection);
+    }
 	
 	public final void setController(Controller c) {
 	    controller = c;
@@ -68,6 +86,7 @@ public class Player extends Character {
 		if ( getState() == State.DYING ) {
 			return;
 		}
+		controller.setTickNumber(tickNumber);
 		
 		if ( getState() == State.JUMPING ) {
 			if ( tickNumber <= jumpStarted + JUMP_BOOST_DURATION
@@ -130,9 +149,9 @@ public class Player extends Character {
 		this.hurt = false;
 		
 		if (hurt) {
-			return DamageEvent.instance();
+			return DamageEvent.playerOneInstance();
 		} else if (jumped && getState() == State.JUMPING) {
-			return JumpEvent.instance();
+			return JumpEvent.playerOneInstance();
 		} else {
 			return null;
 		}
@@ -146,8 +165,10 @@ public class Player extends Character {
 	}
 	
 	public void reset(Vector position) {
-		coinsCollected = 0;
-		setPosition(position);
+		if (! twoPlayerMode) {
+		    coinsCollected = 0;
+		}
+	    setPosition(position);
 		setVelocity(0, 0);
 		setAcceleration(0, GameModel.GRAVITY);
 		setState(Character.State.FALLING);
@@ -199,22 +220,20 @@ public class Player extends Character {
 		}
 	}
 	
-	public Event hazardCollisionCheck(List<? extends Hazard> hazards) {
+	public void hazardCollisionCheck(List<? extends Hazard> hazards) {
 		if ( getState() == State.DYING ) {
-			return null;
+			return;
 		}
 		Rectangle rect = getRectangle();
 		
 		for (int i = 0; i < hazards.size(); i++) {
 			if (rect.intersects( hazards.get(i).getRectangle() )) {
 				beKilled();
-				return DamageEvent.instance();
 			}
 		}
-		return null;
 	}
 	
-	public List<Event> coinCollectCheck(List<Coin> coins) {
+	public List<Event> coinCollectCheck(List<Coin> coins, int tickNum) {
 		if ( getState() == State.DYING ) {
 			return Collections.emptyList();
 		}
@@ -228,13 +247,15 @@ public class Player extends Character {
 		    if (! coin.isCollected() && rect.intersects(coin.getRectangle())) {
 				coin.setCollected(true);
 				coinEvents.add( CoinEvent.instance() );
+				
+				if (twoPlayerMode) {
+    				EventMessage msg = EventMessage.obtain();
+    				msg.coin(tickNum, true, coin.getColumn(), coin.getRow());
+    				connection.enqueue(msg);
+				}
 			}
 		}
 		return coinEvents;
-	}
-	
-	public void incrementCoins() {
-        ++coinsCollected;
 	}
 	
 	public boolean fallingDeathCheck(float bottom) {

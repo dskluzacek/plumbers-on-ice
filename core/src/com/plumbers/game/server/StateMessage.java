@@ -3,18 +3,23 @@ package com.plumbers.game.server;
 import java.util.Scanner;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.badlogic.gdx.utils.Pools;
 import com.plumbers.game.Character;
 import com.plumbers.game.Motionable;
 import com.plumbers.game.Vector;
 
-public final class StatePacket implements Poolable {
+public final class StateMessage implements Message, Poolable {
     private float xPos, yPos;
     private float xVel, yVel;
     private float xAccel, yAccel;
     private Character.State state;
     private int tickNumber;
     
-    private StatePacket() {}
+    private StateMessage() {}
+    
+    public static StateMessage obtain() {
+        return Pools.obtain(StateMessage.class);
+    }
     
     @Override
     public void reset() {
@@ -28,19 +33,19 @@ public final class StatePacket implements Poolable {
         tickNumber = 0;
     }
     
-    public static void write(StringBuilder out, int tickNumber,
-        Vector position, Vector velocity, Vector accel, Character.State state)
+    @Override
+    public void write(StringBuilder out)
     {
         out.setLength(0);
         out.append("STATE ").append(tickNumber).append(' ');
         out.append( state.name() );
         out.append('\n');
-        out.append( position.getX() ).append(' ');
-        out.append( position.getY() ).append(' ');
-        out.append( velocity.getX() ).append(' ');
-        out.append( velocity.getY() ).append(' ');
-        out.append( accel.getX() ).append(' ');
-        out.append( accel.getY() );
+        out.append(xPos).append(' ');
+        out.append(yPos).append(' ');
+        out.append(xVel).append(' ');
+        out.append(yVel).append(' ');
+        out.append(xAccel).append(' ');
+        out.append(yAccel);
         out.append("\n\n");
     }
     
@@ -54,6 +59,20 @@ public final class StatePacket implements Poolable {
         yVel = scanner.nextFloat();
         xAccel = scanner.nextFloat();
         yAccel = scanner.nextFloat();
+    }
+    
+    public StateMessage setValues(Character character, int tickNumber)
+    {
+        this.tickNumber = tickNumber;
+        state = character.getState();
+        xPos = character.getXPosition();
+        yPos = character.getYPosition();
+        xVel = character.getXVelocity();
+        yVel = character.getYVelocity();
+        xAccel = character.getXAcceleration();
+        yAccel = character.getYAcceleration();
+
+        return this;
     }
     
     public void updatePosition(Motionable out) {
