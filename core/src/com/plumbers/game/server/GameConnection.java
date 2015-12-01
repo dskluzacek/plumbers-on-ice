@@ -18,37 +18,68 @@ import com.plumbers.game.server.EventMessage.MsgType;
 public class GameConnection
 {
     private final BlockingQueue<Message> outgoing = new LinkedBlockingQueue<Message>();
-    private final Player localPlayer;
-    private final RemotePlayer remotePlayer;
+    private Player localPlayer;
+    private RemotePlayer remotePlayer;
+    
+    private String levelFile, myCharName, oppCharName; 
     
     private Socket socket;
     private Scanner input;
     private Writer out;
     
-    public GameConnection(String hostname, int port, RemotePlayer rp, Player local) throws IOException
-    {        
-        remotePlayer = rp;
-        localPlayer = local;
-        
-        SocketHints hints = new SocketHints();
-        hints.performancePrefBandwidth = 0;
-        hints.performancePrefConnectionTime = 0;
-        hints.performancePrefLatency = 1;
+    public GameConnection(String hostname, int port, String charName) throws IOException
+    {
+        this.myCharName = charName;
+//        SocketHints hints = new SocketHints();
+//        hints.performancePrefBandwidth = 0;
+//        hints.performancePrefConnectionTime = 0;
+//        hints.performancePrefLatency = 1;
 //      hints.tcpNoDelay = true;
         
         try {
-            socket = Gdx.net.newClientSocket(Protocol.TCP, hostname, port, hints);
+            socket = Gdx.net.newClientSocket(Protocol.TCP, hostname, port, null);
         } catch (GdxRuntimeException ex) {
             throw new IOException("failed to connect to server at: "
                                   + hostname + ':' + port, ex);
         }
         input = new Scanner( socket.getInputStream() );
         out = new OutputStreamWriter( socket.getOutputStream() );
+    }
+    
+    public void handshake() throws IOException {
+        System.out.println("sending...");
+        out.write( myCharName );
+        out.write("\n");
+        out.flush();
+        
+        System.out.println("receiving...");
+        String[] arr = input.nextLine().split(" ");
+        levelFile = arr[0].trim();
+        oppCharName = arr[1].trim();
+        System.out.println("receivied!");
+    }
+    
+    public void ready() {
+        System.out.println("ready...");
+        input.nextLine();
         
         Thread writerThread = new Thread( new MessageWriter() );
         Thread readerThread = new Thread( new MessageReader() );
         writerThread.start();
         readerThread.start();
+    }
+    
+    public void setPlayers(RemotePlayer rp, Player local) {
+        remotePlayer = rp;
+        localPlayer = local;
+    }
+    
+    public String getLevelFileName() {
+        return levelFile;
+    }
+    
+    public String getOppCharacterName() {
+        return oppCharName;
     }
     
     public void enqueue(Message m) {
@@ -64,8 +95,10 @@ public class GameConnection
             while ( socket.isConnected() ) {
                 try {
                     m = outgoing.take();
+                    System.out.println(m);
                     m.write(builder);
                     out.append(builder);
+                    System.out.println( builder.toString() );
                     out.flush();
                     Pools.free(m);
                 }
@@ -87,10 +120,13 @@ public class GameConnection
             
             while ( socket.isConnected() ) {
                 try {
-                    if ( input.hasNext("STATE") ) {
+                    String type = input.next();
+                    
+                    if ( type.equals("state") ) {
                         state = StateMessage.obtain();
                         state.read(input);
                         remotePlayer.putStateMessage(state);
+                        System.out.println("Read: " + state);
                     } else {
                         event = EventMessage.obtain();
                         event.read(input);
@@ -101,6 +137,7 @@ public class GameConnection
                             localPlayer.incrementCoins();
                         }
                         remotePlayer.pushEventMessage(event);
+                        System.out.println("Read: " + event);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

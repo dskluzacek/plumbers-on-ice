@@ -24,11 +24,12 @@ import com.plumbers.game.server.*;
 
 public final class GameView implements Screen {
 	/* -- major fields for game simulation and rendering -- */
-	private TextureAtlas textureAtlas;
 	private GameModel gameModel;
 	private EventContext eventContext;
+	private Level level;
 	private Player player1;
-	private Player player2;
+	private RemotePlayer player2;
+    private TextureAtlas textureAtlas;
 	private SpriteBatch batch;
 	private OrthogonalTiledMapRenderer mapRenderer;
 	private Background background;
@@ -86,11 +87,11 @@ public final class GameView implements Screen {
 	private long coinFrameNumber; 
 	
 	/** the level file filename or path */
-	private final String levelFilePath;
+	private String levelFilePath;
 	/** the name of the character to use for player1 */
-    private final String player1CharacterName;
+    private String player1CharacterName;
     /** the name of the character to use for player2 */
-    private final String player2CharacterName;
+    private String player2CharacterName;
 	
 	private static final float GAME_TICK_TIME = 1/120f;
 	private static final int TICK_PER_FRAME_RESET_THRESHOLD = 3;
@@ -129,16 +130,13 @@ public final class GameView implements Screen {
 	}
 	
 	/** Create a two-player GameView */
-	public GameView(String levelFilePath,
+	public GameView(GameConnection connection,
 	                String player1CharacterName,
-	                String player2CharacterName,
 	                Viewport viewport,
-	                Controller ctrl, GameConnection connection,
+	                Controller ctrl,
 	                float musicVolume)
 	{
-	    this.levelFilePath = levelFilePath;
 	    this.player1CharacterName = player1CharacterName;
-	    this.player2CharacterName = player2CharacterName;
 	    this.viewport = viewport;
 	    this.controller = ctrl;
 	    this.musicVolume = musicVolume;
@@ -153,6 +151,11 @@ public final class GameView implements Screen {
 	 * to be called right before GameView becomes the active Screen. 
 	 */
 	public void load() {
+	    if (twoPlayerMode) {
+	        levelFilePath = connection.getLevelFileName();
+	        player2CharacterName = connection.getOppCharacterName();
+	    }
+	    
 	    FreeTypeFontGenerator generator =
                 new FreeTypeFontGenerator( Gdx.files.internal(FONT_FILE) );
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
@@ -172,7 +175,6 @@ public final class GameView implements Screen {
         Coin.createCoinTile(textureAtlas);
         Enemy.setTextureAtlas(textureAtlas);
         
-        Level level;
         try {
             level = new Level(levelFilePath, textureAtlas);
         } catch (FileFormatException e) {
@@ -196,9 +198,14 @@ public final class GameView implements Screen {
         if (twoPlayerMode) {
             player2 = new RemotePlayer(player2CharacterName, textureAtlas);
             player2.setPosition( level.getStartPosition() );
+            gameModel = new GameModel(level, player1, player2, null);
         } else {
             gameModel = new GameModel(level, player1);
         }
+        connection.setPlayers(player2, player1);
+        player1.set2PlayerMode(true);
+        player1.setGameConnection(connection);
+        player2.setGameConnection(connection);
 
         coinSound = Gdx.audio.newSound(Gdx.files.internal(COIN_SOUND_FILE));
         jumpSound = Gdx.audio.newSound(Gdx.files.internal(JUMP_SOUND_FILE));
@@ -379,7 +386,12 @@ public final class GameView implements Screen {
             elapsedTime += Gdx.graphics.getDeltaTime();
         } else {
             reset();
-            gameModel.reset();
+            
+            if (twoPlayerMode) {
+                player1.reset( level.getStartPosition() );
+            } else {
+                gameModel.reset();
+            }
             System.gc();
             death = false;
         }

@@ -2,14 +2,11 @@ package com.plumbers.game.server;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Pools;
 import com.plumbers.game.Coin;
-import com.plumbers.game.Controller;
 import com.plumbers.game.DamageEvent;
 import com.plumbers.game.Event;
 import com.plumbers.game.Hazard;
@@ -18,52 +15,31 @@ import com.plumbers.game.Player;
 import com.plumbers.game.server.EventMessage.MsgType;
 
 public class RemotePlayer extends Player {
-    private Map<Integer, StateMessage> stateMsgMap = new ConcurrentHashMap<Integer, StateMessage>();
-    private Queue<EventMessage> messageQueue = new ConcurrentLinkedQueue<EventMessage>();
-    private NetworkController controller;
-    private int internalTickNum;
+    private BlockingQueue<StateMessage> stateQueue = new ArrayBlockingQueue<StateMessage>(100);
+    private BlockingQueue<EventMessage> messageQueue = new ArrayBlockingQueue<EventMessage>(25);
     private boolean dead = false;
     
     public RemotePlayer(String name, TextureAtlas textureAtlas) {
         super(name, textureAtlas, null);
-        controller = new NetworkController();
-        setController(controller);
         set2PlayerMode(true);
     }
     
     public void putStateMessage(StateMessage m) {
-        stateMsgMap.put(m.getTickNumber(), m);
+        stateQueue.offer(m);
     }
 
     public void pushEventMessage(EventMessage m) {
-        messageQueue.add(m);
+        System.out.println("Pushing: " + m);
+        messageQueue.offer(m);
     }
 
     @Override
     public void preVelocityLogic(int tickNumber) {
-        internalTickNum = tickNumber - 36000;
         
-        EventMessage message = messageQueue.peek();
+        EventMessage message = messageQueue.poll();
         
-        while (message != null && message.getTickBegin() == internalTickNum)
-        {
-            if (message.getType() == MsgType.RUN_INPUT)
-            {
-                controller.runInputStarted = internalTickNum;
-            }
-            else if (message.getType() == MsgType.RUN_INPUT_END)
-            {
-                controller.runInputStarted = -1;
-            }
-            else if (message.getType() == MsgType.JUMP_INPUT)
-            {
-                controller.jumpInputStarted = internalTickNum;
-            }
-            else if (message.getType() == MsgType.JUMP_INPUT_END)
-            {
-                controller.jumpInputStarted = -1;
-            }
-            else if (message.getType() == MsgType.COIN)
+        if (message != null) {
+            if (message.getType() == MsgType.COIN)
             {
                 // means the coin was not gotten by the local player
                 // so it was the other/remote player
@@ -80,32 +56,35 @@ public class RemotePlayer extends Player {
             {
                 dead = true;
             }
-            messageQueue.remove();
             Pools.free(message);
-            message = messageQueue.peek();
         }
-        
-        StateMessage stateMsg = stateMsgMap.remove(internalTickNum);
+
+        StateMessage stateMsg = stateQueue.poll();
         
         if (stateMsg != null) {
-            stateMsg.updatePosition(this);
-            stateMsg.updateVelocity(this);
-            stateMsg.updateAcceleration(this);
+            setXPosition( stateMsg.getXPos() );
+            setYPosition( stateMsg.getYPos() );
+            setXVelocity( stateMsg.getXVel() );
+            setYVelocity( stateMsg.getYVel() );
+            
             setState( stateMsg.getState() );
             
             Pools.free(stateMsg);
         }
-        super.preVelocityLogic(internalTickNum);
+        if (stateQueue.remainingCapacity() == 0)
+            stateQueue.clear();
     }
     
     @Override
     public void prePositionLogic(int n) {
-        super.prePositionLogic(internalTickNum);
+        super.prePositionLogic(n);
     }
 
     @Override
     public void postMotionLogic(int n) {
-        super.postMotionLogic(internalTickNum);
+        if ( getState() == State.RUNNING && getXVelocity() == 0 ) {
+            setState( State.STANDING );
+        }
     }
 
     @Override
@@ -138,66 +117,5 @@ public class RemotePlayer extends Player {
         boolean died = dead;
         dead = false;
         return died;
-    }
-
-    private class NetworkController extends Controller
-    {
-        int runInputStarted = -1;
-        int jumpInputStarted = -1;
-        
-        @Override
-        public boolean pollRunInput() {
-            return runInputStarted != -1;
-        }
-
-        @Override
-        public boolean pollJumpInput() {
-            return jumpInputStarted != -1;
-        }
-        
-        @Override
-        public boolean pollKillKey() {
-            return false;
-        }
-        /* ------------------------------ */
-        
-        @Override
-        public boolean keyDown(int keycode) {
-            return false;
-        }
-
-        @Override
-        public boolean keyUp(int keycode) {
-            return false;
-        }
-
-        @Override
-        public boolean keyTyped(char character) {
-            return false;
-        }
-
-        @Override
-        public boolean touchDown(int screenX, int screenY, int pointer, int button)
-        {    return false; }
-
-        @Override
-        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            return false;
-        }
-
-        @Override
-        public boolean touchDragged(int screenX, int screenY, int pointer) {
-            return false;
-        }
-
-        @Override
-        public boolean mouseMoved(int screenX, int screenY) {
-            return false;
-        }
-
-        @Override
-        public boolean scrolled(int amount) {
-            return false;
-        }
     }
 }

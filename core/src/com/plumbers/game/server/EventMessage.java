@@ -1,6 +1,7 @@
 package com.plumbers.game.server;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.Pools;
@@ -22,10 +23,6 @@ public final class EventMessage implements Message, Poolable {
     }
     
     public enum MsgType {
-        JUMP_INPUT,
-        JUMP_INPUT_END,
-        RUN_INPUT,
-        RUN_INPUT_END,
         COIN,
         DAMAGED,
         DIED,
@@ -47,6 +44,7 @@ public final class EventMessage implements Message, Poolable {
 
     public void write(StringBuilder out) {
         out.setLength(0);
+        out.append("event ");
         out.append( type.name() );
         out.append(' ');
         out.append(id);
@@ -118,6 +116,10 @@ public final class EventMessage implements Message, Poolable {
     public boolean appliesToLocalPlayer() {
         return fields[0] != 0;
     }
+    
+    public void setAppliesToLocalPlayer(boolean applies) {
+        fields[0] = (applies ? 1 : 0);
+    }
 
     public int getColumn() {
         return fields[1];
@@ -146,32 +148,6 @@ public final class EventMessage implements Message, Poolable {
     public void newId() {
         id = nextId;
         ++nextId;
-    }
-
-    public void jumpInput(int tickBegin) {
-        newId();
-        type = MsgType.JUMP_INPUT;
-        tickNumber = tickBegin;
-    }
-
-    public void jumpInputEnd(int tickEnd) {
-        newId();
-        type = MsgType.JUMP_INPUT_END;
-        tickNumber = tickEnd;
-        fields[0] = tickEnd;
-    }
-
-    public void runInput(int tickBegin) {
-        newId();
-        type = MsgType.RUN_INPUT;
-        tickNumber = tickBegin;
-    }
-
-    public void runInputEnd(int tickEnd) {
-        newId();
-        type = MsgType.RUN_INPUT_END;
-        tickNumber = tickEnd;
-        fields[0] = tickEnd;
     }
 
     public void coin(int tickBegin, boolean thisPlayer, int col, int row) {
@@ -204,6 +180,13 @@ public final class EventMessage implements Message, Poolable {
         this.x = x;
         this.y = y;
         fields[0] = direction;
+    }
+
+    @Override
+    public String toString() {
+        return "EventMessage [id=" + id + ", type=" + type + ", tickNumber="
+                + tickNumber + ", fields=" + Arrays.toString(fields) + ", x="
+                + x + ", y=" + y + ", stringField=" + stringField + "]";
     }
     
 }

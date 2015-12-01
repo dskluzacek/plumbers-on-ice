@@ -36,7 +36,12 @@ public final class GameModel {
 	    player1 = p1; 
 		player2 = p2; 
 		twoPlayer = true;
-		this.spawnStrategy = spawnStrategy;
+		
+		if (spawnStrategy != null) {
+		    this.spawnStrategy = spawnStrategy;
+		} else {
+		    this.spawnStrategy = new SinglePlayerSpawner();
+		}
 	}
 
 	public List<Event> gameTick() {

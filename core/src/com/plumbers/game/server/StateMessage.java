@@ -37,7 +37,7 @@ public final class StateMessage implements Message, Poolable {
     public void write(StringBuilder out)
     {
         out.setLength(0);
-        out.append("STATE ").append(tickNumber).append(' ');
+        out.append("state ").append(tickNumber).append(' ');
         out.append( state.name() );
         out.append('\n');
         out.append(xPos).append(' ');
@@ -50,7 +50,6 @@ public final class StateMessage implements Message, Poolable {
     }
     
     public void read(Scanner scanner) {
-        scanner.next();
         tickNumber = scanner.nextInt();
         state = Character.State.valueOf( scanner.next() );
         xPos = scanner.nextFloat();
@@ -97,6 +96,30 @@ public final class StateMessage implements Message, Poolable {
     
     public void getAcceleration(Vector out) {
         out.set(xAccel, yAccel);
+    }
+    
+    public float getXPos() {
+        return xPos;
+    }
+
+    public float getYPos() {
+        return yPos;
+    }
+
+    public float getXVel() {
+        return xVel;
+    }
+
+    public float getYVel() {
+        return yVel;
+    }
+
+    public float getxAccel() {
+        return xAccel;
+    }
+
+    public float getyAccel() {
+        return yAccel;
     }
 
     public Character.State getState() {
