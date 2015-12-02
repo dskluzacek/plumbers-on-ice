@@ -1,6 +1,6 @@
 <?php
 
-
+include("data/db.inc");
 $username = $_POST['usernamelogin'];
 $levelnumber = $_POST['levelNumber'];
 $username = mysql_real_escape_string($username);
