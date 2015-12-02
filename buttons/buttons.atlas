@@ -1,0 +1,62 @@
+
+buttons.png
+size: 1024,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+character-1
+  rotate: false
+  xy: 2, 170
+  size: 400, 40
+  orig: 400, 40
+  offset: 0, 0
+  index: -1
+character-2
+  rotate: false
+  xy: 2, 128
+  size: 400, 40
+  orig: 400, 40
+  offset: 0, 0
+  index: -1
+login-1
+  rotate: false
+  xy: 404, 170
+  size: 400, 40
+  orig: 400, 40
+  offset: 0, 0
+  index: -1
+login-2
+  rotate: false
+  xy: 2, 86
+  size: 400, 40
+  orig: 400, 40
+  offset: 0, 0
+  index: -1
+multiplayer-2
+  rotate: false
+  xy: 404, 128
+  size: 400, 40
+  orig: 400, 40
+  offset: 0, 0
+  index: -1
+mutilplayer-1
+  rotate: false
+  xy: 2, 44
+  size: 400, 40
+  orig: 400, 40
+  offset: 0, 0
+  index: -1
+play-1
+  rotate: false
+  xy: 404, 86
+  size: 400, 40
+  orig: 400, 40
+  offset: 0, 0
+  index: -1
+play-2
+  rotate: false
+  xy: 2, 2
+  size: 400, 40
+  orig: 400, 40
+  offset: 0, 0
+  index: -1
