@@ -21,6 +21,7 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useCompass = false;
 		config.useWakelock = true;
 		config.numSamples = 2;
+		config.useGLSurfaceView20API18 = true;
 		
 		initialize( PlumbersOnIceGame.createAndroidInstance(width), config );
 	}

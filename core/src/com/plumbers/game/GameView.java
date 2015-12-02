@@ -501,7 +501,7 @@ public final class GameView implements Screen {
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         screenProjMatrix = new Matrix4(camera.combined);
         if (background != null) {
-            background.setProjectionMatrix(screenProjMatrix);
+            background.setProjMatrix(screenProjMatrix, VIRTUAL_WIDTH);
         }
     }
 

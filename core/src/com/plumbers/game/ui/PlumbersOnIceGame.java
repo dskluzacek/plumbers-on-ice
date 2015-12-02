@@ -1,7 +1,5 @@
 package com.plumbers.game.ui;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -13,11 +11,8 @@ import com.plumbers.game.TouchscreenController;
 import com.plumbers.game.server.GameConnection;
 
 public class PlumbersOnIceGame extends Game {
+    private static PlumbersOnIceGame instance;
     private MainMenu mainMenu;
-//    private AccountLoginScreen accountScreen;
-//    private LevelSelectionScreen levelsScreen;
-//    private CharacterSelectionScreen settingsScreen;
-//    private MultiplayerLobbyScreen lobbyScreen;
     private GameView gameView;
     
     private Viewport viewport;
@@ -25,17 +20,32 @@ public class PlumbersOnIceGame extends Game {
     private static String hostname;
     
     public static PlumbersOnIceGame createAndroidInstance(int displayWidth) {
+        if (instance != null)
+            throw new IllegalStateException();
+        
         Viewport viewport = new FitViewport(GameView.VIRTUAL_WIDTH,
                 GameView.VIRTUAL_HEIGHT);
         Controller controller = new TouchscreenController(displayWidth);
         
-        hostname = "10.10.73.167";
-        return new PlumbersOnIceGame(viewport, controller);
+        hostname = "192.168.0.3";
+        instance =  new PlumbersOnIceGame(viewport, controller);
+        return instance;
     }
     
     public static PlumbersOnIceGame createDefaultInstance() {
+        if (instance != null)
+            throw new IllegalStateException();
+        
         hostname = "localhost";
-        return new PlumbersOnIceGame( new ScreenViewport(), new KeyboardController() );
+        instance = new PlumbersOnIceGame( new ScreenViewport(), new KeyboardController() );
+        return instance;
+    }
+    
+    public static void startSinglePlayer(String level, String character) {
+      instance.gameView = new GameView(level, character, instance.viewport, instance.controller, 0.5f);
+      instance.gameView.load();
+      System.gc();
+      instance.setScreen(instance.gameView);
     }
     
     private PlumbersOnIceGame(Viewport viewport, Controller controller) {
@@ -58,11 +68,7 @@ public class PlumbersOnIceGame extends Game {
 //            e.printStackTrace();
 //        }
         
-//        gameView = new GameView("castle.tmx", "hero", viewport, controller, 0.5f);
-//        gameView.load();
-//        System.gc();
-//        setScreen(gameView);
-//        
+
         mainMenu = new MainMenu(this);
         setScreen(mainMenu);
     }
