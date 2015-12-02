@@ -3,6 +3,8 @@ include("data/db.inc");
 
 $username = $_POST['usernamelogin'];
 $password1 = $_POST['passwordlogin'];
+$username = mysql_real_escape_string($username);
+$password1 = mysql_real_escape_string($login);
 
 $password = sha1($password1);
 
