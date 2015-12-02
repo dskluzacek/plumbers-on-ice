@@ -1,5 +1,5 @@
 * {
-	margin: 0 auto;
+	margin: 0px;
 	padding: 0px;
 }
 
@@ -41,14 +41,8 @@ body > a:hover {
 
 }
 
-.alignLeft {
-    float:left;
-    margin-right: 15px;
-	margin-top: 10px;
-}
-
 .alignRight {
-	float: left;
+	float: right;
 	margin-right: 15px;
 	margin-top: 10px;
 	
@@ -62,11 +56,8 @@ body > a:hover {
 
 #top-logo {
 	width: 80%;
-    /*
 	top: 10;
-    */
 	vertical-align: middle;
-    margin: auto;
 	
 }
 
@@ -75,26 +66,10 @@ body > a:hover {
 	height: auto;
 }
 
-.centered-l {
-    float: left;
-    margin-right: 15px;
-    margin-top: 10px;
-}
-
-.centered-r {
-    float: right;
-    margin-right: 15px;
-    margin-top: 10px;
-}
-
 .centered-h {
-    /*
 	display: block;
-    margin-left: auto;
+	margin-left: auto;
 	margin-right: auto;
-    */
-    width: 50%;
-	margin: 0 auto;
 }
 
 #content-pane {

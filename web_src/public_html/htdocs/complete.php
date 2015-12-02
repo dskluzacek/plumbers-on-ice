@@ -42,19 +42,11 @@
 
 if ($conn->query($sql) === TRUE) {
     echo "New record created successfully";
-    
-    $_SESSION['user'] = $username;
-	$_SESSION['admin'] = 0;
-	$_SESSION['cart'] = array();
-	//$_SESSION['id'] = $idd;
-    
-    header('Location: index.php?login=yes');
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }
-//usleep(500000);             
-
 ?>
+
 
 			 
 			</div>
