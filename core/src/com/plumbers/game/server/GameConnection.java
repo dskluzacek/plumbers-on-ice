@@ -65,7 +65,7 @@ public class GameConnection
         readerThread.start();
     }
     
-    public void setPlayers(RemotePlayer rp, Player local) {
+    public void setPlayers(Player local, RemotePlayer rp) {
         remotePlayer = rp;
         localPlayer = local;
     }

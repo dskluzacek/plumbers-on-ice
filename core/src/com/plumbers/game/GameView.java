@@ -184,7 +184,6 @@ public final class GameView implements Screen {
         
         if ( level.hasBackground() ) {
             background = level.getBackground();
-            background.setWindowDimensions(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
         } else if ( level.hasBackgroundColor() ) {
             bgColor = level.getBackgroundColor();
         }
@@ -199,13 +198,13 @@ public final class GameView implements Screen {
             player2 = new RemotePlayer(player2CharacterName, textureAtlas);
             player2.setPosition( level.getStartPosition() );
             gameModel = new GameModel(level, player1, player2, null);
+            connection.setPlayers(player1, player2);
+            player1.set2PlayerMode(true);
+            player1.setGameConnection(connection);
+            player2.setGameConnection(connection);
         } else {
             gameModel = new GameModel(level, player1);
         }
-        connection.setPlayers(player2, player1);
-        player1.set2PlayerMode(true);
-        player1.setGameConnection(connection);
-        player2.setGameConnection(connection);
 
         coinSound = Gdx.audio.newSound(Gdx.files.internal(COIN_SOUND_FILE));
         jumpSound = Gdx.audio.newSound(Gdx.files.internal(JUMP_SOUND_FILE));
@@ -493,7 +492,7 @@ public final class GameView implements Screen {
 		}
 	}
 
-	/** This is called at the start, and when the window is resized,
+	/** This is called at the start, and again when the window is resized,
 	 *  which currently we don't allow to happen.
 	 *  (and probably never will on Android)
 	 */
@@ -501,7 +500,9 @@ public final class GameView implements Screen {
     public void resize(int width, int height) {
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         screenProjMatrix = new Matrix4(camera.combined);
-        background.setWindowDimensions(width, height);
+        if (background != null) {
+            background.setProjectionMatrix(screenProjMatrix);
+        }
     }
 
     @Override

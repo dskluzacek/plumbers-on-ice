@@ -13,10 +13,10 @@ import com.plumbers.game.TouchscreenController;
 import com.plumbers.game.server.GameConnection;
 
 public class PlumbersOnIceGame extends Game {
-//    private MainMenu mainMenu;
+    private MainMenu mainMenu;
 //    private AccountLoginScreen accountScreen;
 //    private LevelSelectionScreen levelsScreen;
-//    private SettingsScreen settingsScreen;
+//    private CharacterSelectionScreen settingsScreen;
 //    private MultiplayerLobbyScreen lobbyScreen;
     private GameView gameView;
     
@@ -29,7 +29,7 @@ public class PlumbersOnIceGame extends Game {
                 GameView.VIRTUAL_HEIGHT);
         Controller controller = new TouchscreenController(displayWidth);
         
-        hostname = "192.168.0.3";
+        hostname = "10.10.73.167";
         return new PlumbersOnIceGame(viewport, controller);
     }
     
@@ -45,18 +45,28 @@ public class PlumbersOnIceGame extends Game {
     
     @Override
     public void create() {
-        try {
-            GameConnection connection = new GameConnection(hostname, 7684, "hero");
-            gameView = new GameView(connection, "hero", viewport, controller, 0.5f);
-            connection.handshake();
-            gameView.load();
-            System.gc();
-            connection.ready();
-            setScreen(gameView);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            GameConnection connection = new GameConnection(hostname, 7684, "hero");
+//            gameView = new GameView(connection, "hero", viewport, controller, 0.5f);
+//            connection.handshake();
+//            gameView.load();
+//            System.gc();
+//            connection.ready();
+//            setScreen(gameView);
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        
+//        gameView = new GameView("castle.tmx", "hero", viewport, controller, 0.5f);
+//        gameView.load();
+//        System.gc();
+//        setScreen(gameView);
+//        
+        mainMenu = new MainMenu(this);
+        setScreen(mainMenu);
     }
+    
+    
 
 }

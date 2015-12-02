@@ -1,6 +1,5 @@
 package com.plumbers.game;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
@@ -11,7 +10,6 @@ public final class Background {
 	private final int scaledWidth;
 	private final int scaledHeight;
 	
-	private int gameWidth;
 	private int numIterations;
 	private Matrix4 projectionMatrix;
 	
@@ -26,14 +24,8 @@ public final class Background {
 		scaledHeight = scale * textureRegion.getRegionHeight();
 	}
 	
-	public void setWindowDimensions(int gameGraphicalWidth, int gameGraphicalHeight) {
-		this.gameWidth = gameGraphicalWidth;
-		numIterations = gameWidth / scaledWidth + 2;
-		
-		OrthographicCamera camera = new OrthographicCamera();
-		camera.setToOrtho(true, gameGraphicalWidth, gameGraphicalHeight);
-		camera.update();
-		projectionMatrix = camera.combined;
+	public void setProjectionMatrix(Matrix4 matrix) {
+		projectionMatrix = matrix;
 	}
 	
 	public void render(Batch batch, int foregroundPosition) {

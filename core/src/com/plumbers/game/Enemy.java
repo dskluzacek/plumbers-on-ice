@@ -31,7 +31,7 @@ public class Enemy extends Character implements Hazard {
 		  new TextureRegion[]{ atlas.findRegion(type.typeName() + "-jump") });
 		
 		setMovementAnim(
-		  new MovementAnimation(null, walkAnim, jumpAnim, jumpAnim, null) );
+		  new MovementAnimation(jumpAnim, walkAnim, jumpAnim, jumpAnim, jumpAnim) );
 		
 		setState(State.FALLING);
 		setPosition(x, y);
