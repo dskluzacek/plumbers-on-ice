@@ -1,7 +1,3 @@
-﻿
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -86,7 +82,8 @@
 				<div class="row">
 
 					<font size=2 color=#33C3F0>Don't have an account?  Sign-up <a href="register.php">here</a>!</font>
-	
+
+						
 			</div>
 	
 		</form>
@@ -101,5 +98,5 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
 </body>
-
 </html>
+
