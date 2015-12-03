@@ -1,5 +1,6 @@
 package com.plumbers.game.ui;
 
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -8,7 +9,6 @@ import com.plumbers.game.Controller;
 import com.plumbers.game.GameView;
 import com.plumbers.game.KeyboardController;
 import com.plumbers.game.TouchscreenController;
-import com.plumbers.game.server.GameConnection;
 
 public class PlumbersOnIceGame extends Game {
     private static PlumbersOnIceGame instance;
@@ -59,24 +59,13 @@ public class PlumbersOnIceGame extends Game {
     
     @Override
     public void create() {
-//        try {
-//            GameConnection connection = new GameConnection(hostname, 7684, "hero");
-//            gameView = new GameView(connection, "hero", viewport, controller, 0.5f);
-//            connection.handshake();
-//            gameView.load();
-//            System.gc();
-//            connection.ready();
-//            setScreen(gameView);
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        
-
         mainMenu = new MainMenu(this);
         setScreen(mainMenu);
     }
-    
-    
 
+    public static void disposeGameView() {
+        if (instance.gameView != null)
+            instance.gameView.dispose(); 
+    }
+    
 }
