@@ -3,21 +3,11 @@
 
 if($_GET["shop"] === "chroma") {
 	$img1 = "<img src='img/redgoomba.png'>";
-	$item1 = "<a>Red Goomba</a><br>";
-	$itemname = "RedGoomba";
+	$img2 = "<img src='img/placeholder.png'>";
+	$item1 = "<a href='#'>Red Goomba</a><br>";
+	$itemname = "redg";
+	$item2 = "<a href='#'>Blue Goomba</a><br>" . "$3.54";
 	$desc1 = "<a>$8.69</a><br>";
-
-	$img2 = "<img src='img/bluegoomba.png'>";
-	$item2 = "<a>Green Goomba</a><br>";
-	$itemname2 = "GreenGoomba";
-	$desc2 = "<a>$2.44</a><br>";
-
-	$img3 = "<img src='img/greenbot1.png'>";
-	$item3 = "<a>Green Bot</a><br>";
-	$itemname3 = "GreenBot";
-	$desc3 = "<a>$10.22</a><br>";
-	
-
 }
 
 if($_GET["shop"] === "character") {
@@ -82,38 +72,7 @@ echo "<div>" .
 "</div><div>" . 
 	"$desc1" .
 "</div><div><form method=post action=departments.php?shop=" . "$_GET[shop]" . "&action=" . "$itemname" . "><input type=submit value=Purchase class=btnAddAction /></form>" .
-"</div>";
-
-echo "</br><div>" . 
-	"$img2" .
-
-"</div><div>" . 
-	"$item2" .
-
-"</div><div>" . 
-	"$desc2" .
-"</div><div><form method=post action=departments.php?shop=" . "$_GET[shop]" . "&action=" . "$itemname2" . "><input type=submit value=Purchase class=btnAddAction /></form>" .
-"</div>";
-
-echo "</br><div>" . 
-	"$img3" .
-
-"</div><div>" . 
-	"$item3" .
-
-"</div><div>" . 
-	"$desc3" .
-"</div><div><form method=post action=departments.php?shop=" . "$_GET[shop]" . "&action=" . "$itemname3" . "><input type=submit value=Purchase class=btnAddAction /></form>" .
-"</div>";
-
-if (isset($_GET['action'])) {
-
-
-	if( !in_array($_GET['action'], $_SESSION['cart'])) {
-		array_push($_SESSION['cart'], $_GET['action']);
-	}
-	echo "You have successfully added an item to your cart";
-}
+"</div>"
 
 
 ?>			
@@ -131,16 +90,3 @@ if (isset($_GET['action'])) {
 	</div>
 	</body>
 </html>
-
-<?php
-	
-	if(!isset($_SESSION))
-	{
-		session_start();
-	}
-
-	if(!isset($_SESSION["admin"]))
-	{
-    		header("Location: signin.php?denied=yes");
-	}	
-?>	

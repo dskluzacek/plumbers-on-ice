@@ -1,4 +1,13 @@
 
+
+<?php
+/** GROUP F - Falcons
+@author: James Hoffoss, Jamil Sabir, Maxine Vang, Nathan Olson, Tsega Terefe
+@desc: this company might offer a home delivery service, this would have informationfor those interested.
+
+*/
+?>
+
 <html>
 	<head>
 		
@@ -8,16 +17,22 @@
 		<script src="js/scripts.js"></script>
 
 		<title>
-			Plumbers on ice
+			Falcon Foods - Where those big chain prices are For the Birds!
 		</title>
 	</head>
 	<body>
-		
+		<div id="splashbg">
 			<header>
 				<?php include('data/header.inc'); ?>
 			</header>
 
+			<div id="top-logo" class="centered-h">
+				<img src="img/falcfoodsplash.png" title="Falcon Foods" alt="Falcon Foods Logo" class="centered-h centered-v">	
+			</div>
 
+			<div id="navi" class="centered-h">
+				<?php include('data/menu.inc'); ?>
+			</div>	
 			
 			<div id="content-pane" class="centered-h">
 			 
@@ -36,30 +51,24 @@
 		$city = $_POST['city'];
 		$address = $_POST['address'];
 
-	$sql = "INSERT INTO 
-	users (username,password,fname,lname,email,datestamp,state,address,city) 
-	VALUES ('".$username."','".$password."','".$fname."','".$lname."','".$email."','".$datestamp."','".$state."','".$address."','".$city."')";
+	$sql = "UPDATE users 
+	SET password= '".$password."'
+	WHERE username = '".$username."'";
 
 if ($conn->query($sql) === TRUE) {
     echo "New record created successfully";
-    
-    $_SESSION['user'] = $username;
-	$_SESSION['admin'] = 0;
-	$_SESSION['cart'] = array();
-	//$_SESSION['id'] = $idd;
-    
-    header('Location: index.php?login=yes');
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }
-//usleep(500000);             
-
 ?>
+
 
 			 
 			</div>
 
-
+			<footer class="centered-h">
+				<?php include('data/footer.inc'); ?>
+			</footer>
 		</div>
 
 	</body>

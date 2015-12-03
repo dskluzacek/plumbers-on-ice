@@ -1,11 +1,6 @@
 <?php
 
-@ $db = new mysqli('localhost', 'ics499fa1503', 'ueqyctma', 'ics499fa1503');
-
-if(mysqli_connect_errno()) {
-    echo 'Error: Could not connect to database.  Please try again later.';
-    exit;
-}
+include("data/db.inc");
 
 if($_GET["level"] === "grassy") {
     $levelName = "Grassy Level";
@@ -36,62 +31,64 @@ if($_GET["level"] === "castle") {
 
 ?>
 
-<html>
-	<head>
-		
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="css/style.css">
-		<script src="js/scripts.js"></script>
+    <html>
 
-		<title>
-			Plumbers on ice
-		</title>
-	</head>
-	<body>
-		<div id="splashbg">
-		<header>
-			<?php include('data/header.inc'); ?>
-				
-		</header>
-			<div id="welcome-logo" class="centered-h">
-			
-			</div>
+    <head>
 
-		<div id="top-logo" class="centered-h">
-			<?php include('data/menu.inc'); ?>
-		</div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <script src="js/scripts.js"></script>
 
-			
-				
-			
+        <title>
+            Plumbers on ice
+        </title>
+    </head>
 
-		<div id="content-pane" class="centered-h">
-		<div id="navi" class="centered-h">
-			 
-		
-<h3><?php echo $levelName ?> Top 10 Scores</h3>
-<?php 
-    $result = $db->query($query);
+    <body>
+        <div id="splashbg">
+            <header>
+                <?php include('data/header.inc'); ?>
+
+            </header>
+            <div id="welcome-logo" class="centered-h">
+
+            </div>
+
+            <div id="top-logo" class="centered-h">
+                <?php include('data/menu.inc'); ?>
+            </div>
+
+            <div id="content-pane" class="centered-h">
+                <div id="navi" class="centered-h">
+
+
+                    <h3><?php echo $levelName ?> Top 10 Scores</h3>
+                    <?php 
+    
+    
+    $result = $conn->query($query);
     $num_results = $result->num_rows;
     for ($i=0; $i < $num_results; $i++) {
         $row = $result->fetch_assoc();
-        echo stripcslashes($row['score']);
-        echo "    ";
         echo stripcslashes($row['username']);
+        echo ": ";
+        echo stripcslashes($row['score']);
         echo "<br />";
     }
     $result->free();
-    $db->close();
+    $conn->close();
     
-?>			
-			</div>
+?>
 
-			<footer class="centered-h">
-				<?php include('data/footer.inc'); ?>
-			</footer>
-			
-		</div>
-	</div>
-	</body>
-</html>
+                </div>
+
+                <footer class="centered-h">
+                    <?php include('data/footer.inc'); ?>
+                </footer>
+
+            </div>
+        </div>
+    </body>
+
+    </html>
