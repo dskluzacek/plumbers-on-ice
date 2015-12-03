@@ -15,6 +15,7 @@ public final class GameModel {
 	private final int levelBottom;
 	private final boolean twoPlayer;
 	private int gameTicks = 0;
+	private boolean finished = false;
 	
 	public static final float GRAVITY = 0.1f;
 
@@ -85,6 +86,19 @@ public final class GameModel {
             else
                 occuringEvents.add( DeathEvent.playerTwoInstance() );
         }
+        
+        if (finished) {
+            return;
+        }
+        
+        if ( p.getRectangle().intersects(currentLevel.getFinish()) ) {
+            if (p == player1) {
+                player1.finished();
+                occuringEvents.add( FinishEvent.playerOneInstance() );
+                finished = true;
+            }
+        }
+
 	}
 
 	public List<Drawable> getDrawables() {

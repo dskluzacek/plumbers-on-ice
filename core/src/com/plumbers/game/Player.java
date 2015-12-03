@@ -19,6 +19,7 @@ public class Player extends Character {
 	protected boolean jumped = false;
 	protected boolean hurt = false;
 	private int jumpStarted;
+	private boolean finished;
 	
 	/* ---- */
 	private boolean twoPlayerMode;
@@ -73,6 +74,11 @@ public class Player extends Character {
         twoPlayerMode = twoPlayer;
     }
     
+    public final void finished() {
+        finished = true;
+        setXAccel(DECELERATION);
+    }
+    
     public final void setGameConnection(GameConnection connection) {
         this.connection = connection;
     }
@@ -83,7 +89,7 @@ public class Player extends Character {
 	
 	@Override
 	public void preVelocityLogic(int tickNumber) {
-		if ( getState() == State.DYING ) {
+		if ( getState() == State.DYING || finished ) {
 			return;
 		}
 		

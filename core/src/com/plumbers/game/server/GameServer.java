@@ -18,7 +18,7 @@ public class GameServer {
             if (waiting == null) {
                 waiting = new RemoteClient(accepted);
             } else {
-                String level = "castle.tmx";
+                String level = "tropical.tmx";
                 RemoteClient client2 = new RemoteClient(accepted);
                 waiting.ready(level, client2.getMyCharacter(), client2.myQueue);
                 client2.ready(level, waiting.getMyCharacter(), waiting.myQueue);

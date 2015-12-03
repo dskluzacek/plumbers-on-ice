@@ -198,7 +198,7 @@ public class MainMenu extends InputAdapter implements Screen {
 
     @Override
     public void resume() {
-
+        currentGroup = mainButtons;
     }
 
     @Override

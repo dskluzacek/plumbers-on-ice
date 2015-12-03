@@ -48,6 +48,10 @@ public class PlumbersOnIceGame extends Game {
       instance.setScreen(instance.gameView);
     }
     
+    public static void returnToMenu() {
+        instance.setScreen(instance.mainMenu);
+      }
+    
     private PlumbersOnIceGame(Viewport viewport, Controller controller) {
         this.viewport = viewport;
         this.controller = controller;

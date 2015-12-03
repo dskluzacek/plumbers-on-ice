@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.plumbers.game.server.*;
+import com.plumbers.game.ui.PlumbersOnIceGame;
 
 public final class GameView implements Screen {
 	/* -- major fields for game simulation and rendering -- */
@@ -54,6 +55,10 @@ public final class GameView implements Screen {
 	
 	/** true when we are in the pause between player death and reset */
 	private boolean death = false;
+	/** true on victory/finish */
+	private boolean finished = false;
+	private float finishedTime;
+	private int score;
 	
 	/* -- objects used for the on-screen timer and coin count displays -- */
 	private Matrix4 screenProjMatrix;
@@ -285,11 +290,16 @@ public final class GameView implements Screen {
 		batch.begin();
 		renderTimer();
 		renderCoinCounter();
+		
+		if (finished) {
+		    renderScore();   
+		}
 		batch.end();
 		
-//		logger.log();
+		if (finishedTime + 10 < elapsedTime) {
+            PlumbersOnIceGame.returnToMenu();
+        }
 	}
-//	FPSLogger logger = new FPSLogger();
 	
 	/** contains the behavior for events during a single player game */
 	private class SinglePlayerEventContext implements EventContext {
@@ -330,6 +340,19 @@ public final class GameView implements Screen {
     	public void apply(JumpEvent e) {
     		jumpSound.play();
     	}
+
+        @Override
+        public void apply(FinishEvent e) {
+            finished = true;
+            finishedTime = elapsedTime;
+            
+            if (finishedTime < 90) {
+                score = (int) ((90 - finishedTime) * 100 + player1.getCoinsCollected() * 75);
+            } else {
+                score = player1.getCoinsCollected() * 75;
+            }
+            
+        }
 	}
 	
 	/** the EventContext during a two-player game */
@@ -441,6 +464,12 @@ public final class GameView implements Screen {
 		}
 	}
 	
+	private void renderScore() {
+        mainFont.draw(batch,
+          "FINISHED! Your score: " + score,
+          INFO_PADDING_IN_PIXELS, INFO_PADDING_IN_PIXELS + 30 );
+    }
+	
 	/** renders the on-screen timer */
 	private void renderTimer() {
 		CharSequence str = getTimerString();
@@ -453,9 +482,15 @@ public final class GameView implements Screen {
 	/** formats elapsed time as minutes, seconds, and tenths of a second */
 	private CharSequence getTimerString() {
 	    builder.setLength(0);
+	    float value;
 	    
-	    int minutes = ((int) elapsedTime) / 60;
-	    float seconds = elapsedTime % 60.0f;
+	    if (! finished)
+	        value = elapsedTime;
+        else
+            value = finishedTime;
+	    
+	    int minutes = ((int) value) / 60;
+	    float seconds = value % 60.0f;
 	    
 	    if (minutes > 0) { builder.append(minutes); }
 	    builder.append(':');
