@@ -52,8 +52,8 @@ public class MainMenu extends InputAdapter implements Screen {
         }
 
         batch = new SpriteBatch();
-        background = new Sprite( new Texture("menu.png") );
-        levelsBackground = new Sprite( new Texture("levels.png") );
+        background = new Sprite( new Texture("menu.jpg") );
+        levelsBackground = new Sprite( new Texture("levels.jpg") );
         background.setSize(1920, 1200);
         levelsBackground.setSize(1920, 1200);
         
@@ -199,6 +199,7 @@ public class MainMenu extends InputAdapter implements Screen {
     @Override
     public void resume() {
         currentGroup = mainButtons;
+        PlumbersOnIceGame.disposeGameView();
     }
 
     @Override

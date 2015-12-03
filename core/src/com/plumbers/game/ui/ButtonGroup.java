@@ -8,12 +8,6 @@ public class ButtonGroup {
         this.buttons = buttons;
     }
     
-//    public void draw(Batch batch) {
-//        for (Button b : buttons) {
-//            b.draw(batch);
-//        }
-//    }
-    
     public void touchDown(float x, float y) {
         for (Button b : buttons) {
             b.touchDown((int) x, (int) y);

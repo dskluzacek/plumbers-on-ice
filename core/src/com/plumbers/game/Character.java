@@ -13,7 +13,8 @@ public abstract class Character extends Motionable implements Drawable {
 	private State state = State.RUNNING;
 	private boolean flipped = false;
 	
-	/* ---- */
+	/* Used to store the results of hitboxToColumnsAndRows, allowing us to
+	 * check only those blocks the Character could be intersecting. -- */
 	private int columnBegin, columnEnd, rowBegin, rowEnd;
 	/* ---- */
 

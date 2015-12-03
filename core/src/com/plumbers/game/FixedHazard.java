@@ -1,5 +1,8 @@
 package com.plumbers.game;
 
+/** 
+ * Used to represent a non-moving hazard that has one collision box.
+ */
 public class FixedHazard implements Hazard {
 	private final Rectangle rectangle;
 	

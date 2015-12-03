@@ -296,7 +296,7 @@ public final class GameView implements Screen {
 		}
 		batch.end();
 		
-		if (finishedTime + 10 < elapsedTime) {
+		if (finished && finishedTime + 10 < elapsedTime) {
             PlumbersOnIceGame.returnToMenu();
         }
 	}

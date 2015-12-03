@@ -6,7 +6,9 @@ import android.util.DisplayMetrics;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.plumbers.game.ui.PlumbersOnIceGame;
-
+/**
+ * Entry point for the Android app.
+ */
 public class AndroidLauncher extends AndroidApplication {
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -21,7 +23,6 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useCompass = false;
 		config.useWakelock = true;
 		config.numSamples = 2;
-		config.useGLSurfaceView20API18 = true;
 		
 		initialize( PlumbersOnIceGame.createAndroidInstance(width), config );
 	}
