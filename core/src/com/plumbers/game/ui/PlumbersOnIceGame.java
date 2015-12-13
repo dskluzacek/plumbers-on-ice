@@ -64,8 +64,10 @@ public class PlumbersOnIceGame extends Game {
     }
 
     public static void disposeGameView() {
-        if (instance.gameView != null)
-            instance.gameView.dispose(); 
+        if (instance.gameView != null) {
+            instance.gameView.dispose();
+            instance.gameView = null;
+        }
     }
     
 }
