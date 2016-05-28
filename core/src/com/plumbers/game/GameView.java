@@ -51,6 +51,7 @@ public final class GameView implements Screen {
 	private float timeAccumulator = 0;
 	private float elapsedTime = 0;
 	private float cameraPos = 0;
+	private int cameraSpeed;
 	private List<Event> events = new ArrayList<Event>();
 	
 	/** true when we are in the pause between player death and reset */
@@ -271,7 +272,7 @@ public final class GameView implements Screen {
 		positionCamera();
 		
 		if (background != null) {
-			background.render( batch, MathUtils.round(cameraPos) );
+			background.render( batch, MathUtils.floor(cameraPos) );
 		}
 		mapRenderer.render();
 		
@@ -438,30 +439,72 @@ public final class GameView implements Screen {
 	private void positionCamera() {
 	    float playerX = player1.getXPosition();
 	    
-		if ( playerX
-		        - CAMERA_PLAYER_X < gameModel.getLevelWidth() - VIRTUAL_WIDTH )
+	    if (playerX < CAMERA_PLAYER_X) {
+	        return;
+	    }
+	    float change = 0;
+	    
+		if ( playerX < gameModel.getLevelWidth() - VIRTUAL_WIDTH + CAMERA_PLAYER_X )
 		{
-			if ( playerX - CAMERA_PLAYER_X > cameraPos )
+			if ( playerX > cameraPos + CAMERA_PLAYER_X )
 			{
-				float change = MathUtils.floor(
-				    playerX - cameraPos - CAMERA_PLAYER_X );
-				
-				camera.translate(change, 0);
-				cameraPos += change;
-				camera.update();
-				mapRenderer.setView(camera);
+		        if ( player1.getEffectiveXVelocity() == 0 )
+		        {
+		            change = playerX - (cameraPos + CAMERA_PLAYER_X);
+		            
+		            if (change == 0) {
+		                return;
+		            }
+		            change = MathUtils.lerp(0, change, 1/30f);
+		            change = MathUtils.floor(change);
+		            
+		            if (change != 0) {
+		                System.out.println("lerp!");
+		            }
+		        }
+		        else
+		        {
+                    float diff = playerX - (cameraPos + CAMERA_PLAYER_X);
+                    float realSpeed = player1.getEffectiveXVelocity() * 2;
+                    int speed = MathUtils.floor(realSpeed);
+                    
+                    if (speed > cameraSpeed) {
+                        ++cameraSpeed;
+                        System.out.println("++cameraSpeed: " + cameraSpeed);
+                    } else if (speed < cameraSpeed) {
+                        --cameraSpeed;
+                        System.out.println("--cameraSpeed: " + cameraSpeed);
+                    }
+                    
+                    if (cameraSpeed < 0) {
+                        cameraSpeed = 0;
+                    }
+                    
+                    change = cameraSpeed;
+                }
 			}
 		}
-		else if ( playerX
-		            - CAMERA_PLAYER_X > gameModel.getLevelWidth() - VIRTUAL_WIDTH )
+		else if ( playerX > gameModel.getLevelWidth() - VIRTUAL_WIDTH + CAMERA_PLAYER_X )
 		{
-			float change = (gameModel.getLevelWidth() - VIRTUAL_WIDTH) - cameraPos;
-			
-			camera.translate(change, 0);
-			cameraPos += change;
-			camera.update();
-			mapRenderer.setView(camera);
+		    change = (gameModel.getLevelWidth() - VIRTUAL_WIDTH) - cameraPos;
+		    
+		    if (change == 0) {
+                return;
+		    }
+			change = MathUtils.lerp(0, change, 1/8f);
+            
+			if (change > 1) {
+			    change = MathUtils.floor(change);
+			}
 		}
+		
+		if (change != 0)
+		{
+	        cameraPos += change;
+	        camera.translate(change, 0);
+	        camera.update();
+	        mapRenderer.setView(camera);
+        }
 	}
 	
 	private void renderScore() {
