@@ -1,6 +1,5 @@
 package com.plumbers.game.ui;
 
-
 public class ButtonGroup {
     private final Button[] buttons;
 
@@ -13,5 +12,4 @@ public class ButtonGroup {
             b.touchDown((int) x, (int) y);
         }
     }
-    
 }

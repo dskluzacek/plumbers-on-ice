@@ -12,9 +12,7 @@ public class Button {
         this.listener = listener;
     }
     
-    
     public void touchDown(int x, int y) {
-
         if ( this.containsPoint(x, y) ) {
             listener.action();
         }
