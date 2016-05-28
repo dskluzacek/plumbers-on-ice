@@ -92,7 +92,7 @@
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Badguy2" x="2150" y="149">
+  <object name="Badguy2" x="2352" y="194">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
