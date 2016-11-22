@@ -34,10 +34,10 @@ public class MainMenu extends InputAdapter implements Screen {
             AUTUMN_LEVEL = 3,
             ICY_LEVEL = 4,
             CASTLE_LEVEL = 5;
-    public static final String LEVEL_1_FILE = "grassy.tmx",
-               LEVEL_2_FILE = "tropical.tmx",
-               LEVEL_3_FILE = "fall.tmx",
-               LEVEL_4_FILE = "winter.tmx",
+    public static final String LEVEL_1_FILE = "grassy2.tmx",
+               LEVEL_2_FILE = "tropical2.tmx",
+               LEVEL_3_FILE = "fall-2.tmx",
+               LEVEL_4_FILE = "winter2.tmx",
                LEVEL_5_FILE = "castle.tmx";
     
     public MainMenu(Game game) {

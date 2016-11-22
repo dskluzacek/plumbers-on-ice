@@ -27,10 +27,10 @@ public class Player extends Character {
     private final List<Event> coinEvents = new ArrayList<Event>();
     /* ---- */
 
-    private static final float ACCELERATION = 1/14f,
-                               DECELERATION = -0.3f,
-                               MAX_SPEED = 2.75f,
-                               JUMP_POWER = -2.75f,
+    private static final float ACCELERATION = 1/24f, // 1/24f //1/14f,
+                               DECELERATION = -0.3f, //-0.3f,
+                               MAX_SPEED = 2.2f, //2.75f,
+                               JUMP_POWER = -2.2f, //-2.75f,
                                JUMP_BOOST = -1/20f,
                                JUMP_FWD_ASSIST = 0.75f;
     private static final int JUMP_BOOST_DURATION = 24;
@@ -174,7 +174,7 @@ public class Player extends Character {
     }
 
     public void beKilled() {
-        setState( State.DYING );
+        setState(State.DYING);
         setAcceleration(0, GameModel.GRAVITY);
         setVelocity(-0.75f, -4.0f);
         hurt = true;
