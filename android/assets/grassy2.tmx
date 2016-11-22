@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="150" height="16" tilewidth="16" tileheight="16">
+ <properties>
+  <property name="background" value="grassy.png"/>
+  <property name="soundtrack" value="Grasslands-Theme.mp3"/>
+  <property name="soundtrack-delay" value="2"/>
+ </properties>
+ <tileset firstgid="1" name="special tiles" tilewidth="16" tileheight="16" spacing="1">
+  <image source="special-tiles.png" width="84" height="33"/>
+  <tile id="6">
+   <properties>
+    <property name="special" value="spike"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="special" value="coin"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="11" name="Grassland tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
+  <image source="grassland-tiles.png" width="144" height="126"/>
+ </tileset>
+ <layer name="Decorative layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztmN0OgjAMhXehF/gq6pVMff8nsxcsWRZwG2ultudLmkACpCunZz8hAAAAAHaI2fWV4nZUIsAsD4o5uz9RnA/KRSOx/ogL7oPvTxQXjkSAOvbMTeirfso6j/akdsq5SRtW1mTSdbauU25a/seT4rXEO8BPtdLiEVZ8hBMPeh7xxeQR377R6+vQIZBgTYeS5wz/puM8X09rJU6PT3WTPGfQth+p6VxbvhJ46hdutmrHqRsP6zhvWO+5PePL9+O/2pOjt4AGPtKjDWA=
+  </data>
+ </layer>
+ <layer name="Platform layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztWG1PwkAMvm8sQVERFd9gRo3Rf2CMIf7/P+UaaCy17bUbYxvhSZoxdrvr9Z6+LaUjiq4V6CGONmmO764V6CHGXSswcIBffnWtRM8x6lqBAeK6kqfA+EPPDzx2Tyo5q2TegS59R5F0PiwqeQzOdagAH3tXnn2kNb9QhsYzfm5tniPY8SLZvML1h1JvRO0F48EOwBWNUxI4z7h41+b3hfB7l2g7LiCnlknmlcajofArB+RSlE+7ROH4vS/UWRNsOGf3yCmNV4gueWT5M4LyA+TcObfWqxTseijg5+g5V4nr1N63ldyx+zcirzX0PKnk1NBlH+di1UMUkk3ajlE3gvCajJ7tTBh/1YJe3jgh9cBee+eg1VZWzL5UrnV4ZvX3nj3y9/f5PWUpSGmMf0nbvi7lkbq5w1PT4G+IF1Jv0oRTNF9G94D8uVeuEX5hLc19PBJvJul/Lc3fwXXoGqu05uPKoaeFKK84gGd18ggFt/XYeCaB9iaWvX8y88A3h1LRI6eLxieNXxqQO5irMX8DxyLf2TzAOrMk95+bteDK8xb6Ms3/WkyN8Ap9SMqVHtT5hsBjVe4d7bnk//R/EGpja24pfnp5hVdpbivWgv/yvFAkuZa35qf1C/Yu5WbMIsXiC5+PipdXs7TdQ02V+aRaK8cn6sO5/BPJT9SX0GZcb7qnaKymaMoryFuUU5IfPAf0kc6c75XvOcIr3lN7RJrvwfmu1bPzHMBrEgSPC0WS+aTFT+l/brPI3rVYR9GUVwiMK3hm08y6Grz7jfIKbRHlFPVpiD2jjUR5NUt/sYvzR6txEZRDWj/P7UDjEN1zKYyN8mphPEPU5ZUnrmi5Qevjo7EE92XxKsqnX8wlNVE=
+  </data>
+ </layer>
+ <objectgroup name="Object layer" width="0" height="0">
+  <object name="badguy1" x="272" y="132">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="328" y="196">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="816" y="164">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="837" y="228">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="1000" y="196">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="1200" y="212">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="1688" y="164">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="1804" y="100">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="1752" y="228">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="1848" y="228">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="1750" y="148">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="2000" y="116">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="2240" y="52">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="2264" y="164">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="2008" y="180">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="Goal" x="2328" y="-128" width="72" height="320">
+   <properties>
+    <property name="type" value="goal"/>
+   </properties>
+  </object>
+  <object name="Start" x="0" y="128"/>
+ </objectgroup>
+</map>
