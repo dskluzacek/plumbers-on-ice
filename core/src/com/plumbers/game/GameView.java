@@ -102,7 +102,7 @@ public final class GameView implements Screen {
     private static final float GAME_TICK_TIME = 1/120f;
     private static final int TICK_PER_FRAME_RESET_THRESHOLD = 3;
     private static final int COIN_SOUND_MIN_DELAY_IN_FRAMES = 3;
-    private static final int CAMERA_PLAYER_X = 300;
+    private /*static*/ final int CAMERA_PLAYER_X;// = 300;
     private static final int INFO_PADDING_IN_PIXELS = 5;
     private static final float ON_DEATH_DELAY = 0.75f;
 
@@ -114,8 +114,8 @@ public final class GameView implements Screen {
     private static final String DEATH_SOUND_FILE = "death.wav";
 
     /** game viewport dimensions in game units */
-    public static final int VIRTUAL_WIDTH = 853,
-            VIRTUAL_HEIGHT = 512;  
+    public final int VIRTUAL_WIDTH;// = 853;
+    public static final int VIRTUAL_HEIGHT = 512;  
 
     /** Create a single-player GameView */
     public GameView(String levelFilePath,
@@ -130,6 +130,12 @@ public final class GameView implements Screen {
         this.controller = controller;
         this.musicVolume = musicVolume;
 
+        ////
+        VIRTUAL_WIDTH = (int) ( Gdx.graphics.getWidth() * VIRTUAL_HEIGHT
+                              / ((float) Gdx.graphics.getHeight()) );
+        CAMERA_PLAYER_X = VIRTUAL_WIDTH - 650;
+        ////
+        
         eventContext = new SinglePlayerEventContext();
         twoPlayerMode = false;
         player2CharacterName = null;
@@ -147,6 +153,11 @@ public final class GameView implements Screen {
         this.controller = ctrl;
         this.musicVolume = musicVolume;
         this.connection = connection;
+        
+        ////
+        VIRTUAL_WIDTH = 853;
+        CAMERA_PLAYER_X = 300;
+        ////
 
         eventContext = new TwoPlayerEventContext();
         twoPlayerMode = true;

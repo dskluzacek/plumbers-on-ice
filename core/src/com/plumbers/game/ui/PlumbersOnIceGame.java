@@ -1,7 +1,7 @@
 package com.plumbers.game.ui;
 
-
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -23,8 +23,8 @@ public class PlumbersOnIceGame extends Game {
         if (instance != null)
             throw new IllegalStateException();
         
-        Viewport viewport = new FitViewport(GameView.VIRTUAL_WIDTH,
-                GameView.VIRTUAL_HEIGHT);
+        Viewport viewport = new ExtendViewport(1, 512);
+                //GameView.VIRTUAL_WIDTH, GameView.VIRTUAL_HEIGHT);
         Controller controller = new TouchscreenController(displayWidth);
         
         hostname = "192.168.0.3";

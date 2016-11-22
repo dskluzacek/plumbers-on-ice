@@ -7,7 +7,7 @@ import com.plumbers.game.ui.PlumbersOnIceGame;
 public class DesktopLauncher {
     public static void main(String[] args) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 853;
+        config.width = 910;
         config.height = 512;
         config.resizable = false;
         config.vSyncEnabled = true;

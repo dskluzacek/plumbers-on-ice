@@ -92,7 +92,8 @@ public final class GameModel {
             return;
         }
 
-        if ( p.getRectangle().intersects(currentLevel.getFinish()) ) {
+        if ( currentLevel.getFinish() != null
+            && p.getRectangle().intersects(currentLevel.getFinish()) ) {
             if (p == player1) {
                 player1.finished();
                 occuringEvents.add( FinishEvent.playerOneInstance() );
