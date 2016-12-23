@@ -29,16 +29,16 @@ public class MainMenu extends InputAdapter implements Screen {
     
     private static String characterChoice = "hero";
     
-    public static final int GRASSY_LEVEL = 1,
-            TROPICAL_LEVEL = 2,
-            AUTUMN_LEVEL = 3,
-            ICY_LEVEL = 4,
-            CASTLE_LEVEL = 5;
-    public static final String LEVEL_1_FILE = "grassy2.tmx",
-               LEVEL_2_FILE = "tropical2.tmx",
-               LEVEL_3_FILE = "fall-2.tmx",
-               LEVEL_4_FILE = "winter2.tmx",
-               LEVEL_5_FILE = "castle.tmx";
+//    public static final int GRASSY_LEVEL = 1,
+//            TROPICAL_LEVEL = 2,
+//            AUTUMN_LEVEL = 3,
+//            ICY_LEVEL = 4,
+//            CASTLE_LEVEL = 5;
+    public static final String LEVEL_1_FILE = "grassy1.tmx",
+                               LEVEL_2_FILE = "tropical1.tmx",
+                               LEVEL_3_FILE = "castle1.tmx",
+                               LEVEL_4_FILE = "winter1.tmx",
+                               LEVEL_5_FILE = "castle2.tmx";
     
     public MainMenu(Game game) {
         theGame = game;

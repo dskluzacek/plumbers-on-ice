@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="150" height="16" tilewidth="16" tileheight="16">
+ <properties>
+  <property name="background-color" value="20, 12, 28"/>
+  <property name="soundtrack" value="Castle-Theme.mp3"/>
+  <property name="soundtrack-delay" value="2"/>
+ </properties>
+ <tileset firstgid="1" name="grassland-tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
+  <image source="grassland-tiles.png" width="144" height="126"/>
+  <terraintypes>
+   <terrain name="Grass" tile="-1"/>
+  </terraintypes>
+  <tile id="10" terrain=",,,0"/>
+  <tile id="11" terrain=",,0,0"/>
+  <tile id="12" terrain=",,0,"/>
+  <tile id="17" terrain=",0,,0"/>
+  <tile id="18" terrain="0,0,0,0"/>
+  <tile id="19" terrain="0,,0,"/>
+ </tileset>
+ <tileset firstgid="57" name="special-tiles" tilewidth="16" tileheight="16" spacing="1">
+  <image source="special-tiles.png" width="84" height="33"/>
+  <tile id="6">
+   <properties>
+    <property name="special" value="spike"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="special" value="coin"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="67" source="castle-tiles.tsx"/>
+ <layer name="Decorative layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztls1OwzAMx/NwwECDGxpwYRVwAQl2BZ4CMQHnceHjCg+IIxYRLDtxsrRp2vwkK1uTOv/arlOlaGZgF2CHzHwlLSbeFPb10vJh652tx4VnPsYnNy/1K71Hotfni8qh9Nl9e1H+Fswa7jr2G6vN5TPUr6TuTwL8DZXUeXP54+I9tDxwfVnKFhqpucofknMwlD7Gmeu/Keukj8+di5hzkEIS05xxv8+49xjh4u3KQ30vy2YbbAdsYo27xJqJYF3JnILNc4voGJ3XR/U/p0s13Bx3wRvYO9jHerwEu7L+c2Olgtmzfr+iuX2wA4EPV83p8TNSD8U0wBeHfn9CNMWg+95Y+xrOIa6rI7DjjrQYVoI1KWqrJMw3Vyl1inOI6+oM7LwjLQZJXTWCNfaZrnvTg/r9TnqKVlbxwZ01uK6uwW5a1mLwnX82TVsiRoQd7xT935U/XFdfYN8J9pQg6VM2fToLcUz7pM2mzW9XV/5y9KuQPuUjRz5d+mP0pOwjm8Q2ZG/fPriubsHuwuQk0xJDs8G9begx4BxRe00jNFC5z/0cFLiunsFeBPf9AKSATCY=
+  </data>
+ </layer>
+ <layer name="Platform layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztWbFOAzEMzadZYusCFHUpZWAoRYIBuvAFbHzASQiEisTCT5KoiWpM4ti5XC+teJLlKHGcd7HjS68zY8zMy8bKp29jxMalkpvjxjpvp/XZZew6Ad+crzC+Eayn4U33RQPtHvflqp3bJfjmnqdkD3LjGr/SORqblB133rTInd++fmuiJC54bmsAJK2gdtyGyIN/pAEROQTA2AQYwNgEFABh3ynRsTE8PyWt43lsAgSA2rG9pzatQJInJb4gIiUAoo8ZEOmTxKI0XjVwMsKaYNrPKcj4x+MaHqn95uIwZn5IAUT/Y4czK+dWpkhfRGymAjsHGIpoowCix/JRAhfXN/M7pu8mH+MaeFHat3YnwwArEy9zK5dWFlaukM0C9cd0bUwYOWa0nCdauFiFb7dLKzdWVl4HrEg/1VzOOX2t5BS+0dLvyp2pk1vzAk5auLo3VF07BOC4PVh5tLL2OmBN+qnmcs7peyEX8Dr2XwVu98VSwakFhDtX63kKZvdewXG7NWX1iss5p5+EvAInLqfo/0Yp4He6q02vZntP+jDb8yPlJAVU9rcP1L5b4HcfjttQ9eouwwe8ztWp0KZ7AeYv8Dvd1aYv3/9ttucnx0kLegeMcWoBmCfez775BSYdt9L7Vd96Ja1T9J7F3enxGaHrl9YrYPjHuHFzONSsI3SPcue1dG3O977rleRZpe0N8Y3f6XT9ZYIT9zuUk1zuc89ObbC/3LopSPOIa0vXk6xTer/6Ae1SFm4=
+  </data>
+ </layer>
+ <layer name="Decorative layer 2" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztzrEJADAIAEEHi0Wy/1C6gpUQ7uD7jwAAAACYOV1uT/Cd273tCQAAAAAYKszZAP0=
+  </data>
+ </layer>
+ <objectgroup name="Object layer" width="150" height="16">
+  <object name="Start" x="0" y="144"/>
+  <object name="badguy1" x="416" y="132">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="960" y="116">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="1008" y="228">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="1488" y="228">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="1424" y="100">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="1264" y="100">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="1696" y="212">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="1936" y="228">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="2224" y="116">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="Goal" x="2312" y="16" width="88" height="112"/>
+ </objectgroup>
+</map>

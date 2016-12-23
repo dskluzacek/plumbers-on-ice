@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="150" height="16" tilewidth="16" tileheight="16">
  <properties>
-  <property name="background" value="winter.png"/>
+  <property name="enviroment" value="winter"/>
   <property name="soundtrack" value="Iceland-Theme.mp3"/>
   <property name="soundtrack-delay" value="0"/>
  </properties>

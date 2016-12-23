@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="150" height="16" tilewidth="16" tileheight="16">
+ <properties>
+  <property name="background-color" value="20, 12, 28"/>
+  <property name="ceiling" value="true"/>
+  <property name="enviroment" value="dungeon"/>
+  <property name="soundtrack" value="Castle-Theme.mp3"/>
+  <property name="soundtrack-delay" value="0"/>
+ </properties>
+ <tileset firstgid="1" name="Special Tiles" tilewidth="16" tileheight="16" spacing="1">
+  <image source="special-tiles.png" width="84" height="33"/>
+  <tile id="6">
+   <properties>
+    <property name="special" value="spike"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="special" value="coin"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="11" source="castle-tiles.tsx"/>
+ <layer name="Decorative layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztWD1PAzEMvR9QPgZgQgIWkIAFJGA9WGFhgyJ+ABO0jHz8dhypliIrjmPHiVqVJ1m5y9295JwXv2uHwRd7TNubg3JZzzXclv5ajtx8a/ImYb8hdwpHTGvhuCGtBfRZOh/puoZb6k9xc+Nx/ZQ7lxtL7jXoqa1zprVw1GgTQZ+l85Gua7il/hQ3Nx7XT7lzuSl5lwk5f4V4h/iAmC1axCzqny/63grG8ACtNRZN4LM12kRodaSpjbWa4Ppy86Dcudy0rldBk710RWuNRRMtfVDSUUsf1NQrDx+05P5TeX+JFx5DnBjmEoPWGosmWvqgpKOWPpjKhUaDKe5cbkpzT71QA65mxT56AXEZnQcPfYJ4VoyzrD6IuUvpKM5rbx+8Y+7t4YM1eooh1awdiN3KMTx8EHO9Dj7IoVRv3j5ogfSddQBxmLm+AbEJsQWxneAO0Pig5LuY2xofpOuD86H1C8/jtZD2M7f22m9xDSg3Nwev8UqRq1mnEGdKPpp76oPxe9Pfr7HvoudOE2No911OD3Qdan4PcuDmm9NALXcKVINevpdCrmZdQVxX8uN7l+Sw1Hetaz1hjuM+ys3NW7MmLeuEx/dfK3A16wviu5Jb896S7yI0+1y7J2Nur/3sUZc8uHv6YABXszzqlea9Lb4bf+OFFv8fnpP7OI1wdYtDS+9oDS99/0D8Ft6bqlkjxK3TXErgoWMJq6yLZcE41OniHuLBZypFGIe+Oi7V2DpqMfUtit6A9Qo9IrTT6PiF9AcPeRSiJXrr+B82jIN+//8B+CE/+g==
+  </data>
+ </layer>
+ <layer name="Platform layer" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztWD1PwzAQvTESP6BQxELL0AGK1A7QhQG6MECHskfiQ4hKLPx/ibPwidM1vtqOU6eSn/Rk12l8tvPyzjFAQUEczpAbyy9kzeoFBW1gtCU1VWccT0F/sQ64VsG2pjadjKogBFXm+APx+xN5jhwhx8gLdm3M2iesveTBAh9cIq+QU1sSpqx9Dv+aNLmwhpIHU2FfXqPF6WIMN8hb5MKWFGfB2u/EGELyIOXSNmPP7fM+6IM+ckLmwmvY7Vczca/0LFcepRz6inxLNYGMkGvne61rHGWM7Zp3k18BuP3KQHqWS5eUQ78dsXe9eyHvZsVokHOt+4Kca9C0v6qg2a8MmjzLpcsmTR4jT5BD5CmLx/tOiRRr6+pDjrdp/Lvm1Af9dzGGGL8y4J6l+dVs+9YthKw9/34dsXaec989YsaMaV9eqPl0bh36vvs++6u5o2/yrBC/8oH2/LTvVy3nxmLgqGttvv7Wd7T5RrhHPiCXtqT+lqz9UYlrPKutX4VA81dNw/JZa+fB9Px915X3nUo7XfpSbs/TwD1L6hLsb02TGrR5a/7qq2G+xzMlnQ9PxP9cGgndRx2aT3Hk1OAzcmVLwsryJXGsJn8FiNewwQ/85VeZ7wkxuujrOdO+oM0/xZlmajyBW8dtNGzyq89e0Fdjh+xRsTBzXltSnXKD+ZYyZ5iUI4a2jeofot3kkF87m0Jq
+  </data>
+ </layer>
+ <layer name="Decorative layer 2" width="150" height="16">
+  <data encoding="base64" compression="zlib">
+   eJzt1CEOwlAURNEvqKC61aBoUhQkrYZlwE6ALp5ZQgWfCcM9yXVPjHqlAMD3HdTgHoE4J3V2j0CcTvXuEYizU3v3CMQZ1dE9AnEe6ukegTj8K9Qwqdk9AnFeanGPQBz+FWq4qKt7BAB82EY17hH4CXd1W3m7VW3FLfhvb9fhBdM=
+  </data>
+ </layer>
+ <objectgroup name="Object layer" width="150" height="16">
+  <object name="Goal" x="2376" y="208" width="24" height="32"/>
+  <object name="badguy1" x="800" y="196">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="badguy1" x="584" y="148">
+   <properties>
+    <property name="type" value="badguy1"/>
+   </properties>
+  </object>
+  <object name="Start" x="0" y="96"/>
+  <object name="spawner" x="224" y="132">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="badguy2" x="2184" y="-16">
+   <properties>
+    <property name="spawndistance" value="80"/>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
