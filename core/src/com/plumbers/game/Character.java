@@ -12,11 +12,16 @@ public abstract class Character extends Motionable implements Drawable {
     private MovementAnimation movementAnim;
     private State state = State.RUNNING;
     private boolean flipped = false;
-
-    /* Used to store the results of hitboxToColumnsAndRows, allowing us to
-     * check only those blocks the Character could be intersecting. */
+    
+    /* 
+     * Used to store the results of hitboxToColumnsAndRows, allowing us to
+     * check only those blocks the Character could be intersecting.
+     * Storing this info in these fields, rather than returning an object
+     * from the relevant method, is simply an optimization allowing us
+     * to avoid having to ever construct such an object.
+     */
     private int columnBegin, columnEnd, rowBegin, rowEnd;
-    /* ---- */
+    // ----
 
     public Character(String characterName) {
         this.characterName = characterName;
@@ -33,7 +38,11 @@ public abstract class Character extends Motionable implements Drawable {
     }
 
     public enum State {
-        STANDING, RUNNING, JUMPING, FALLING, DYING;
+        STANDING,
+        RUNNING,
+        JUMPING, 
+        FALLING,
+        DYING;
     }
 
     public abstract void respondToCollision(Block b, Rectangle.Collision info);

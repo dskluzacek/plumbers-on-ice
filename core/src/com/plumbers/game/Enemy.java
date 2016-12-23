@@ -43,8 +43,13 @@ public class Enemy extends Character implements Hazard {
         Enemy.atlas = atlas;
     }
 
+    
     @Override
-    public void fallingCheck(Block[][] blocks) {
+    public void fallingCheck(Block[][] blocks)
+    {
+        // causes the enemy to turn around 
+        // when it is one enemy-width away from falling
+        
         float x = getXPosition();
         setXPosition( x + Math.copySign(getRectangle().getW(), getXVelocity()) );
         super.fallingCheck(blocks);

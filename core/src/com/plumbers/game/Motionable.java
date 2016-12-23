@@ -126,12 +126,13 @@ public abstract class Motionable {
         velocity.add( acceleration );
 
         prePositionLogic(tickNumber);
+        
         effectiveVelocity.set(velocity);
         effectiveVelocity.add(velocityModifier);
         velocityModifier.set(0, 0);
         previousPosition.set(position);
-
         position.add( effectiveVelocity );
+        
         postMotionLogic(tickNumber);
     }
 }
