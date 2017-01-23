@@ -11,7 +11,7 @@ public class DesktopLauncher {
         config.height = 512;
         config.resizable = false;
         config.vSyncEnabled = true;
-        config.samples = 2;
+//        config.samples = 4;
 
         new LwjglApplication(PlumbersOnIceGame.createDefaultInstance(), config);
     }

@@ -8,7 +8,7 @@ import com.plumbers.game.MovementAnimation.Action;
 public abstract class Character extends Motionable implements Drawable {
     private String characterName;
     private Rectangle hitbox;
-    private float hitboxRelPosX, hitboxRelPosY;
+    private float hitboOffsetX, hitboxOffsetY;
     private MovementAnimation movementAnim;
     private State state = State.RUNNING;
     private boolean flipped = false;
@@ -26,15 +26,15 @@ public abstract class Character extends Motionable implements Drawable {
     public Character(String characterName) {
         this.characterName = characterName;
         hitbox = new Rectangle(0, 0, 20, 26);
-        hitboxRelPosX = 4;
-        hitboxRelPosY = 4;
+        hitboOffsetX = 4;
+        hitboxOffsetY = 4;
     }
 
     public Character(String name, float relX, float relY, float w, float h) {
         characterName = name;
         hitbox = new Rectangle(0, 0, w, h);
-        hitboxRelPosX = relX;
-        hitboxRelPosY = relY;
+        hitboOffsetX = relX;
+        hitboxOffsetY = relY;
     }
 
     public enum State {
@@ -65,13 +65,13 @@ public abstract class Character extends Motionable implements Drawable {
             frame.flip(true, false);
         }
 
-        batch.draw(frame, MathUtils.floor( getXPosition() ), getYPosition(),
+        batch.draw(frame, getXPosition(), getYPosition(),
                 frame.getRegionWidth() * 2, frame.getRegionHeight() * 2);
     }
 
     private void updateHitbox() {
-        hitbox.setX( getXPosition() + hitboxRelPosX );
-        hitbox.setY( getYPosition() + hitboxRelPosY );
+        hitbox.setX( getXPosition() + hitboOffsetX );
+        hitbox.setY( getYPosition() + hitboxOffsetY );
     }
 
     public void fallingCheck(Block[][] blocks) {
@@ -135,8 +135,8 @@ public abstract class Character extends Motionable implements Drawable {
                 }
                 Rectangle.Collision coll
                 = hitbox.collisionInfo(b.getRectangle(),
-                        getPreviousX() + hitboxRelPosX,
-                        getPreviousY() + hitboxRelPosY);
+                        getPreviousX() + hitboOffsetX,
+                        getPreviousY() + hitboxOffsetY);
 
                 if (coll != null && (coll.getDirection() != Direction.TOP
                         || coll.getDistance() != 0.0f) )
@@ -206,12 +206,12 @@ public abstract class Character extends Motionable implements Drawable {
         this.hitbox = hitbox;
     }
 
-    public float rectRelPosX() {
-        return hitboxRelPosX;
+    public float rectOffsetX() {
+        return hitboOffsetX;
     }
 
-    public float rectRelPosY() {
-        return hitboxRelPosY;
+    public float rectOffsetY() {
+        return hitboxOffsetY;
     }	
 
     public MovementAnimation getMovementAnim() {

@@ -71,7 +71,7 @@ public class Enemy extends Character implements Hazard {
         {
             setYAccel(0);
             setYVelocity(0);
-            setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectRelPosY() );
+            setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectOffsetY() );
 
             if ( getState() != State.RUNNING ) {
                 setState(State.RUNNING);
@@ -94,8 +94,8 @@ public class Enemy extends Character implements Hazard {
     }
 
     public enum Type {
-        BADGUY_1 ("badguy1", 4, 6, 24, 24, 0.7f),
-        BADGUY_2 ("badguy2", 4, 2, 24, 28, 0.55f);
+        BADGUY_1 ("badguy1", 4, 6, 24, 24, 1.4f), //0.7f),
+        BADGUY_2 ("badguy2", 4, 2, 24, 28, 1.1f);//0.55f);
 
         private String string;
         private float speed;
