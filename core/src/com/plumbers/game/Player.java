@@ -27,13 +27,13 @@ public class Player extends Character {
     private final List<Event> coinEvents = new ArrayList<Event>();
     /* ---- */
 
-    private static final float ACCELERATION = 1/24f, // 1/24f //1/14f,
-                               DECELERATION = -0.3f, //-0.3f,
-                               MAX_SPEED = 2.2f, //2.75f,
-                               JUMP_POWER = -2.2f, //-2.75f,
-                               JUMP_BOOST = -1/20f,
-                               JUMP_FWD_ASSIST = 0.75f;
-    private static final int JUMP_BOOST_DURATION = 24;
+    private static final float ACCELERATION = 11/75f, //11/300f, // 1/24f //1/14f,
+                               DECELERATION = -1.2f, //-0.3f, //-0.3f,
+                               MAX_SPEED = 4.4f, //2.2f, //2.75f,
+                               JUMP_POWER = -4.4f, //-2.2f, //-2.75f,
+                               JUMP_BOOST = -1/5f, //-1/20f,
+                               JUMP_FWD_ASSIST = 1.5f; //0.75f;
+    private static final int JUMP_BOOST_DURATION = 12;//24;
 
     public Player(String name, TextureAtlas textureAtlas, Controller controller) {
         super(name);
@@ -113,19 +113,26 @@ public class Player extends Character {
 
         if ( getState() == State.STANDING || getState() == State.RUNNING ) {
             if ( controller.pollJumpInput() ) {
-                jumped = true;
-                jumpStarted = tickNumber;
-                setState( State.JUMPING );
-                setYVelocity(JUMP_POWER);
-                setYAccel(JUMP_BOOST);
-                setXAccel(0);
-            } else if ( controller.pollRunInput() ) {
+                startJump(tickNumber);
+            }
+            else if ( controller.pollRunInput() ) {
                 setXAccel(ACCELERATION);
                 setState( State.RUNNING );
-            } else {
+            }
+            else {
                 setXAccel(DECELERATION);
             }
         }
+    }
+    
+    private void startJump(int tickNumber)
+    {
+        jumped = true;
+        jumpStarted = tickNumber;
+        setState( State.JUMPING );
+        setYVelocity(JUMP_POWER);
+        setYAccel(JUMP_BOOST);
+        setXAccel(0);
     }
 
     @Override
@@ -176,7 +183,8 @@ public class Player extends Character {
     public void beKilled() {
         setState(State.DYING);
         setAcceleration(0, GameModel.GRAVITY);
-        setVelocity(-0.75f, -4.0f);
+//        setVelocity(-0.75f, -4.0f);
+        setVelocity(-1.5f, -8.0f);
         hurt = true;
     }
 
@@ -197,27 +205,35 @@ public class Player extends Character {
         if (info.getDirection() == Direction.TOP) {
             setYAccel(0);
             setYVelocity(0);
-            setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectRelPosY() );
+            setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectOffsetY() );
 
             if (state == State.JUMPING || state == State.FALLING) {
                 setState(State.RUNNING);
             }     
-        } else if (info.getDirection() == Direction.LEFT) {
-            setXAccel(0);
-            setXVelocity(0);
-            setXPosition( getXPosition() - info.getDistance() );
-
-            if (state == State.JUMPING && getYVelocity() > 0) {
-                setState(State.FALLING);
-            }        
-        } else if (info.getDirection() == Direction.BOTTOM) {
+        }
+        else if (info.getDirection() == Direction.LEFT) {
+            leftCollision(state, info);   
+        }
+        else if (info.getDirection() == Direction.BOTTOM) {
             setYVelocity(0);
             setYPosition( getYPosition() + info.getDistance() );
 
-        } else if (info.getDirection() == Direction.RIGHT) {
+        }
+        else if (info.getDirection() == Direction.RIGHT) {
             setXAccel(0);
             setXVelocity(0);
             setXPosition( getXPosition() + info.getDistance() );
+        }
+    }
+    
+    private void leftCollision(State state, Rectangle.Collision info)
+    {
+        setXAccel(0);
+        setXVelocity(0);
+        setXPosition( getXPosition() - info.getDistance() );
+
+        if (state == State.JUMPING && getYVelocity() > 0) {
+            setState(State.FALLING);
         }
     }
 
@@ -232,7 +248,7 @@ public class Player extends Character {
         if ( getRectangle().getY() <= 0 ) {
             setYAccel(GameModel.GRAVITY);
             setYVelocity(0);
-            setYPosition( - rectRelPosY() );
+            setYPosition( - rectOffsetY() );
         }
     }
 
@@ -272,6 +288,55 @@ public class Player extends Character {
             }
         }
         return coinEvents;
+    }
+    
+    public Event springboardCheck(List<Springboard> springboards, int tickNumber)
+    {
+        if ( getState() == State.DYING ) {
+            return null;
+        }
+        Rectangle rect = getRectangle();
+        boolean eventOccurred = false;
+        
+        for (int i = 0; i < springboards.size(); i++)
+        {
+            Springboard sb = springboards.get(i);
+            
+            if ( rect.intersects(sb.getRectangle()) )
+            {
+                Rectangle.Collision coll = rect.collisionInfo(
+                        sb.getRectangle(),
+                        getPreviousX() + rectOffsetX(),
+                        getPreviousY() + rectOffsetY() );
+                if (sb.isReady(tickNumber) && coll.getDirection() == Direction.TOP)
+                {
+                    if ( controller.pollJumpInput() )
+                    {
+                        startJump(tickNumber);
+                        setYVelocity( sb.getPlayerVelocityWithJump() );
+                        setYAccel( sb.getPlayerJumpBoost() );
+                    }
+                    else
+                    {
+                        setState(State.JUMPING);
+                        setYVelocity( sb.getPlayerVelocity() );
+                    }
+                    setYPosition(sb.getRectangle().getY() - rect.getH() - rectOffsetY());
+                    setXVelocity(0);
+                    eventOccurred = true;
+                    sb.activate(tickNumber);
+                }
+                else if (coll.getDirection() == Direction.LEFT)
+                {
+                    leftCollision(getState(), coll);
+                }
+            }
+        }
+        
+        if (eventOccurred)
+            return SpringboardEvent.instance();
+        else
+            return null;
     }
 
     public boolean fallingDeathCheck(float bottom) {

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="150" height="21" tilewidth="16" tileheight="16">
+ <properties>
+  <property name="enviroment" value="grassland"/>
+  <property name="soundtrack" value="Grasslands-Theme.mp3"/>
+  <property name="soundtrack-delay" value="2"/>
+ </properties>
+ <tileset firstgid="1" name="special tiles" tilewidth="16" tileheight="16" spacing="1">
+  <image source="special-tiles.png" width="84" height="50"/>
+  <tile id="2">
+   <properties>
+    <property name="special" value="springboard"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="special" value="spike"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="special" value="coin"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="16" name="Grassland tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
+  <image source="grassland-tiles.png" width="144" height="126"/>
+ </tileset>
+ <layer name="Decorative layer" width="150" height="21">
+  <data encoding="base64" compression="zlib">
+   eJzt1rEJACAQA0BH0k7dfzC/tlAQbPQOUgQyQFICAAAAAAAAfpYjZdHhRI20SJ86AHCPH/evvp8c8+MAgBcM+foC6w==
+  </data>
+ </layer>
+ <layer name="Platform layer" width="150" height="21">
+  <data encoding="base64" compression="zlib">
+   eJzt100OwiAQhmGim55AF+rCv4WN9z+fdUGCOEMZKtjq+ySTJtUKhi8wdQ4AAAAAAAAAAAD/rPv2BPCTVhV+czfUPqhDhTHQzlz2nvNQl6C27jVncZG7dlLrIK1JF10l0me59yziXI3VM3dkq43cNbkGz4zlQTrzcu9ZaLm6C0W22irJ1VxIueqV794c2WqpZq5qnH3e2r3nSsuUR7basfQmqT44fjebWtqah+NsXH6mvDhbU+YCnaXvTe1h1h66dH+0nH2aMFtL7QHmbum5OhX+7+MH5gLdA7hJJZE=
+  </data>
+ </layer>
+ <objectgroup name="Object layer" width="150" height="21">
+  <object name="Goal" x="2328" y="-48" width="72" height="320">
+   <properties>
+    <property name="type" value="goal"/>
+   </properties>
+  </object>
+  <object name="Start" x="0" y="208"/>
+ </objectgroup>
+</map>

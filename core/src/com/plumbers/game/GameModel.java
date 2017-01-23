@@ -17,7 +17,7 @@ public final class GameModel {
     private int gameTicks = 0;
     private boolean finished = false;
 
-    public static final float GRAVITY = 0.1f;
+    public static final float GRAVITY = 0.4f;//0.1f;
 
     public GameModel(Level level, Player p1) {
         currentLevel = level;
@@ -80,6 +80,8 @@ public final class GameModel {
         addNotNull( occuringEvents, p.getEvent() );
         occuringEvents.addAll(
                 p.coinCollectCheck( currentLevel.getCoins(), gameTicks ));
+        addNotNull( occuringEvents,
+                p.springboardCheck(currentLevel.getSpringboards(), gameTicks) );
 
         if ( p.fallingDeathCheck(levelBottom) ) {
             if (p == player1)
@@ -105,6 +107,7 @@ public final class GameModel {
 
     public List<Drawable> getDrawables() {
         drawables.clear();
+        drawables.addAll(currentLevel.getSpringboards());
         drawables.add(player1);
         addNotNull(drawables, player2);
         drawables.addAll(enemies);
@@ -124,6 +127,7 @@ public final class GameModel {
 
         enemies.clear();
         currentLevel.resetCoins();
+        currentLevel.resetSpringboards();
         gameTicks = 0;
         player1.reset( currentLevel.getStartPosition() );
     }

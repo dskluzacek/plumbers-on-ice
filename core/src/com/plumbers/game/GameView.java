@@ -9,7 +9,6 @@ import com.badlogic.gdx.audio.Music.OnCompletionListener;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -34,9 +33,8 @@ public final class GameView implements Screen {
     private SpriteBatch batch;
     private OrthogonalTiledMapRenderer mapRenderer;
     private Background background;
-    private Viewport viewport;
     private Controller controller;
-    private OrthographicCamera camera;
+    private GameCamera camera;
 
     /** true if this is a two-player network game */
     private final boolean twoPlayerMode;
@@ -48,10 +46,11 @@ public final class GameView implements Screen {
     private Color bgColor = Color.BLACK;
 
     /* -- state fields needed by the View -- */
-    private float timeAccumulator = 0;
+//    private float timeAccumulator = 0;
     private float elapsedTime = 0;
-    private float cameraPos = 0;
-    private int cameraSpeed;
+//    private float cameraPos = 0;
+//    private float cameraTargetPos = 0;
+//    private int cameraSpeed;
     private List<Event> events = new ArrayList<Event>();
 
     /** true when we are in the pause between player death and reset */
@@ -84,6 +83,8 @@ public final class GameView implements Screen {
     private Sound coinSound;
     /** sound when the player jumps */
     private Sound jumpSound;
+    /** sound made by spring boards */
+    private Sound springboardSound;
     /** sound when the player is hurt by an enemy or hazard */
     private Sound damageSound;
     /** sound after the player falls off the bottom of the screen */
@@ -99,10 +100,9 @@ public final class GameView implements Screen {
     /** the name of the character to use for player2 */
     private String player2CharacterName;
 
-    private static final float GAME_TICK_TIME = 1/120f;
-    private static final int TICK_PER_FRAME_RESET_THRESHOLD = 3;
+//    private static final float GAME_TICK_TIME = 1/60f;
+//    private static final int TICK_PER_FRAME_RESET_THRESHOLD = 3;
     private static final int COIN_SOUND_MIN_DELAY_IN_FRAMES = 3;
-    private /*static*/ final int CAMERA_PLAYER_X;// = 300;
     private static final int INFO_PADDING_IN_PIXELS = 5;
     private static final float ON_DEATH_DELAY = 0.75f;
 
@@ -110,11 +110,12 @@ public final class GameView implements Screen {
     private static final String FONT_FILE = "DejaVuSansMono-Bold.ttf";
     private static final String JUMP_SOUND_FILE = "jump.wav";
     private static final String COIN_SOUND_FILE = "coin.wav";
+    private static final String SPRING_SOUND_FILE = "spring.wav";
     private static final String DAMAGE_SOUND_FILE = "hurt.wav";
     private static final String DEATH_SOUND_FILE = "death.wav";
 
     /** game viewport dimensions in game units */
-    public final int VIRTUAL_WIDTH;// = 853;
+//    public final int VIRTUAL_WIDTH;// = 853;
     public static final int VIRTUAL_HEIGHT = 512;  
 
     /** Create a single-player GameView */
@@ -126,16 +127,16 @@ public final class GameView implements Screen {
     {
         this.levelFilePath = levelFilePath;
         this.player1CharacterName = player1CharacterName;
-        this.viewport = viewport;
         this.controller = controller;
         this.musicVolume = musicVolume;
 
         ////
-        VIRTUAL_WIDTH = (int) ( Gdx.graphics.getWidth() * VIRTUAL_HEIGHT
-                              / ((float) Gdx.graphics.getHeight()) );
-        CAMERA_PLAYER_X = VIRTUAL_WIDTH - 650;
+//        VIRTUAL_WIDTH = (int) ( Gdx.graphics.getWidth() * VIRTUAL_HEIGHT
+//                              / ((float) Gdx.graphics.getHeight()) );
+//        
+//        CAMERA_PLAYER_X = VIRTUAL_WIDTH - 640;
         ////
-        
+        camera = new GameCamera(viewport);
         eventContext = new SinglePlayerEventContext();
         twoPlayerMode = false;
         player2CharacterName = null;
@@ -149,16 +150,14 @@ public final class GameView implements Screen {
                     float musicVolume)
     {
         this.player1CharacterName = player1CharacterName;
-        this.viewport = viewport;
         this.controller = ctrl;
         this.musicVolume = musicVolume;
-        this.connection = connection;
-        
+        this.connection = connection; 
         ////
-        VIRTUAL_WIDTH = 853;
-        CAMERA_PLAYER_X = 300;
+//        VIRTUAL_WIDTH = 853;
+//        CAMERA_PLAYER_X = 300;
         ////
-
+        camera = new GameCamera(viewport);
         eventContext = new TwoPlayerEventContext();
         twoPlayerMode = true;
     }
@@ -183,14 +182,13 @@ public final class GameView implements Screen {
         mainFont = generator.generateFont(parameter);
         generator.dispose();
 
-        textureAtlas =
-                new TextureAtlas(Gdx.files.internal(TEXTURE_ATLAS_FILE), true);
+        textureAtlas = new TextureAtlas(Gdx.files.internal(TEXTURE_ATLAS_FILE), true);
         batch = new SpriteBatch();
-        camera = new OrthographicCamera();
 
         coinAnimation = Coin.getAnimation(textureAtlas);
         Coin.createCoinTile(textureAtlas);
         Enemy.setTextureAtlas(textureAtlas);
+        Springboard.setTextureAtlas(textureAtlas);
 
         try {
             level = new Level(levelFilePath, textureAtlas);
@@ -226,8 +224,9 @@ public final class GameView implements Screen {
         coinSound = Gdx.audio.newSound(Gdx.files.internal(COIN_SOUND_FILE));
         jumpSound = Gdx.audio.newSound(Gdx.files.internal(JUMP_SOUND_FILE));
         damageSound = Gdx.audio.newSound(Gdx.files.internal(DAMAGE_SOUND_FILE));
+        springboardSound = Gdx.audio.newSound(Gdx.files.internal(SPRING_SOUND_FILE));
         deathSound = Gdx.audio.newSound(Gdx.files.internal(DEATH_SOUND_FILE));
-
+        
         music.setOnCompletionListener( new MusicListener() );
         music.setVolume(musicVolume);
     }
@@ -237,15 +236,29 @@ public final class GameView implements Screen {
      */
     @Override
     public void show() {
-        camera.setToOrtho(true, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-        viewport.setCamera(camera);
-        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        screenProjMatrix = new Matrix4(camera.combined);
-        mapRenderer.setView(camera);
+        camera.configure( Gdx.graphics.getWidth(),
+                          Gdx.graphics.getHeight(),
+                          Gdx.graphics.getPpiY() );
+        camera.setLevel(level);
 
         Gdx.input.setInputProcessor(controller);
         music.play();
+    }
+    
+    /** This is called at the start, and again when the window is resized,
+     *  or when the game app is resumed.
+     */
+    @Override
+    public void resize(int width, int height) {
+        camera.resize(width, height);
+        mapRenderer.setView( camera.getCamera() );
+        
+        screenProjMatrix = camera.getOriginMatrix();
+        
+        if (background != null) {
+            background.setProjectionMatrix(screenProjMatrix);
+            background.setGameWidth( camera.virtualWidth() );
+        }
     }
 
     /**
@@ -262,17 +275,7 @@ public final class GameView implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         elapsedTime += deltaTime;
-        timeAccumulator += deltaTime;
-        int count = 0;	
-
-        while (timeAccumulator > GAME_TICK_TIME) {
-            events.addAll( gameModel.gameTick() );
-            ++count;
-            timeAccumulator -= GAME_TICK_TIME;
-        }
-        if (count >= TICK_PER_FRAME_RESET_THRESHOLD) {
-            timeAccumulator = 0;
-        }
+        events.addAll( gameModel.gameTick() );
 
         for (int i = 0; i < events.size(); i++) {
             events.get(i).applyTo(eventContext);
@@ -280,14 +283,19 @@ public final class GameView implements Screen {
         events.clear();
 
         musicCheck();
-        positionCamera();
+        if ( camera.repositionCamera(player1.getXPosition(),
+                                     player1.getYPosition(),
+                                     player1.getState()) )
+        {
+            mapRenderer.setView( camera.getCamera() );
+        }
 
         if (background != null) {
-            background.render( batch, MathUtils.floor(cameraPos) );
+            background.render(batch, MathUtils.floor(camera.getXDisplacement()), elapsedTime);
         }
         mapRenderer.render();
 
-        batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix( camera.combined() );
         batch.begin();
 
         List<Drawable> drawables = gameModel.getDrawables();
@@ -295,11 +303,11 @@ public final class GameView implements Screen {
         for (int i = 0; i < drawables.size(); i++) {
             drawables.get(i).draw(batch, elapsedTime);
         }
-
         batch.end();
 
         batch.setProjectionMatrix(screenProjMatrix);
         batch.begin();
+        
         renderTimer();
         renderCoinCounter();
 
@@ -343,7 +351,7 @@ public final class GameView implements Screen {
 
             death = true;
             elapsedTime = 0;
-            timeAccumulator = 0;
+//            timeAccumulator = 0;
             deathSound.play();
             music.stop();
         }
@@ -351,6 +359,11 @@ public final class GameView implements Screen {
         @Override
         public void apply(JumpEvent e) {
             jumpSound.play();
+        }
+        
+        @Override
+        public void apply(SpringboardEvent e) {
+            springboardSound.play(0.5f);
         }
 
         @Override
@@ -385,7 +398,7 @@ public final class GameView implements Screen {
         public void apply(DeathEvent e) {
             if ( e.getPlayerNum() == 1 && ! death ) {
                 death = true;
-                timeAccumulator = 0;
+//                timeAccumulator = 0;
                 deathSound.play(0.8f);
 
                 EventMessage m = EventMessage.obtain();
@@ -396,17 +409,17 @@ public final class GameView implements Screen {
 
         @Override
         public void apply(JumpEvent e) {
-            if ( e.getPlayerNum() == 1 ) {
+//            if ( e.getPlayerNum() == 1 ) {
                 super.apply(e);
 
-            } else {
-                float dist = Math.abs(player1.getXPosition() - player2.getXPosition());
-                float volume = (VIRTUAL_WIDTH - dist) / VIRTUAL_WIDTH;
-
-                if (volume > 0.1f) {
-                    jumpSound.play(volume);
-                }
-            }
+//            } else {
+//                float dist = Math.abs(player1.getXPosition() - player2.getXPosition());
+//                float volume = (VIRTUAL_WIDTH - dist) / VIRTUAL_WIDTH;
+//
+//                if (volume > 0.1f) {
+//                    jumpSound.play(volume);
+//                }
+//            }
         }
 
     }
@@ -436,86 +449,13 @@ public final class GameView implements Screen {
      * and starts the music track.
      */
     private void reset() {
-        camera.translate(- cameraPos, 0);
-        cameraPos = 0;
-        camera.update();
-        mapRenderer.setView(camera);
-        batch.setProjectionMatrix(camera.combined);
+//        camera.translate(- cameraPos, 0);
+//        cameraPos = 0;
+//        camera.update();
+        camera.reset();
+        mapRenderer.setView( camera.getCamera() );
+//        batch.setProjectionMatrix( camera.combined() );
         music.play();
-    }
-
-    /**
-     * Repositions the camera if needed based on player position.
-     */
-    private void positionCamera() {
-        float playerX = player1.getXPosition();
-
-        if (playerX < CAMERA_PLAYER_X) {
-            return;
-        }
-        float change = 0;
-
-        if ( playerX < gameModel.getLevelWidth() - VIRTUAL_WIDTH + CAMERA_PLAYER_X )
-        {
-            if ( playerX > cameraPos + CAMERA_PLAYER_X )
-            {
-                if ( player1.getEffectiveXVelocity() == 0 )
-                {
-                    change = playerX - (cameraPos + CAMERA_PLAYER_X);
-
-                    if (change == 0) {
-                        return;
-                    }
-                    change = MathUtils.lerp(0, change, 1/30f);
-                    change = MathUtils.floor(change);
-
-                    if (change != 0) {
-                        System.out.println("lerp!");
-                    }
-                }
-                else
-                {
-                    float diff = playerX - (cameraPos + CAMERA_PLAYER_X);
-                    float realSpeed = player1.getEffectiveXVelocity() * 2;
-                    int speed = MathUtils.floor(realSpeed);
-
-                    if (speed > cameraSpeed) {
-                        ++cameraSpeed;
-                        System.out.println("++cameraSpeed: " + cameraSpeed);
-                    } else if (speed < cameraSpeed) {
-                        --cameraSpeed;
-                        System.out.println("--cameraSpeed: " + cameraSpeed);
-                    }
-
-                    if (cameraSpeed < 0) {
-                        cameraSpeed = 0;
-                    }
-
-                    change = cameraSpeed;
-                }
-            }
-        }
-        else if ( playerX > gameModel.getLevelWidth() - VIRTUAL_WIDTH + CAMERA_PLAYER_X )
-        {
-            change = (gameModel.getLevelWidth() - VIRTUAL_WIDTH) - cameraPos;
-
-            if (change == 0) {
-                return;
-            }
-            change = MathUtils.lerp(0, change, 1/8f);
-
-            if (change > 1) {
-                change = MathUtils.floor(change);
-            }
-        }
-
-        if (change != 0)
-        {
-            cameraPos += change;
-            camera.translate(change, 0);
-            camera.update();
-            mapRenderer.setView(camera);
-        }
     }
 
     private void renderScore() {
@@ -527,10 +467,10 @@ public final class GameView implements Screen {
     /** renders the on-screen timer */
     private void renderTimer() {
         CharSequence str = getTimerString();
-        mainFont.draw(
-                batch,
-                str, VIRTUAL_WIDTH - 2 - str.length() * (mainFont.getSpaceWidth() + 2),
-                INFO_PADDING_IN_PIXELS );
+        mainFont.draw(batch,
+                str,
+                camera.virtualWidth() - 2 - str.length() * (mainFont.getSpaceWidth() + 2),
+                INFO_PADDING_IN_PIXELS);
     }
 
     /** formats elapsed time as minutes, seconds, and tenths of a second */
@@ -578,19 +518,6 @@ public final class GameView implements Screen {
         public void onCompletion(Music music) {
             musicEndTime = elapsedTime;
             musicWait = true;
-        }
-    }
-
-    /** This is called at the start, and again when the window is resized,
-     *  which currently we don't allow to happen.
-     *  (and probably never will on Android)
-     */
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        screenProjMatrix = new Matrix4(camera.combined);
-        if (background != null) {
-            background.setProjMatrix(screenProjMatrix, VIRTUAL_WIDTH);
         }
     }
 

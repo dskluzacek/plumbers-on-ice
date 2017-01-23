@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.plumbers.game.GameCamera;
 
 public class MainMenu extends InputAdapter implements Screen {
     private Viewport viewport;
@@ -35,10 +36,10 @@ public class MainMenu extends InputAdapter implements Screen {
 //            ICY_LEVEL = 4,
 //            CASTLE_LEVEL = 5;
     public static final String LEVEL_1_FILE = "grassy1.tmx",
-                               LEVEL_2_FILE = "tropical1.tmx",
-                               LEVEL_3_FILE = "castle1.tmx",
-                               LEVEL_4_FILE = "winter1.tmx",
-                               LEVEL_5_FILE = "castle2.tmx";
+                               LEVEL_2_FILE = "grassy2.tmx",
+                               LEVEL_3_FILE = "winter1.tmx",
+                               LEVEL_4_FILE = "fall1.tmx",
+                               LEVEL_5_FILE = "castle1.tmx";
     
     public MainMenu(Game game) {
         theGame = game;
@@ -218,6 +219,5 @@ public class MainMenu extends InputAdapter implements Screen {
     public void resize(int width, int height) {
         
     }
-    
     
 }

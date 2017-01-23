@@ -2,7 +2,6 @@ package com.plumbers.game.ui;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.plumbers.game.Controller;
@@ -14,20 +13,15 @@ public class PlumbersOnIceGame extends Game {
     private static PlumbersOnIceGame instance;
     private MainMenu mainMenu;
     private GameView gameView;
-    
     private Viewport viewport;
     private Controller controller;
-    private static String hostname;
     
     public static PlumbersOnIceGame createAndroidInstance(int displayWidth) {
         if (instance != null)
             throw new IllegalStateException();
         
-        Viewport viewport = new ExtendViewport(1, 512);
-                //GameView.VIRTUAL_WIDTH, GameView.VIRTUAL_HEIGHT);
+        Viewport viewport = new ExtendViewport(1, 480);
         Controller controller = new TouchscreenController(displayWidth);
-        
-        hostname = "192.168.0.3";
         instance =  new PlumbersOnIceGame(viewport, controller);
         return instance;
     }
@@ -36,21 +30,25 @@ public class PlumbersOnIceGame extends Game {
         if (instance != null)
             throw new IllegalStateException();
         
-        hostname = "localhost";
-        instance = new PlumbersOnIceGame( new ScreenViewport(), new KeyboardController() );
+        Viewport viewport = new ExtendViewport(1, 512);
+        instance = new PlumbersOnIceGame( viewport, new KeyboardController() );
         return instance;
     }
     
     public static void startSinglePlayer(String level, String character) {
-      instance.gameView = new GameView(level, character, instance.viewport, instance.controller, 0.5f);
-      instance.gameView.load();
-      System.gc();
-      instance.setScreen(instance.gameView);
+        instance.gameView = new GameView(level,
+                                         character,
+                                         instance.viewport,
+                                         instance.controller,
+                                         0.5f);
+        instance.gameView.load();
+        System.gc();
+        instance.setScreen(instance.gameView);
     }
     
     public static void returnToMenu() {
         instance.setScreen(instance.mainMenu);
-      }
+    }
     
     private PlumbersOnIceGame(Viewport viewport, Controller controller) {
         this.viewport = viewport;

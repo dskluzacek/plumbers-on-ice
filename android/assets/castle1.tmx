@@ -5,20 +5,8 @@
   <property name="soundtrack" value="Castle-Theme.mp3"/>
   <property name="soundtrack-delay" value="2"/>
  </properties>
- <tileset firstgid="1" name="grassland-tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
-  <image source="grassland-tiles.png" width="144" height="126"/>
-  <terraintypes>
-   <terrain name="Grass" tile="-1"/>
-  </terraintypes>
-  <tile id="10" terrain=",,,0"/>
-  <tile id="11" terrain=",,0,0"/>
-  <tile id="12" terrain=",,0,"/>
-  <tile id="17" terrain=",0,,0"/>
-  <tile id="18" terrain="0,0,0,0"/>
-  <tile id="19" terrain="0,,0,"/>
- </tileset>
- <tileset firstgid="57" name="special-tiles" tilewidth="16" tileheight="16" spacing="1">
-  <image source="special-tiles.png" width="84" height="33"/>
+ <tileset firstgid="1" name="special-tiles" tilewidth="16" tileheight="16" spacing="1">
+  <image source="special-tiles.png" width="84" height="50"/>
   <tile id="6">
    <properties>
     <property name="special" value="spike"/>
@@ -30,23 +18,23 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="67" source="castle-tiles.tsx"/>
+ <tileset firstgid="16" source="castle-tiles.tsx"/>
  <layer name="Decorative layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztls1OwzAMx/NwwECDGxpwYRVwAQl2BZ4CMQHnceHjCg+IIxYRLDtxsrRp2vwkK1uTOv/arlOlaGZgF2CHzHwlLSbeFPb10vJh652tx4VnPsYnNy/1K71Hotfni8qh9Nl9e1H+Fswa7jr2G6vN5TPUr6TuTwL8DZXUeXP54+I9tDxwfVnKFhqpucofknMwlD7Gmeu/Keukj8+di5hzkEIS05xxv8+49xjh4u3KQ30vy2YbbAdsYo27xJqJYF3JnILNc4voGJ3XR/U/p0s13Bx3wRvYO9jHerwEu7L+c2Olgtmzfr+iuX2wA4EPV83p8TNSD8U0wBeHfn9CNMWg+95Y+xrOIa6rI7DjjrQYVoI1KWqrJMw3Vyl1inOI6+oM7LwjLQZJXTWCNfaZrnvTg/r9TnqKVlbxwZ01uK6uwW5a1mLwnX82TVsiRoQd7xT935U/XFdfYN8J9pQg6VM2fToLcUz7pM2mzW9XV/5y9KuQPuUjRz5d+mP0pOwjm8Q2ZG/fPriubsHuwuQk0xJDs8G9begx4BxRe00jNFC5z/0cFLiunsFeBPf9AKSATCY=
+   eJztls1OwzAMx/MKwECDGxpwAQRcQIJdgadAIOAMFz6u8OY4YhHGshMnS5umy0+ysjWp86/tOjWGZwZ2BrYrzDfy4uLNga/Xlg+sd7YY54H5FJ/SvNav9h6N3pAvLofaZw/txfmbC2uk69Rvqjafz1i/mro/iPA3VnLnzedPivfY8iD1ZS1rZOTmGn9ozsFYhhhnqf/mrJMhPncpUs5BDk1MS8b9tuDeq4gUb18e2ntZN+tgG2ATNG4yayaKdTVzCHZUWkTP2Lzem/85fTDjzXEfvIG9g30sxnOwC/RfGhsNyhb6/UrmtsF2FD58NWfHz0Q9HNMIXxL2/YnRlILte6va12gOaV3tge33pMXxoliTo7Zqwn1z1VKnNIe0rk7ATnvS4tDU1bFiDT7TbW+6M7/fSY/JyhohpLOG1tUl2FXHWhyh8w+jqauGHxzvHP3flz9aV19g3xn21KDpU5ghnYU0pkPShuny29WXvxL9KqZPhSiRT5/+FD05+8gysY3ZO7QPratrsJs4Odm0pLDM+diFHgfNEbfXNEEDl/vSz8FB6+oJ7Flx3w8u0ybl
   </data>
  </layer>
  <layer name="Platform layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztWbFOAzEMzadZYusCFHUpZWAoRYIBuvAFbHzASQiEisTCT5KoiWpM4ti5XC+teJLlKHGcd7HjS68zY8zMy8bKp29jxMalkpvjxjpvp/XZZew6Ad+crzC+Eayn4U33RQPtHvflqp3bJfjmnqdkD3LjGr/SORqblB133rTInd++fmuiJC54bmsAJK2gdtyGyIN/pAEROQTA2AQYwNgEFABh3ynRsTE8PyWt43lsAgSA2rG9pzatQJInJb4gIiUAoo8ZEOmTxKI0XjVwMsKaYNrPKcj4x+MaHqn95uIwZn5IAUT/Y4czK+dWpkhfRGymAjsHGIpoowCix/JRAhfXN/M7pu8mH+MaeFHat3YnwwArEy9zK5dWFlaukM0C9cd0bUwYOWa0nCdauFiFb7dLKzdWVl4HrEg/1VzOOX2t5BS+0dLvyp2pk1vzAk5auLo3VF07BOC4PVh5tLL2OmBN+qnmcs7peyEX8Dr2XwVu98VSwakFhDtX63kKZvdewXG7NWX1iss5p5+EvAInLqfo/0Yp4He6q02vZntP+jDb8yPlJAVU9rcP1L5b4HcfjttQ9eouwwe8ztWp0KZ7AeYv8Dvd1aYv3/9ttucnx0kLegeMcWoBmCfez775BSYdt9L7Vd96Ja1T9J7F3enxGaHrl9YrYPjHuHFzONSsI3SPcue1dG3O977rleRZpe0N8Y3f6XT9ZYIT9zuUk1zuc89ObbC/3LopSPOIa0vXk6xTer/6Ae1SFm4=
+   eJztWb1OwzAQ9piRrQvQqkspA0MoEgzQhSdg4wEiIVBVJBYeH1uxpeNk34/jELflk05nxX9f7s7na7o0xiy97K18+jZErF8q3BzX1/lx2jU7Zlwn4MutFfr3gv00vLFdNNDaeChX7dwuwZd7nxwbcP2adaVzNGNS46jzpgV3foeuWxI5foFza0MDpBaU9tsYcfCPNJqIHAJq5lkzN4wY19izc6RjfXB+SmrHy9QEEKDNYrbHY2qBJE5y1ioVUw3SxwzqPFPI9VcJnE2w5yHEFMcP9mt4pOxN+WHK+JDilM65FhdWLq3MgV5ExswF4xxOzcYlYmuq+HR+fTe/ffpheB+XwKtyfG01GYTz28zLysqVlbWVazBmDZ7HdGnMCDlm1BwnWjhfhW+3rZVbKxuvAzboOdZUzDl9o+QUvtHi78qdKRNbqwxOWri8txh5j5oB/fZo5cnK1uuALXqONRVzTj8IuYQ7L/ZfBWwPRavgVANCzbWYmAcHePdBv92ZvHxFxZzTz0JegRMVU/h/oxTgne5y05vp66Sd6c+PlJMUh1hDl64t4N0H/TZWvrpn+EjzVGhjW8R8Cu90l5u+/PNv058fjpMWuAasNc4gT2jPofHVmLTfcuuroflKmqdwnUXV9PCM4P1z81UqVnDeHxpfJfMIthF3XnP3ptb+63wleVdpe4/Whnc63r9NcKJ+h1LCxT717ngMXI/bNwVpHFFt6X6SfXLrqx9zOY9n
   </data>
  </layer>
  <layer name="Decorative layer 2" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztzrEJADAIAEEHi0Wy/1C6gpUQ7uD7jwAAAACYOV1uT/Cd273tCQAAAAAYKszZAP0=
+   eJztzrEJADAIAEGLWCT7D6wrWAnhDr7/CAAAAICZ0+X2BN+53dueAAAAAIChAkoaAB0=
   </data>
  </layer>
- <objectgroup name="Object layer" width="150" height="16">
+ <objectgroup name="Object layer" width="0" height="0">
   <object name="Start" x="0" y="144"/>
   <object name="badguy1" x="416" y="132">
    <properties>

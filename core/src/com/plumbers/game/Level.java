@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
@@ -20,6 +21,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.utils.Array;
 
 public final class Level { 
     private final OrthogonalTiledMapRenderer renderer;
@@ -28,6 +32,7 @@ public final class Level {
     private final List<Coin> coins = new ArrayList<Coin>();
     private final List<EnemySpawner> spawners = new ArrayList<EnemySpawner>();
     private final List<FixedHazard> hazards = new ArrayList<FixedHazard>();
+    private final List<Springboard> springboards = new ArrayList<Springboard>();
     private final TiledMap tiledMap;
     private Vector start;
     private Rectangle finish;
@@ -41,6 +46,28 @@ public final class Level {
 
     private static final String PLATFORM_LAYER_NAME = "Platform layer",
                                 OBJECT_LAYER_NAME   = "Object layer";
+    private static final String START_NAME =  "Start",
+                                FINISH_NAME = "Goal",
+                                CEILING_KEY = "ceiling",
+                                SOUNDTRACK_KEY = "soundtrack",
+                                SOUNDTRACK_DELAY_KEY = "soundtrack-delay",
+                                ENVIROMENT_KEY = "enviroment",
+                                GRASSLAND_STR = "grassland",
+                                WINTER_STR = "winter",
+                                AUTUMN_STR = "autumn",
+                                TROPICAL_STR = "tropical",
+                                DUNGEON_STR = "dungeon",
+                                BACKGROUND_COLOR_KEY = "background-color",
+                                SPECIAL_TILE_KEY = "special",
+                                COIN_STR = "coin",
+                                SPIKES_STR = "spike",
+                                SPRINGBOARD_STR = "springboard",
+                                ENEMY_TYPE_KEY = "type",
+                                SPAWN_DISTANCE_KEY = "spawndistance",
+                                COLL_OFFSET_X_KEY = "relativeX",
+                                COLL_OFFSET_Y_KEY = "relativeY",
+                                COLL_WIDTH_KEY = "width",
+                                COLL_HEIGHT_KEY = "height";
 
     public Level(String filename, TextureAtlas atlas)
             throws FileFormatException
@@ -50,16 +77,16 @@ public final class Level {
 
         tiledMap = new TmxMapLoader().load(filename, mapParams);
 
-        for ( TiledMapTileSet tileset : tiledMap.getTileSets() ) {
-            for (TiledMapTile tile : tileset) {
+        for ( TiledMapTileSet tileset : tiledMap.getTileSets() )
+        {
+            for (TiledMapTile tile : tileset)
+            {
                 tile.getTextureRegion().flip(false, true);
-
-                if ( nullToEmptyString(
-                        tile.getProperties().get("opaque", String.class)
-                        ).equals("true") )
-                {
-                    tile.setBlendMode(TiledMapTile.BlendMode.NONE);
-                }
+            }
+            
+            if ( tileset.getName().equalsIgnoreCase("castle-tiles") )
+            {
+                loadWaterfallAnim(tileset);
             }
         }
 
@@ -83,8 +110,7 @@ public final class Level {
             getMapObjects();
         } catch (NumberFormatException nfe) {
             throw new FileFormatException(
-                    "Error trying to parse an integer in " + filename,
-                    nfe);
+                    "Error trying to parse an integer in " + filename, nfe);
         }
         renderer = new OrthogonalTiledMapRenderer(tiledMap, 2);
     }
@@ -115,6 +141,10 @@ public final class Level {
 
     public List<EnemySpawner> getSpawners() {
         return spawners;
+    }
+    
+    public List<Springboard> getSpringboards() {
+        return springboards;
     }
 
     public boolean hasBackground() {
@@ -162,6 +192,12 @@ public final class Level {
             c.setCollected(false);
         }
     }
+    
+    public void resetSpringboards() {
+        for (Springboard sb : springboards) {
+            sb.reset();
+        }
+    }
 
     private void getMapObjects() {
         MapObjects objects = 
@@ -173,34 +209,34 @@ public final class Level {
             {
                 RectangleMapObject rectObj = (RectangleMapObject) obj;
 
-                if ( rectObj.getName().equalsIgnoreCase("Start") )
+                if ( rectObj.getName().equalsIgnoreCase(START_NAME) )
                 {
                     float x = rectObj.getRectangle().getX() * 2;
                     float y = rectObj.getRectangle().getY() * 2;
                     start = new Vector(x, y);
 
                 }
-                else if ( rectObj.getName().equalsIgnoreCase("Goal") )
+                else if ( rectObj.getName().equalsIgnoreCase(FINISH_NAME) )
                 {
                     com.badlogic.gdx.math.Rectangle rect = rectObj.getRectangle();
 
                     finish = new Rectangle(rect.getX() * 2, rect.getY() * 2,
                                            rect.getWidth() * 2, rect.getHeight() * 2);
                 }
-                else if ( rectObj.getProperties().containsKey("type") )
+                else if ( rectObj.getProperties().containsKey(ENEMY_TYPE_KEY) )
                 {
                     MapProperties props = rectObj.getProperties();
-                    Enemy.Type type = Enemy.Type.get( props.get("type", String.class) );
+                    Enemy.Type type = Enemy.Type.get( props.get(ENEMY_TYPE_KEY, String.class) );
                     int x = 2 * (int) rectObj.getRectangle().getX();
                     int y = 2 * (int) rectObj.getRectangle().getY();
 
                     if (type == null)
                         return;
 
-                    if ( props.containsKey("spawndistance") )
+                    if ( props.containsKey(SPAWN_DISTANCE_KEY) )
                     {
                         int spawnDistance = 2 * Integer.parseInt(
-                                props.get("spawndistance", String.class) );
+                                props.get(SPAWN_DISTANCE_KEY, String.class) );
 
                         spawners.add( new EnemySpawner(x, y, type, spawnDistance) );
                     }
@@ -218,29 +254,61 @@ public final class Level {
         MapProperties properties = tiledMap.getProperties();
 
         useCeiling = nullToEmptyString(
-                properties.get("ceiling", String.class) ).equalsIgnoreCase("true");
+                properties.get(CEILING_KEY, String.class) ).equalsIgnoreCase("true");
 
-        String musicStr = properties.get("soundtrack", String.class);
+        String musicStr = properties.get(SOUNDTRACK_KEY, String.class);
 
         if (musicStr != null) {
             soundtrack = Gdx.audio.newMusic( Gdx.files.internal(musicStr) );
         }
 
-        if ( properties.containsKey("soundtrack-delay") ) {
+        if ( properties.containsKey(SOUNDTRACK_DELAY_KEY) ) {
             soundtrackDelay = Integer.parseInt(
-                    properties.get("soundtrack-delay", String.class).trim()
+                    properties.get(SOUNDTRACK_DELAY_KEY, String.class).trim()
                     );
         }
-
-        String bgStr = properties.get("background", String.class);
-
-        if (bgStr != null) {
-            TextureRegion bg = new TextureRegion( new Texture(bgStr) );
-            bg.flip(false, true);
-            background = new Background(bg, 2, 0.125);
+        
+        String envStr = properties.get(ENVIROMENT_KEY, String.class);
+        
+        if (envStr != null)
+        {
+            if ( envStr.equalsIgnoreCase(AUTUMN_STR) )
+            {
+                TextureRegion land = new TextureRegion( new Texture("fall.png") );
+                TextureRegion sky   = new TextureRegion( new Texture("fall-sky.png") );
+                land.flip(false, true);
+                sky.flip(false, true);
+                background = new Background.AutumnBackground(land, sky);
+            }
+            else if ( envStr.equalsIgnoreCase(GRASSLAND_STR) )
+            {
+                TextureRegion land = new TextureRegion( new Texture("grassy.png") );
+                TextureRegion sky   = new TextureRegion( new Texture("grassy-sky.png") );
+                land.flip(false, true);
+                sky.flip(false, true);
+                background = new Background.GrasslandBackground(land, sky);
+            }
+            else if ( envStr.equalsIgnoreCase(WINTER_STR) )
+            {
+                TextureRegion land = new TextureRegion( new Texture("winter.png") );
+                TextureRegion sky   = new TextureRegion( new Texture("winter-sky.png") );
+                land.flip(false, true);
+                sky.flip(false, true);
+                background = new Background.AutumnBackground(land, sky);
+            }
         }
-
-        String colorStr = properties.get("background-color", String.class);
+        else
+        {
+            String bgStr = properties.get("background", String.class);
+    
+            if (bgStr != null) {
+                TextureRegion bg = new TextureRegion( new Texture(bgStr) );
+                bg.flip(false, true);
+                background = new Background.ImageBackground(bg, 2, 0.125);
+            }
+        }
+        
+        String colorStr = properties.get(BACKGROUND_COLOR_KEY, String.class);
 
         if (colorStr != null) {
             String[] strArr = colorStr.split(",");
@@ -257,29 +325,35 @@ public final class Level {
                     throws NumberFormatException
     {
         MapProperties props = cell.getTile().getProperties();
-
-        if ( props.containsKey("special")
-                && props.get("special").equals("coin") )
+        
+        if ( props.containsKey(SPECIAL_TILE_KEY) )
         {
-            coins.add( new Coin(column, row, cell) );
+            if ( props.get(SPECIAL_TILE_KEY).equals(COIN_STR) )
+            {
+                coins.add( new Coin(column, row, cell) );
+            }
+            else if ( props.get(SPECIAL_TILE_KEY).equals(SPIKES_STR) )
+            {
+                hazards.add( new FixedHazard(
+                        new Rectangle(column * Block.SIZE + 4,
+                                      row * Block.SIZE + 20,
+                                      24, 12)) );
+            }
+            else if ( props.get(SPECIAL_TILE_KEY).equals(SPRINGBOARD_STR) )
+            {
+                springboards.add( new Springboard(column, row) );
+                cell.setTile(null);
+            }
         }
-        else if ( props.containsKey("special")
-                 && props.get("special").equals("spike") )
+        else if ( props.containsKey(COLL_OFFSET_X_KEY)
+                  || props.containsKey(COLL_OFFSET_Y_KEY)
+                  || props.containsKey(COLL_WIDTH_KEY)
+                  || props.containsKey(COLL_HEIGHT_KEY) )
         {
-            hazards.add( new FixedHazard(
-                    new Rectangle(column * Block.SIZE + 4,
-                                  row * Block.SIZE + 20,
-                                  24, 12)) );
-        }
-        else if ( props.containsKey("relativeX")
-                 || props.containsKey("relativeY")
-                 || props.containsKey("width")
-                 || props.containsKey("height") )
-        {
-            String relX = props.get("relativeX", String.class);
-            String relY = props.get("relativeY", String.class);
-            String wStr = props.get("width", String.class);
-            String hStr = props.get("height", String.class);
+            String relX = props.get(COLL_OFFSET_X_KEY, String.class);
+            String relY = props.get(COLL_OFFSET_Y_KEY, String.class);
+            String wStr = props.get(COLL_WIDTH_KEY, String.class);
+            String hStr = props.get(COLL_HEIGHT_KEY, String.class);
 
             int relativeX =
                 (relX == null ? 0 : Integer.parseInt(relX.trim()) * 2);
@@ -302,8 +376,90 @@ public final class Level {
             blockArray[column][row] = b;
         }
     }
+    
+    private void loadWaterfallAnim(TiledMapTileSet tileset)
+    {
+        final String WATERFALL_1_KEY = "waterfall1";
+        final String WATERFALL_2_KEY = "waterfall2";
+        final int LENGTH = 16;
+        
+        StaticTiledMapTile[] framesA = new StaticTiledMapTile[LENGTH];
+        StaticTiledMapTile[] framesB = new StaticTiledMapTile[LENGTH];
+        
+        for (TiledMapTile tile : tileset)
+        {
+            MapProperties properties = tile.getProperties();
+            
+            if ( properties.containsKey(WATERFALL_1_KEY) )
+            {
+                int index = Integer.parseInt(
+                        properties.get(WATERFALL_1_KEY, String.class).trim()
+                        );
+                framesA[index] = (StaticTiledMapTile) tile;
+            }
+            else if ( properties.containsKey(WATERFALL_2_KEY) )
+            {
+                int index = Integer.parseInt(
+                        properties.get(WATERFALL_2_KEY, String.class).trim()
+                        );
+                framesB[index] = (StaticTiledMapTile) tile;
+            }
+        }
+        
+        Array<StaticTiledMapTile> animFrames = new Array<StaticTiledMapTile>(2);
+        
+        for (int i = 0; i < framesA.length; i++)
+        {
+            System.out.println(framesA[i]);
+            System.out.println(framesB[i]);
+            
+            animFrames.add(framesA[i]);
+            animFrames.add(framesB[i]);    
+            final AnimatedTiledMapTile animatedTile = new AnimatedTiledMapTile(1/6f, animFrames);
+            final int id = framesA[i].getId();
+            
+            // have to do this because setting the tile in the tileset does nothing
+            for (MapLayer mapLayer : tiledMap.getLayers())
+            {
+                if (mapLayer instanceof TiledMapTileLayer)
+                {
+                    TiledMapTileLayer layer = (TiledMapTileLayer) mapLayer;
+                    
+                    forEachCell(layer, new CellAction()
+                    {
+                        @Override
+                        public void apply(Cell cell)
+                        {
+                            if (cell != null && cell.getTile().getId() == id)
+                            {
+                                cell.setTile(animatedTile);
+                            }
+                        }
+                    });
+                }
+            }
+            animFrames.clear();
+        }
+    }
+    
+    private static void forEachCell(TiledMapTileLayer layer, CellAction action)
+    {
+        for (int column = 0; column < layer.getWidth(); column++)
+        {
+            for (int row = 0; row < layer.getHeight(); row++)
+            {
+                Cell cell = layer.getCell(column, row);
+                action.apply(cell);
+            }
+        }
+    }
+    
+    private interface CellAction
+    {
+        void apply(Cell c);
+    }
 
-    private String nullToEmptyString(String str) {
+    private static String nullToEmptyString(String str) {
         return (str == null ? "" : str);
     }
 }

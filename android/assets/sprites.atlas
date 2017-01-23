@@ -277,65 +277,23 @@ hero-walk3
   orig: 16, 16
   offset: 0, 0
   index: -1
-plumber-red-idle1
+springboard-1
   rotate: false
   xy: 92, 56
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-plumber-red-idle2
+springboard-2
   rotate: false
   xy: 110, 56
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-plumber-red-idle3
+springboard-3
   rotate: false
   xy: 74, 20
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-plumber-red-jump
-  rotate: false
-  xy: 74, 2
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-plumber-red-knockback
-  rotate: false
-  xy: 92, 38
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-plumber-red-land
-  rotate: false
-  xy: 110, 38
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-plumber-red-walk1
-  rotate: false
-  xy: 92, 20
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-plumber-red-walk2
-  rotate: false
-  xy: 92, 2
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-plumber-red-walk3
-  rotate: false
-  xy: 110, 20
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
