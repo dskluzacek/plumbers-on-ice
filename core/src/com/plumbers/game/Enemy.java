@@ -8,28 +8,36 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
-public class Enemy extends Character implements Hazard {
+/**
+ * An enemy character.
+ */
+public class Enemy extends Character implements Hazard
+{
     private final float walkSpeed;
     private static TextureAtlas atlas = null;
 
-    public Enemy(Type type, float x, float y) {
+    public Enemy(Type type, float x, float y)
+    {
         super(type.typeName(), type.relativeX, type.relativeY, type.width, type.height);
         walkSpeed = type.speed;
 
         Array<TextureRegion> walkFrames = new Array<TextureRegion>();
-
-        for (int i = 0; i < 6; i++) {
+        
+        for (int i = 1; i <= 6; i++)
+        {
             TextureRegion region = atlas.findRegion(type.typeName() + "-walk" + i);
 
-            if ( region != null ) {
+            if ( region != null )
+            {
                 walkFrames.add(region);
             }
         }
 
-        Animation walkAnim = new Animation(1/4f, walkFrames);
+        Animation walkAnim = new Animation(1/6f, walkFrames);
         Animation jumpAnim = new Animation(1,
             new TextureRegion[]{ atlas.findRegion(type.typeName() + "-jump") });
-
+        
+        // idle anim will never be used, for falling and knockback we reuse jump
         setMovementAnim(
             new MovementAnimation(jumpAnim, walkAnim, jumpAnim, jumpAnim, jumpAnim) );
 
@@ -39,10 +47,10 @@ public class Enemy extends Character implements Hazard {
         setFlipped(true);
     }
 
-    public static void setTextureAtlas(TextureAtlas atlas) {
+    public static void setTextureAtlas(TextureAtlas atlas)
+    {
         Enemy.atlas = atlas;
     }
-
     
     @Override
     public void fallingCheck(Block[][] blocks)
@@ -57,7 +65,8 @@ public class Enemy extends Character implements Hazard {
     }
 
     @Override
-    public void respondToUnsupported() {
+    public void respondToUnsupported()
+    {
         float Vx = getXVelocity();
 
         setXVelocity( -Vx );
@@ -66,14 +75,16 @@ public class Enemy extends Character implements Hazard {
     }
 
     @Override
-    public void respondToCollision(Block block, Rectangle.Collision info) {	    
+    public void respondToCollision(Block block, Rectangle.Collision info)
+    {	    
         if (info.getDirection() == Direction.TOP)
         {
             setYAccel(0);
             setYVelocity(0);
             setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectOffsetY() );
 
-            if ( getState() != State.RUNNING ) {
+            if ( getState() != State.RUNNING )
+            {
                 setState(State.RUNNING);
                 setXVelocity(- walkSpeed);
                 setFlipped(true);
@@ -93,17 +104,19 @@ public class Enemy extends Character implements Hazard {
         }
     }
 
-    public enum Type {
+    public enum Type
+    {
         BADGUY_1 ("badguy1", 4, 6, 24, 24, 1.4f), //0.7f),
-        BADGUY_2 ("badguy2", 4, 2, 24, 28, 1.1f);//0.55f);
+        BADGUY_2 ("badguy2", 4, 2, 24, 28, 1.1f); //0.55f);
 
         private String string;
         private float speed;
-        private static Map<String, Type> map;
         protected float relativeX, relativeY, width, height;
+        
+        private static Map<String, Type> map;
 
         private Type(String typeName, float relativeX, float relativeY,
-                float width, float height, float speed)
+                     float width, float height, float speed)
         {
             this.string = typeName;
             this.speed = speed;
@@ -114,22 +127,27 @@ public class Enemy extends Character implements Hazard {
             this.height = height;
         }
 
-        public String typeName() {
+        public String typeName()
+        {
             return string;
         }
 
-        public float speed() {
+        public float speed()
+        {
             return speed;
         }
 
-        public static Type get(String typeName) {
+        public static Type get(String typeName)
+        {
             return map.get(typeName);
         }
 
-        static {
+        static
+        {
             map = new HashMap<String, Type>();
 
-            for (Type type : Type.values()) {
+            for (Type type : Type.values())
+            {
                 map.put(type.string, type);
             }
         }
