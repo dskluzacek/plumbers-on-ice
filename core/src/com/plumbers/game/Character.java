@@ -5,15 +5,20 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.plumbers.game.MovementAnimation.Action;
 
-public abstract class Character extends Motionable implements Drawable {
-    private String characterName;
+/**
+ * A character in the game, including player character(s), enemies, and any NPCs.
+ */
+public abstract class Character extends Motionable implements Drawable
+{
+    private String characterName;  // corresponds to names of texture regions
     private Rectangle hitbox;
-    private float hitboOffsetX, hitboxOffsetY;
+    private float hitboxOffsetX, hitboxOffsetY;  // offsets to the position of the hitbox
+                                                 // from the character object coordinates
     private MovementAnimation movementAnim;
     private State state = State.RUNNING;
-    private boolean flipped = false;
+    private boolean flipped = false;  // true if the character is facing left instead of right
     
-    /* 
+    /* ----
      * Used to store the results of hitboxToColumnsAndRows, allowing us to
      * check only those blocks the Character could be intersecting.
      * Storing this info in these fields, rather than returning an object
@@ -23,59 +28,76 @@ public abstract class Character extends Motionable implements Drawable {
     private int columnBegin, columnEnd, rowBegin, rowEnd;
     // ----
 
-    public Character(String characterName) {
+    public Character(String characterName)
+    {
         this.characterName = characterName;
         hitbox = new Rectangle(0, 0, 20, 26);
-        hitboOffsetX = 4;
+        hitboxOffsetX = 4;
         hitboxOffsetY = 4;
     }
 
-    public Character(String name, float relX, float relY, float w, float h) {
+    public Character(String name, float offsetX, float offsetY, float w, float h)
+    {
         characterName = name;
         hitbox = new Rectangle(0, 0, w, h);
-        hitboOffsetX = relX;
-        hitboxOffsetY = relY;
+        hitboxOffsetX = offsetX;
+        hitboxOffsetY = offsetY;
     }
 
-    public enum State {
+    public enum State
+    {
         STANDING,
         RUNNING,
         JUMPING, 
         FALLING,
         DYING;
     }
-
+    
+    /**
+     * Defined by subclasses to customize behavior
+     * in response to a collision with a block.
+     */
     public abstract void respondToCollision(Block b, Rectangle.Collision info);
+    
+    /**
+     * Defined by subclasses to customize behavior in response
+     * to not being held up by a block - not standing on anything.
+     */
     public abstract void respondToUnsupported();
 
     @Override
-    public void draw(Batch batch, float time) {
-        switch (state) {
+    public void draw(Batch batch, float time)
+    {
+        switch (state)
+        {
             case STANDING: movementAnim.setAction(Action.IDLE); break;
             case RUNNING: movementAnim.setAction(Action.RUN); break;
             case JUMPING: movementAnim.setAction(Action.JUMP); break;
             case FALLING: movementAnim.setAction(Action.LAND); break;
             case DYING: movementAnim.setAction(Action.KNOCKED_BACK); break;
         }
-
         TextureRegion frame = movementAnim.getFrame(time);
 
         // if flipped and isFlipX() are different (XOR)
-        if ( flipped ^ frame.isFlipX() ) {
+        if ( flipped ^ frame.isFlipX() )
+        {
             frame.flip(true, false);
         }
-
         batch.draw(frame, getXPosition(), getYPosition(),
                 frame.getRegionWidth() * 2, frame.getRegionHeight() * 2);
     }
-
-    private void updateHitbox() {
-        hitbox.setX( getXPosition() + hitboOffsetX );
+    
+    // called to update the position of the hitbox after a change in position
+    private void updateHitbox()
+    {
+        hitbox.setX( getXPosition() + hitboxOffsetX );
         hitbox.setY( getYPosition() + hitboxOffsetY );
     }
 
-    public void fallingCheck(Block[][] blocks) {
-        if (state != State.STANDING && state != State.RUNNING) {
+    public void fallingCheck(Block[][] blocks)
+    {
+        if (state != State.STANDING && state != State.RUNNING)
+        {
             return;
         }
         updateHitbox();
@@ -86,14 +108,18 @@ public abstract class Character extends Motionable implements Drawable {
         doFallingCheck(blocks);
     }
 
-    private void doFallingCheck(Block[][] blocks) {
-        if (state != State.STANDING && state != State.RUNNING) {
+    private void doFallingCheck(Block[][] blocks)
+    {
+        if (state != State.STANDING && state != State.RUNNING)
+        {
             return;
         }
         boolean flag = false;
 
-        for (int x = columnBegin; x <= columnEnd; x++) {
-            for (int y = rowBegin; y <= rowEnd; y++) {
+        for (int x = columnBegin; x <= columnEnd; x++)
+        {
+            for (int y = rowBegin; y <= rowEnd; y++)
+            {
                 Block b = blocks[x][y];
 
                 if (b == null) {
@@ -110,13 +136,16 @@ public abstract class Character extends Motionable implements Drawable {
                 Rectangle.disposeOf(coll);
             }
         }	
-        if (! flag) {
+        if (! flag)
+        {
             respondToUnsupported();
         }
     }
 
-    public void collisionCheck(Block[][] blocks) {
-        if (state == State.DYING) {
+    public void collisionCheck(Block[][] blocks)
+    {
+        if (state == State.DYING)
+        {
             return;
         }
         updateHitbox();
@@ -126,8 +155,10 @@ public abstract class Character extends Motionable implements Drawable {
 
         boolean flag = false;
 
-        for (int x = columnBegin; x <= columnEnd; x++) {
-            for (int y = rowBegin; y <= rowEnd; y++) {
+        for (int x = columnBegin; x <= columnEnd; x++)
+        {
+            for (int y = rowBegin; y <= rowEnd; y++)
+            {
                 Block b = blocks[x][y];
 
                 if (b == null) {
@@ -135,7 +166,7 @@ public abstract class Character extends Motionable implements Drawable {
                 }
                 Rectangle.Collision coll
                 = hitbox.collisionInfo(b.getRectangle(),
-                        getPreviousX() + hitboOffsetX,
+                        getPreviousX() + hitboxOffsetX,
                         getPreviousY() + hitboxOffsetY);
 
                 if (coll != null && (coll.getDirection() != Direction.TOP
@@ -149,12 +180,17 @@ public abstract class Character extends Motionable implements Drawable {
                 Rectangle.disposeOf(coll);
             }
         }
-        if (flag) {
+        if (flag)
+        {
             fallingCheck(blocks);
         }
     }
-
-    private void hitboxToColumnsAndRows() {
+    
+    // Calculates the first and last row, and column, the Character
+    // is intersecting, allowing collision checks against only blocks
+    // in those cells.
+    private void hitboxToColumnsAndRows()
+    {
         float x1 = hitbox.getX();
         float y1 = hitbox.getY();
         int x2 = MathUtils.ceil(hitbox.getW() + x1);
@@ -173,52 +209,64 @@ public abstract class Character extends Motionable implements Drawable {
         }
     }
 
-    public State getState() {
+    public State getState()
+    {
         return state;
     }
 
-    public void setState(State s) {
+    public void setState(State s)
+    {
         state = s;
     }
 
-    public boolean isFlipped() {
+    public boolean isFlipped()
+    {
         return flipped;
     }
 
-    public void setFlipped(boolean flipped) {
+    public void setFlipped(boolean flipped)
+    {
         this.flipped = flipped;
     }
 
-    public final String getCharacterName() {
+    public final String getCharacterName()
+    {
         return characterName;
     }
 
-    public final void setCharacterName(String characterName) {
+    public final void setCharacterName(String characterName)
+    {
         this.characterName = characterName;
     }
 
-    public Rectangle getRectangle() {
+    public Rectangle getRectangle()
+    {
         updateHitbox();
         return hitbox;
     }
 
-    public void setRectangle(Rectangle hitbox) {
+    public void setRectangle(Rectangle hitbox)
+    {
         this.hitbox = hitbox;
     }
 
-    public float rectOffsetX() {
-        return hitboOffsetX;
+    public float rectOffsetX()
+    {
+        return hitboxOffsetX;
     }
 
-    public float rectOffsetY() {
+    public float rectOffsetY()
+    {
         return hitboxOffsetY;
-    }	
+    }
 
-    public MovementAnimation getMovementAnim() {
+    public MovementAnimation getMovementAnim()
+    {
         return movementAnim;
     }
 
-    public void setMovementAnim(MovementAnimation movementAnim) {
+    public void setMovementAnim(MovementAnimation movementAnim)
+    {
         this.movementAnim = movementAnim;
     }
 }

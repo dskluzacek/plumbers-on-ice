@@ -1,17 +1,24 @@
 package com.plumbers.game;
 
-public class CoinEvent implements Event {
+/**
+ * An event indicating that a coin has been collected.
+ */
+public class CoinEvent implements Event
+{
     private static CoinEvent instance;
 
     private CoinEvent() {}
 
     @Override
-    public void applyTo(EventContext context) {
+    public void applyTo(EventContext context)
+    {
         context.apply(this);
     }
 
-    public static CoinEvent instance() {
-        if (instance == null) {
+    public static CoinEvent instance()
+    {
+        if (instance == null)
+        {
             instance = new CoinEvent();
         }
         return instance;

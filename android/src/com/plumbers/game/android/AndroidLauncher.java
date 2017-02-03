@@ -9,21 +9,20 @@ import com.plumbers.game.ui.PlumbersOnIceGame;
 /**
  * Entry point for the Android app.
  */
-public class AndroidLauncher extends AndroidApplication {
+public class AndroidLauncher extends AndroidApplication
+{
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int width = metrics.widthPixels;
 
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.useAccelerometer = false;
         config.useCompass = false;
-//        config.useWakelock = true;
-//        config.numSamples = 2;
 
-        initialize( PlumbersOnIceGame.createAndroidInstance(width), config );
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        
+        initialize( PlumbersOnIceGame.createAndroidInstance(metrics.widthPixels), config );
     }
 }
