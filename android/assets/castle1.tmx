@@ -2,8 +2,9 @@
 <map version="1.0" orientation="orthogonal" width="150" height="16" tilewidth="16" tileheight="16">
  <properties>
   <property name="background-color" value="20, 12, 28"/>
+  <property name="ceiling" value="true"/>
   <property name="soundtrack" value="Castle-Theme.mp3"/>
-  <property name="soundtrack-delay" value="2"/>
+  <property name="soundtrack-delay" value="0"/>
  </properties>
  <tileset firstgid="1" name="special-tiles" tilewidth="16" tileheight="16" spacing="1">
   <image source="special-tiles.png" width="84" height="50"/>

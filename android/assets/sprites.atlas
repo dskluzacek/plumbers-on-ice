@@ -11,14 +11,14 @@ badguy1-jump
   orig: 16, 16
   offset: 0, 0
   index: -1
-badguy1-walk1
+badguy1-walk2
   rotate: false
   xy: 2, 92
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-badguy1-walk2
+badguy1-walk1
   rotate: false
   xy: 20, 110
   size: 16, 16
