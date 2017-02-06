@@ -1,6 +1,10 @@
 package com.plumbers.game;
 
-public interface EventContext {
+/**
+ * A context defining view behavior for the various types of events.
+ */
+public interface EventContext
+{
     void apply(JumpEvent e);
     void apply(CoinEvent e);
     void apply(SpringboardEvent e);

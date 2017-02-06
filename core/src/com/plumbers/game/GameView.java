@@ -22,7 +22,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.plumbers.game.server.*;
 import com.plumbers.game.ui.PlumbersOnIceGame;
 
-public final class GameView implements Screen {
+public final class GameView implements Screen
+{
     /* -- major fields for game simulation and rendering -- */
     private GameModel gameModel;
     private EventContext eventContext;
@@ -46,18 +47,17 @@ public final class GameView implements Screen {
     private Color bgColor = Color.BLACK;
 
     /* -- state fields needed by the View -- */
-//    private float timeAccumulator = 0;
     private float elapsedTime = 0;
-//    private float cameraPos = 0;
-//    private float cameraTargetPos = 0;
-//    private int cameraSpeed;
     private List<Event> events = new ArrayList<Event>();
 
     /** true when we are in the pause between player death and reset */
     private boolean death = false;
+    
     /** true on victory/finish */
     private boolean finished = false;
+    /** time of finish */
     private float finishedTime;
+    /** score for the level, calculated at finish */
     private int score;
 
     /* -- objects used for the on-screen timer and coin count displays -- */
@@ -101,7 +101,6 @@ public final class GameView implements Screen {
     private String player2CharacterName;
 
 //    private static final float GAME_TICK_TIME = 1/60f;
-//    private static final int TICK_PER_FRAME_RESET_THRESHOLD = 3;
     private static final int COIN_SOUND_MIN_DELAY_IN_FRAMES = 3;
     private static final int INFO_PADDING_IN_PIXELS = 5;
     private static final float ON_DEATH_DELAY = 0.75f;
@@ -114,9 +113,9 @@ public final class GameView implements Screen {
     private static final String DAMAGE_SOUND_FILE = "hurt.wav";
     private static final String DEATH_SOUND_FILE = "death.wav";
 
-    /** game viewport dimensions in game units */
+//    /** game viewport dimensions in game units */
 //    public final int VIRTUAL_WIDTH;// = 853;
-    public static final int VIRTUAL_HEIGHT = 512;  
+//    public static final int VIRTUAL_HEIGHT = 512;  
 
     /** Create a single-player GameView */
     public GameView(String levelFilePath,
@@ -130,12 +129,6 @@ public final class GameView implements Screen {
         this.controller = controller;
         this.musicVolume = musicVolume;
 
-        ////
-//        VIRTUAL_WIDTH = (int) ( Gdx.graphics.getWidth() * VIRTUAL_HEIGHT
-//                              / ((float) Gdx.graphics.getHeight()) );
-//        
-//        CAMERA_PLAYER_X = VIRTUAL_WIDTH - 640;
-        ////
         camera = new GameCamera(viewport);
         eventContext = new SinglePlayerEventContext();
         twoPlayerMode = false;
@@ -153,10 +146,7 @@ public final class GameView implements Screen {
         this.controller = ctrl;
         this.musicVolume = musicVolume;
         this.connection = connection; 
-        ////
-//        VIRTUAL_WIDTH = 853;
-//        CAMERA_PLAYER_X = 300;
-        ////
+
         camera = new GameCamera(viewport);
         eventContext = new TwoPlayerEventContext();
         twoPlayerMode = true;
@@ -166,8 +156,10 @@ public final class GameView implements Screen {
      * Loads needed assets, constructs objects, and initializes fields;
      * to be called right before GameView becomes the active Screen. 
      */
-    public void load() {
-        if (twoPlayerMode) {
+    public void load() 
+    {
+        if (twoPlayerMode)
+        {
             levelFilePath = connection.getLevelFileName();
             player2CharacterName = connection.getOppCharacterName();
         }
@@ -192,14 +184,16 @@ public final class GameView implements Screen {
 
         try {
             level = new Level(levelFilePath, textureAtlas);
-        } catch (FileFormatException e) {
+        }
+        catch (FileFormatException e) {
             e.printStackTrace();
             return;
         }
 
         if ( level.hasBackground() ) {
             background = level.getBackground();
-        } else if ( level.hasBackgroundColor() ) {
+        }
+        else if ( level.hasBackgroundColor() ) {
             bgColor = level.getBackgroundColor();
         }
         music = level.getSoundtrack();
@@ -209,7 +203,8 @@ public final class GameView implements Screen {
         player1 = new Player(player1CharacterName, textureAtlas, controller);
         player1.setPosition( level.getStartPosition() );
 
-        if (twoPlayerMode) {
+        if (twoPlayerMode)
+        {
             player2 = new RemotePlayer(player2CharacterName, textureAtlas);
             player2.setPosition( level.getStartPosition() );
             gameModel = new GameModel(level, player1, player2, null);
@@ -217,7 +212,9 @@ public final class GameView implements Screen {
             player1.set2PlayerMode(true);
             player1.setGameConnection(connection);
             player2.setGameConnection(connection);
-        } else {
+        }
+        else
+        {
             gameModel = new GameModel(level, player1);
         }
 
@@ -235,7 +232,8 @@ public final class GameView implements Screen {
      * Called by the Game when GameView becomes the active Screen.
      */
     @Override
-    public void show() {
+    public void show()
+    {
         camera.configure( Gdx.graphics.getWidth(),
                           Gdx.graphics.getHeight(),
                           Gdx.graphics.getPpiY() );
@@ -249,13 +247,15 @@ public final class GameView implements Screen {
      *  or when the game app is resumed.
      */
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height)
+    {
         camera.resize(width, height);
         mapRenderer.setView( camera.getCamera() );
         
         screenProjMatrix = camera.getOriginMatrix();
         
-        if (background != null) {
+        if (background != null)
+        {
             background.setProjectionMatrix(screenProjMatrix);
             background.setGameWidth( camera.virtualWidth() );
         }
@@ -266,68 +266,93 @@ public final class GameView implements Screen {
      * called by the application automatically to render each frame.
      */
     @Override
-    public void render(float deltaTime) {
-        if (death) {
+    public void render(float deltaTime) 
+    {
+        if (death)
+        {
             deathLoop();
             return;
         }
+        // clear the screen
         Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         elapsedTime += deltaTime;
+        
+        // simulate one game tick and get events
         events.addAll( gameModel.gameTick() );
-
-        for (int i = 0; i < events.size(); i++) {
+        
+        // apply events to the event context
+        for (int i = 0; i < events.size(); i++)
+        {
             events.get(i).applyTo(eventContext);
         }
         events.clear();
 
-        musicCheck();
+
+        
+        // give camera the chance to reposition
         if ( camera.repositionCamera(player1.getXPosition(),
                                      player1.getYPosition(),
                                      player1.getState()) )
         {
             mapRenderer.setView( camera.getCamera() );
         }
-
-        if (background != null) {
+        
+        // render the background
+        if (background != null)
+        {
             background.render(batch, MathUtils.floor(camera.getXDisplacement()), elapsedTime);
         }
         mapRenderer.render();
-
+        
+        // render drawables
         batch.setProjectionMatrix( camera.combined() );
         batch.begin();
 
         List<Drawable> drawables = gameModel.getDrawables();
 
-        for (int i = 0; i < drawables.size(); i++) {
+        for (int i = 0; i < drawables.size(); i++)
+        {
             drawables.get(i).draw(batch, elapsedTime);
         }
         batch.end();
-
+        
+        // render on-screen info displays
         batch.setProjectionMatrix(screenProjMatrix);
         batch.begin();
         
         renderTimer();
         renderCoinCounter();
 
-        if (finished) {
+        if (finished)
+        {
             renderScore();   
         }
         batch.end();
-
-        if (finished && finishedTime + 10 < elapsedTime) {
+        
+        musicCheck();
+        
+        if (death)
+        {
+            elapsedTime = 0;
+        }
+        else if (finished && finishedTime + 10 < elapsedTime)
+        {
             PlumbersOnIceGame.returnToMenu();
         }
     }
 
     /** contains the behavior for events during a single player game */
-    private class SinglePlayerEventContext implements EventContext {
+    private class SinglePlayerEventContext implements EventContext
+    {
         @Override
-        public void apply(CoinEvent e) {
+        public void apply(CoinEvent e)
+        {
             long frameId = Gdx.graphics.getFrameId();
 
-            if ( frameId - coinFrameNumber >= COIN_SOUND_MIN_DELAY_IN_FRAMES ) {
+            if ( frameId - coinFrameNumber >= COIN_SOUND_MIN_DELAY_IN_FRAMES )
+            {
                 coinSound.play();
                 coinFrameNumber = frameId;
             }
@@ -339,41 +364,45 @@ public final class GameView implements Screen {
         }
 
         @Override
-        public void apply(DamageEvent e) {
+        public void apply(DamageEvent e)
+        {
             damageSound.play();
         }
 
         @Override
-        public void apply(DeathEvent e) {
+        public void apply(DeathEvent e)
+        {
             if (death) {
                 return;
             }
 
             death = true;
-            elapsedTime = 0;
-//            timeAccumulator = 0;
             deathSound.play();
             music.stop();
         }
 
         @Override
-        public void apply(JumpEvent e) {
+        public void apply(JumpEvent e)
+        {
             jumpSound.play();
         }
         
         @Override
-        public void apply(SpringboardEvent e) {
+        public void apply(SpringboardEvent e)
+        {
             springboardSound.play(0.5f);
         }
 
         @Override
-        public void apply(FinishEvent e) {
+        public void apply(FinishEvent e)
+        {
             finished = true;
             finishedTime = elapsedTime;
 
             if (finishedTime < 90) {
                 score = (int) ((90 - finishedTime) * 100 + player1.getCoinsCollected() * 75);
-            } else {
+            }
+            else {
                 score = player1.getCoinsCollected() * 75;
             }
 
@@ -421,22 +450,26 @@ public final class GameView implements Screen {
 //                }
 //            }
         }
-
     }
 
     /** render() delegates to this while player is dead */
-    private void deathLoop() {
+    private void deathLoop()
+    {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (elapsedTime < ON_DEATH_DELAY) {
+        if (elapsedTime < ON_DEATH_DELAY)
+        {
             elapsedTime += Gdx.graphics.getDeltaTime();
-        } else {
+        }
+        else
+        {
             reset();
 
             if (twoPlayerMode) {
                 player1.reset( level.getStartPosition() );
-            } else {
+            } 
+            else {
                 gameModel.reset();
             }
             System.gc();
@@ -448,24 +481,24 @@ public final class GameView implements Screen {
      * Resets the View to the beginning of the level
      * and starts the music track.
      */
-    private void reset() {
-//        camera.translate(- cameraPos, 0);
-//        cameraPos = 0;
-//        camera.update();
+    private void reset()
+    {
+        elapsedTime = 0;
         camera.reset();
         mapRenderer.setView( camera.getCamera() );
-//        batch.setProjectionMatrix( camera.combined() );
         music.play();
     }
 
-    private void renderScore() {
+    private void renderScore()
+    {
         mainFont.draw(batch,
                 "FINISHED! Your score: " + score,
                 INFO_PADDING_IN_PIXELS, INFO_PADDING_IN_PIXELS + 30 );
     }
 
     /** renders the on-screen timer */
-    private void renderTimer() {
+    private void renderTimer()
+    {
         CharSequence str = getTimerString();
         mainFont.draw(batch,
                 str,
@@ -474,15 +507,18 @@ public final class GameView implements Screen {
     }
 
     /** formats elapsed time as minutes, seconds, and tenths of a second */
-    private CharSequence getTimerString() {
+    private CharSequence getTimerString()
+    {
         builder.setLength(0);
         float value;
 
-        if (! finished)
+        if (! finished) {
             value = elapsedTime;
-        else
+        }
+        else {
             value = finishedTime;
-
+        }
+        
         int minutes = ((int) value) / 60;
         float seconds = value % 60.0f;
 
@@ -490,13 +526,16 @@ public final class GameView implements Screen {
         builder.append(':');
         if (seconds < 10) { builder.append('0'); }
         builder.append(seconds);
+        
         int index = builder.lastIndexOf("."); // find the decimal point,
-        this.builder.setLength(index + 2); // round down to the nearest tenth
+        this.builder.setLength(index + 2);    // round down to the nearest tenth
+        
         return builder;
     }
 
     /** renders the on-screen coin counter */
-    private void renderCoinCounter() {
+    private void renderCoinCounter()
+    {
         int p = INFO_PADDING_IN_PIXELS;
         builder.setLength(0);
 
@@ -504,41 +543,49 @@ public final class GameView implements Screen {
         mainFont.draw(batch, builder.append(player1.getCoinsCollected()), 33, p);
     }
 
-    /** start the music again yet? */
-    private void musicCheck() {
-        if (musicWait && elapsedTime > musicEndTime + musicDelay) {
+    /* start the music again yet? */
+    private void musicCheck()
+    {
+        if (musicWait && elapsedTime > musicEndTime + musicDelay)
+        {
             music.play();
             musicWait = false;
         }
     }
 
-    /** listener class to detect the end of the music track */
-    private class MusicListener implements OnCompletionListener {
+    /* listener class to detect the end of the music track */
+    private class MusicListener implements OnCompletionListener
+    {
         @Override
-        public void onCompletion(Music music) {
+        public void onCompletion(Music music)
+        {
             musicEndTime = elapsedTime;
             musicWait = true;
         }
     }
 
     @Override
-    public void pause() {
+    public void pause()
+    {
         music.pause();
     }
 
     @Override
-    public void resume() {
+    public void resume()
+    {
         music.play();
     }
 
     @Override
-    public void hide() {
+    public void hide()
+    {
         music.stop();
     }
 
     /** release resources needing dispose() */
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         music.dispose();
         coinSound.dispose();
         jumpSound.dispose();

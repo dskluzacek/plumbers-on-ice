@@ -18,7 +18,7 @@ public class Enemy extends Character implements Hazard
 
     public Enemy(Type type, float x, float y)
     {
-        super(type.typeName(), type.relativeX, type.relativeY, type.width, type.height);
+        super(type.typeName(), type.offsetX, type.offsetY, type.width, type.height);
         walkSpeed = type.speed;
 
         Array<TextureRegion> walkFrames = new Array<TextureRegion>();
@@ -63,12 +63,14 @@ public class Enemy extends Character implements Hazard
         super.fallingCheck(blocks);
         setXPosition(x);
     }
-
+    
+    // with the override of fallingCheck, will be called when one width from falling
     @Override
     public void respondToUnsupported()
     {
         float Vx = getXVelocity();
-
+        
+        // turn around
         setXVelocity( -Vx );
         setXPosition( getXPosition() - Vx );
         setFlipped( (Vx > 0) );
@@ -106,12 +108,12 @@ public class Enemy extends Character implements Hazard
 
     public enum Type
     {
-        BADGUY_1 ("badguy1", 4, 6, 24, 24, 1.4f), //0.7f),
-        BADGUY_2 ("badguy2", 4, 2, 24, 28, 1.1f); //0.55f);
+        BADGUY_1 ("badguy1", 4, 6, 24, 24, 1.4f),
+        BADGUY_2 ("badguy2", 4, 2, 24, 28, 1.1f);
 
         private String string;
         private float speed;
-        protected float relativeX, relativeY, width, height;
+        protected float offsetX, offsetY, width, height;
         
         private static Map<String, Type> map;
 
@@ -121,8 +123,8 @@ public class Enemy extends Character implements Hazard
             this.string = typeName;
             this.speed = speed;
 
-            this.relativeX = relativeX;
-            this.relativeY = relativeY;
+            this.offsetX = relativeX;
+            this.offsetY = relativeY;
             this.width = width;
             this.height = height;
         }
@@ -137,7 +139,7 @@ public class Enemy extends Character implements Hazard
             return speed;
         }
 
-        public static Type get(String typeName)
+        public static Type getByName(String typeName)
         {
             return map.get(typeName);
         }

@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+/**
+ * Controls the view dimensions, zoom level, and positioning and movement of the camera.
+ */
 public class GameCamera
 {
     private CameraConfig currentConfig;
@@ -114,6 +117,9 @@ public class GameCamera
         return camera.combined;
     }
     
+    /**
+     * Returns a projection/view matrix putting (0, 0) at the upper left corner.
+     */
     public Matrix4 getOriginMatrix()
     {
         float x = camera.position.x;
@@ -154,9 +160,7 @@ public class GameCamera
     private float getTargetYPosition(float playerY)
     {
         float proposed = playerY - (Block.SIZE * 4.5f) + (currentConfig.virtualHeight / 2.0f);
-        
-//        System.out.println(proposed);
-        
+                
         if (proposed > yMax)
         {
             return yMax;
@@ -167,8 +171,6 @@ public class GameCamera
         }
         else
         {
-//            System.out.print("Returning proposed:");
-//            System.out.println(proposed);
             return proposed;
         }
     }
@@ -266,6 +268,12 @@ public class GameCamera
         return flag;
     }
     
+    /**
+     * Configures the viewport and camera based on device display metrics.
+     * @param width The width of the display in pixels
+     * @param height The height of the display in pixels
+     * @param ppiY The pixels per inch in the y direction
+     */
     public void configure(int width, int height, float ppiY)
     {   
         if (height == 320)

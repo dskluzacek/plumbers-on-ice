@@ -1,5 +1,10 @@
 package com.plumbers.game;
 
-public interface Event {
+/**
+ * Represents an event detected within the game model,
+ * to be applied to an EventContext.
+ */
+public interface Event
+{
     void applyTo(EventContext context);
 }

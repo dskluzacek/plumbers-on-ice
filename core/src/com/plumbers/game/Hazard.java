@@ -1,5 +1,9 @@
 package com.plumbers.game;
 
-public interface Hazard {
+/**
+ * An object, with a hitbox, that hurts the player.
+ */
+public interface Hazard
+{
     Rectangle getRectangle();
 }

@@ -25,7 +25,11 @@ import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.utils.Array;
 
-public final class Level { 
+/**
+ * A game level, loaded from a Tiled map file.
+ */
+public final class Level
+{ 
     private final OrthogonalTiledMapRenderer renderer;
     private final List<Block> blocks = new ArrayList<Block>();
     private final Block[][] blockArray;
@@ -44,8 +48,11 @@ public final class Level {
     private Background background;
     private Color backgroundColor;
 
+    public static final int UNIT_SCALE = 2;
+    
     private static final String PLATFORM_LAYER_NAME = "Platform layer",
                                 OBJECT_LAYER_NAME   = "Object layer";
+    @SuppressWarnings("unused")
     private static final String START_NAME =  "Start",
                                 FINISH_NAME = "Goal",
                                 CEILING_KEY = "ceiling",
@@ -68,15 +75,16 @@ public final class Level {
                                 COLL_OFFSET_Y_KEY = "relativeY",
                                 COLL_WIDTH_KEY = "width",
                                 COLL_HEIGHT_KEY = "height";
-
+    
     public Level(String filename, TextureAtlas atlas)
             throws FileFormatException
     {
+        // load the map
         TmxMapLoader.Parameters mapParams = new TmxMapLoader.Parameters();
         mapParams.flipY = false;
-
         tiledMap = new TmxMapLoader().load(filename, mapParams);
-
+        
+        // set every tile in every tileset to be flipped vertically
         for ( TiledMapTileSet tileset : tiledMap.getTileSets() )
         {
             for (TiledMapTile tile : tileset)
@@ -84,122 +92,158 @@ public final class Level {
                 tile.getTextureRegion().flip(false, true);
             }
             
+            // special case enabling waterfall animated tiles
             if ( tileset.getName().equalsIgnoreCase("castle-tiles") )
             {
                 loadWaterfallAnim(tileset);
             }
         }
-
+        
+        // tiles the player can interact with, like blocks and coins,
+        // are to be found in the platform layer
         TiledMapTileLayer blockLayer =
                 (TiledMapTileLayer) tiledMap.getLayers().get(PLATFORM_LAYER_NAME);
         widthInTiles = blockLayer.getWidth();
         heightInTiles = blockLayer.getHeight();
         blockArray = new Block[widthInTiles][heightInTiles];
         
-        try {
-            for (int column = 0; column < blockLayer.getWidth(); column++) {
-                for (int row = 0; row < blockLayer.getHeight(); row++) {
+        try
+        {
+            // iterate over every cell in the layer and get tile properties
+            for (int column = 0; column < blockLayer.getWidth(); column++)
+            {
+                for (int row = 0; row < blockLayer.getHeight(); row++)
+                {
                     Cell cell = blockLayer.getCell(column, row);
 
-                    if ( cell != null ) {
+                    if (cell != null) {
                         getTileProperties(column, row, cell, blockLayer);
                     }
                 }
             }
+            
+            // load map properties and objects
             getMapProperties();
             getMapObjects();
-        } catch (NumberFormatException nfe) {
+        }
+        catch (NumberFormatException nfe)
+        {
             throw new FileFormatException(
                     "Error trying to parse an integer in " + filename, nfe);
         }
-        renderer = new OrthogonalTiledMapRenderer(tiledMap, 2);
+        
+        // finally, construct the renderer
+        renderer = new OrthogonalTiledMapRenderer(tiledMap, UNIT_SCALE);
     }
 
-    public Vector getStartPosition() {
+    public Vector getStartPosition()
+    {
         return start;
     }
 
-    public Rectangle getFinish() {
+    public Rectangle getFinish()
+    {
         return finish;
     }
 
-    public List<Block> getBlocks(){
-        return blocks; 
+    public List<Block> getBlocks()
+    {
+        return blocks;
     }
 
-    public Block[][] getBlockArray() {
+    public Block[][] getBlockArray()
+    {
         return blockArray;
     }
 
-    public List<Coin> getCoins() {
+    public List<Coin> getCoins()
+    {
         return coins;
     }
 
-    public List<FixedHazard> getHazards() {
+    public List<FixedHazard> getHazards()
+    {
         return hazards;
     }
 
-    public List<EnemySpawner> getSpawners() {
+    public List<EnemySpawner> getSpawners()
+    {
         return spawners;
     }
-    
-    public List<Springboard> getSpringboards() {
+
+    public List<Springboard> getSpringboards()
+    {
         return springboards;
     }
 
-    public boolean hasBackground() {
+    public boolean hasBackground()
+    {
         return background != null;
     }
 
-    public Background getBackground() {
+    public Background getBackground()
+    {
         return background;
     }
 
-    public boolean hasBackgroundColor() {
+    public boolean hasBackgroundColor()
+    {
         return backgroundColor != null;
     }
 
-    public Color getBackgroundColor() {
+    public Color getBackgroundColor()
+    {
         return backgroundColor;
     }
 
-    public Music getSoundtrack() {
+    public Music getSoundtrack()
+    {
         return soundtrack;
     }
 
-    public int getSoundtrackDelay() {
+    public int getSoundtrackDelay()
+    {
         return soundtrackDelay;
     }
 
-    public OrthogonalTiledMapRenderer getRenderer() {
+    public OrthogonalTiledMapRenderer getRenderer()
+    {
         return renderer;
     }
 
-    public int getWidthInTiles() {
+    public int getWidthInTiles()
+    {
         return widthInTiles;
     }
 
-    public int getHeightInTiles() {
+    public int getHeightInTiles()
+    {
         return heightInTiles;
     }
 
-    public boolean useCeiling() {
+    public boolean useCeiling()
+    {
         return useCeiling;
     }
 
-    public void resetCoins() {
-        for (Coin c : coins) {
+    public void resetCoins()
+    {
+        for (Coin c : coins)
+        {
             c.setCollected(false);
         }
     }
     
-    public void resetSpringboards() {
-        for (Springboard sb : springboards) {
+    public void resetSpringboards()
+    {
+        for (Springboard sb : springboards)
+        {
             sb.reset();
         }
     }
 
-    private void getMapObjects() {
+    private void getMapObjects()
+    {
         MapObjects objects = 
                 tiledMap.getLayers().get(OBJECT_LAYER_NAME).getObjects();
 
@@ -211,31 +255,34 @@ public final class Level {
 
                 if ( rectObj.getName().equalsIgnoreCase(START_NAME) )
                 {
-                    float x = rectObj.getRectangle().getX() * 2;
-                    float y = rectObj.getRectangle().getY() * 2;
+                    float x = rectObj.getRectangle().getX() * UNIT_SCALE;
+                    float y = rectObj.getRectangle().getY() * UNIT_SCALE;
                     start = new Vector(x, y);
-
                 }
                 else if ( rectObj.getName().equalsIgnoreCase(FINISH_NAME) )
                 {
                     com.badlogic.gdx.math.Rectangle rect = rectObj.getRectangle();
 
-                    finish = new Rectangle(rect.getX() * 2, rect.getY() * 2,
-                                           rect.getWidth() * 2, rect.getHeight() * 2);
+                    finish = new Rectangle(rect.getX() * UNIT_SCALE,
+                                           rect.getY() * UNIT_SCALE,
+                                           rect.getWidth() * UNIT_SCALE,
+                                           rect.getHeight() * UNIT_SCALE);
                 }
                 else if ( rectObj.getProperties().containsKey(ENEMY_TYPE_KEY) )
                 {
                     MapProperties props = rectObj.getProperties();
-                    Enemy.Type type = Enemy.Type.get( props.get(ENEMY_TYPE_KEY, String.class) );
-                    int x = 2 * (int) rectObj.getRectangle().getX();
-                    int y = 2 * (int) rectObj.getRectangle().getY();
+                    Enemy.Type type = Enemy.Type.getByName(
+                            props.get(ENEMY_TYPE_KEY, String.class) );
+                    
+                    int x = UNIT_SCALE * (int) rectObj.getRectangle().getX();
+                    int y = UNIT_SCALE * (int) rectObj.getRectangle().getY();
 
                     if (type == null)
                         return;
 
                     if ( props.containsKey(SPAWN_DISTANCE_KEY) )
                     {
-                        int spawnDistance = 2 * Integer.parseInt(
+                        int spawnDistance = UNIT_SCALE * Integer.parseInt(
                                 props.get(SPAWN_DISTANCE_KEY, String.class) );
 
                         spawners.add( new EnemySpawner(x, y, type, spawnDistance) );
@@ -250,22 +297,24 @@ public final class Level {
 
     }
 
-    private void getMapProperties() {
+    private void getMapProperties()
+    {
         MapProperties properties = tiledMap.getProperties();
 
         useCeiling = nullToEmptyString(
-                properties.get(CEILING_KEY, String.class) ).equalsIgnoreCase("true");
+                properties.get(CEILING_KEY, String.class)).equalsIgnoreCase("true");
 
         String musicStr = properties.get(SOUNDTRACK_KEY, String.class);
 
-        if (musicStr != null) {
+        if (musicStr != null)
+        {
             soundtrack = Gdx.audio.newMusic( Gdx.files.internal(musicStr) );
         }
 
-        if ( properties.containsKey(SOUNDTRACK_DELAY_KEY) ) {
+        if (properties.containsKey(SOUNDTRACK_DELAY_KEY))
+        {
             soundtrackDelay = Integer.parseInt(
-                    properties.get(SOUNDTRACK_DELAY_KEY, String.class).trim()
-                    );
+                    properties.get(SOUNDTRACK_DELAY_KEY, String.class).trim() );
         }
         
         String envStr = properties.get(ENVIROMENT_KEY, String.class);
@@ -301,16 +350,18 @@ public final class Level {
         {
             String bgStr = properties.get("background", String.class);
     
-            if (bgStr != null) {
+            if (bgStr != null)
+            {
                 TextureRegion bg = new TextureRegion( new Texture(bgStr) );
                 bg.flip(false, true);
-                background = new Background.ImageBackground(bg, 2, 0.125);
+                background = new Background.ImageBackground(bg, UNIT_SCALE, 0.125);
             }
         }
         
         String colorStr = properties.get(BACKGROUND_COLOR_KEY, String.class);
 
-        if (colorStr != null) {
+        if (colorStr != null)
+        {
             String[] strArr = colorStr.split(",");
             int red = Integer.parseInt( strArr[0].trim() );
             int green = Integer.parseInt( strArr[1].trim() );
@@ -459,7 +510,8 @@ public final class Level {
         void apply(Cell c);
     }
 
-    private static String nullToEmptyString(String str) {
+    private static String nullToEmptyString(String str)
+    {
         return (str == null ? "" : str);
     }
 }
