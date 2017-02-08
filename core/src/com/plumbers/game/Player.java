@@ -224,7 +224,7 @@ public class Player extends Character
     public void respondToCollision(Block block, Rectangle.Collision info)
     {
         State state = getState();
-
+        
         if (info.getDirection() == Direction.TOP)
         {
             setYAccel(0);
@@ -238,7 +238,18 @@ public class Player extends Character
         }
         else if (info.getDirection() == Direction.LEFT)
         {
-            leftCollision(state, info);   
+            Rectangle blockRect = block.getRectangle();
+            float blockBottom = blockRect.getY() + blockRect.getH();
+            
+            // don't make player fall from hitting bottom left corner
+            if (getRectangle().getY() > blockBottom - 2.0f)
+            {
+                setYPosition( blockBottom - rectOffsetY() );
+            }
+            else
+            {
+                leftCollision(state, info);
+            }
         }
         else if (info.getDirection() == Direction.BOTTOM)
         {

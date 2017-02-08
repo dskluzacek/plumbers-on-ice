@@ -169,8 +169,11 @@ public abstract class Character extends Motionable implements Drawable
                         getPreviousX() + hitboxOffsetX,
                         getPreviousY() + hitboxOffsetY);
 
-                if (coll != null && (coll.getDirection() != Direction.TOP
-                        || coll.getDistance() != 0.0f) )
+                if (coll != null
+                    && (coll.getDirection() != Direction.TOP || coll.getDistance() != 0.0f)
+                    && (coll.getDirection() != Direction.BOTTOM || blocks[x][y + 1] == null))
+                     // ^^ this line ensures a bottom collision with a block that has
+                     //    a block below it - i.e., part of a vertical wall, is ignored
                 {
                     respondToCollision(blocks[x][y], coll);
                     updateHitbox();
