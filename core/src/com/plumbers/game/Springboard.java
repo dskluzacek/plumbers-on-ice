@@ -4,6 +4,10 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+/**
+ * A "springboard" or "trampoline" in the game, which the player can bounce on
+ * to jump higher.
+ */
 public final class Springboard implements Drawable
 {
     private final int column;
@@ -76,9 +80,10 @@ public final class Springboard implements Drawable
     {
         state = State.FRAME_2_DOWN;
         lastActivationTickNumber = tickNumber;
-        currentStateStartTime = Float.NaN;
+        currentStateStartTime = Float.NaN;  // will be set upon next call to draw() 
     }
     
+    /** Call this when the game model is being reset. */
     public void reset()
     {
         state = State.IDLE;

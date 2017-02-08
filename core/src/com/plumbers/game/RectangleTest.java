@@ -1,5 +1,9 @@
 package com.plumbers.game;
 
+/**
+ * Test of the Rectangle class's staticCollisionInfo()
+ * @author David Skluzacek
+ */
 public class RectangleTest {
 
     public static void main(String[] args) {

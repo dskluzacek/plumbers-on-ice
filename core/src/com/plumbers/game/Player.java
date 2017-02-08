@@ -12,7 +12,8 @@ import com.plumbers.game.server.EventMessage;
 import com.plumbers.game.server.GameConnection;
 import com.plumbers.game.server.StateMessage;
 
-public class Player extends Character {
+public class Player extends Character
+{
     private Controller controller;
     private GameConnection connection;
     private int coinsCollected = 0;
@@ -23,25 +24,26 @@ public class Player extends Character {
 
     /* ---- */
     private boolean twoPlayerMode;
-    /* ---- */
     private final List<Event> coinEvents = new ArrayList<Event>();
     /* ---- */
 
-    private static final float ACCELERATION = 11/75f, //11/300f, // 1/24f //1/14f,
-                               DECELERATION = -1.2f, //-0.3f, //-0.3f,
-                               MAX_SPEED = 4.4f, //2.2f, //2.75f,
-                               JUMP_POWER = -4.4f, //-2.2f, //-2.75f,
-                               JUMP_BOOST = -1/5f, //-1/20f,
-                               JUMP_FWD_ASSIST = 1.5f; //0.75f;
-    private static final int JUMP_BOOST_DURATION = 12;//24;
+    private static final float ACCELERATION = 11/75f, //1/14f,
+                               DECELERATION = -1.2f, 
+                               MAX_SPEED = 4.4f,      //2.75f,
+                               JUMP_POWER = -4.4f,    //-2.75f,
+                               JUMP_BOOST = -1/5f,
+                               JUMP_FWD_ASSIST = 1.5f;
+    private static final int JUMP_BOOST_DURATION = 12;
 
-    public Player(String name, TextureAtlas textureAtlas, Controller controller) {
+    public Player(String name, TextureAtlas textureAtlas, Controller controller)
+    {
         super(name);
         this.controller = controller;
 
         Array<TextureRegion> walkFrames = new Array<TextureRegion>();
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++)
+        {
             TextureRegion region = textureAtlas.findRegion(name + "-walk" + i);
 
             if ( region != null ) {
@@ -67,129 +69,149 @@ public class Player extends Character {
                                  jumpAnimation, landAnimation, knockbackAnimation) );
     }
 
-    public final int getCoinsCollected() {
+    public final int getCoinsCollected()
+    {
         return coinsCollected;
     }
 
-    public final void incrementCoins() {
+    public final void incrementCoins()
+    {
         ++coinsCollected;
     }
 
-    public final void set2PlayerMode(boolean twoPlayer) {
+    public final void set2PlayerMode(boolean twoPlayer)
+    {
         twoPlayerMode = twoPlayer;
     }
-
-    public final void finished() {
+    
+    // TODO fix this
+    public final void finished()
+    {
         finished = true;
         setXAccel(DECELERATION);
     }
 
-    public final void setGameConnection(GameConnection connection) {
+    public final void setGameConnection(GameConnection connection)
+    {
         this.connection = connection;
     }
 
-    public final void setController(Controller c) {
+    public final void setController(Controller c)
+    {
         controller = c;
     }
 
     @Override
-    public void preVelocityLogic(int tickNumber) {
-        if ( getState() == State.DYING || finished ) {
+    public void preVelocityLogic(int tickNumber)
+    {
+        if ( getState() == State.DYING || finished )
+        {
             return;
         }
 
-        if ( getState() == State.JUMPING ) {
+        if ( getState() == State.JUMPING )
+        {
             if ( tickNumber <= jumpStarted + JUMP_BOOST_DURATION
-                    && controller.pollJumpInput() ) {
+                    && controller.pollJumpInput() )
+            {
                 // allow jump acceleration to continue
-            } else {
+            }
+            else
+            {
                 setYAccel(GameModel.GRAVITY);
             }
 
-            if ( controller.pollRunInput() ) {
+            if ( controller.pollRunInput() )
+            {
                 addXVelocityModifier(JUMP_FWD_ASSIST);
             }
         }
 
-        if ( getState() == State.STANDING || getState() == State.RUNNING ) {
-            if ( controller.pollJumpInput() ) {
+        if ( getState() == State.STANDING || getState() == State.RUNNING )
+        {
+            if ( controller.pollJumpInput() )
+            {
                 startJump(tickNumber);
             }
-            else if ( controller.pollRunInput() ) {
+            else if ( controller.pollRunInput() )
+            {
                 setXAccel(ACCELERATION);
                 setState( State.RUNNING );
             }
-            else {
+            else
+            {
                 setXAccel(DECELERATION);
             }
         }
     }
     
-    private void startJump(int tickNumber)
-    {
-        jumped = true;
-        jumpStarted = tickNumber;
-        setState( State.JUMPING );
-        setYVelocity(JUMP_POWER);
-        setYAccel(JUMP_BOOST);
-        setXAccel(0);
-    }
-
     @Override
-    public void prePositionLogic(int tickNumber) {
-        if ( getState() == State.DYING ) {
+    public void prePositionLogic(int tickNumber)
+    {
+        if ( getState() == State.DYING )
+        {
             return;
         }
         float Vx = getXVelocity();
 
-        if (Vx > MAX_SPEED) {
+        if (Vx > MAX_SPEED)
+        {
             setXVelocity(MAX_SPEED);
-        } else if (Vx < 0) {
+        }
+        else if (Vx < 0)
+        {
             setXVelocity(0);
         }
     }
 
     @Override
-    public void postMotionLogic(int tickNumber) {
-        if ( getState() == State.RUNNING && getXVelocity() == 0 ) {
+    public void postMotionLogic(int tickNumber)
+    {
+        if ( getState() == State.RUNNING && getXVelocity() == 0 )
+        {
             setState( State.STANDING );
         }
-        if ( getState() != State.DYING && controller.pollKillKey() ) {
+        if ( getState() != State.DYING && controller.pollKillKey() )
+        {
             beKilled();
         }
 
-        if (twoPlayerMode && tickNumber % 8 == 0) {
+        if (twoPlayerMode && tickNumber % 8 == 0)
+        {
             StateMessage msg = StateMessage.obtain();
             msg.setValues(this, tickNumber);
             connection.enqueue(msg);
         }
     }
-
-    public Event getEvent() {
+    
+    /**
+     * Returns any outstanding events resulting from simulation logic.
+     */
+    public Event getEvent()
+    {
         boolean jumped = this.jumped;
         boolean hurt = this.hurt;
         this.jumped = false;
         this.hurt = false;
 
-        if (hurt) {
+        if (hurt)
+        {
             return DamageEvent.playerOneInstance();
-        } else if (jumped && getState() == State.JUMPING) {
+        }
+        else if (jumped && getState() == State.JUMPING)
+        {
             return JumpEvent.playerOneInstance();
-        } else {
+        }
+        else
+        {
             return null;
         }
     }
-
-    public void beKilled() {
-        setState(State.DYING);
-        setAcceleration(0, GameModel.GRAVITY);
-//        setVelocity(-0.75f, -4.0f);
-        setVelocity(-1.5f, -8.0f);
-        hurt = true;
-    }
-
-    public void reset(Vector position) {
-        if (! twoPlayerMode) {
+    
+    public void reset(Vector position) 
+    {
+        if (! twoPlayerMode)
+        {
             coinsCollected = 0;
         }
         setPosition(position);
@@ -199,88 +221,94 @@ public class Player extends Character {
     }
 
     @Override
-    public void respondToCollision(Block block, Rectangle.Collision info) {
+    public void respondToCollision(Block block, Rectangle.Collision info)
+    {
         State state = getState();
 
-        if (info.getDirection() == Direction.TOP) {
+        if (info.getDirection() == Direction.TOP)
+        {
             setYAccel(0);
             setYVelocity(0);
             setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectOffsetY() );
 
-            if (state == State.JUMPING || state == State.FALLING) {
+            if (state == State.JUMPING || state == State.FALLING)
+            {
                 setState(State.RUNNING);
             }     
         }
-        else if (info.getDirection() == Direction.LEFT) {
+        else if (info.getDirection() == Direction.LEFT)
+        {
             leftCollision(state, info);   
         }
-        else if (info.getDirection() == Direction.BOTTOM) {
+        else if (info.getDirection() == Direction.BOTTOM)
+        {
             setYVelocity(0);
             setYPosition( getYPosition() + info.getDistance() );
-
         }
-        else if (info.getDirection() == Direction.RIGHT) {
+        else if (info.getDirection() == Direction.RIGHT)
+        {
             setXAccel(0);
             setXVelocity(0);
             setXPosition( getXPosition() + info.getDistance() );
         }
     }
     
-    private void leftCollision(State state, Rectangle.Collision info)
-    {
-        setXAccel(0);
-        setXVelocity(0);
-        setXPosition( getXPosition() - info.getDistance() );
-
-        if (state == State.JUMPING && getYVelocity() > 0) {
-            setState(State.FALLING);
-        }
-    }
-
     @Override
-    public void respondToUnsupported() {
+    public void respondToUnsupported()
+    {
         setState(State.FALLING);
         setXAccel(0);
         setYAccel(GameModel.GRAVITY);
     }
 
-    public void ceilingCheck() {
-        if ( getRectangle().getY() <= 0 ) {
+    public void ceilingCheck()
+    {
+        if ( getRectangle().getY() <= 0 )
+        {
             setYAccel(GameModel.GRAVITY);
             setYVelocity(0);
             setYPosition( - rectOffsetY() );
         }
     }
 
-    public void hazardCollisionCheck(List<? extends Hazard> hazards) {
-        if ( getState() == State.DYING ) {
+    public void hazardCollisionCheck(List<? extends Hazard> hazards)
+    {
+        if ( getState() == State.DYING )
+        {
             return;
         }
         Rectangle rect = getRectangle();
 
-        for (int i = 0; i < hazards.size(); i++) {
-            if (rect.intersects( hazards.get(i).getRectangle() )) {
+        for (int i = 0; i < hazards.size(); i++)
+        {
+            if (rect.intersects( hazards.get(i).getRectangle() ))
+            {
                 beKilled();
             }
         }
     }
 
-    public List<Event> coinCollectCheck(List<Coin> coins, int tickNum) {
-        if ( getState() == State.DYING ) {
+    public List<Event> coinCollectCheck(List<Coin> coins, int tickNum)
+    {
+        if ( getState() == State.DYING )
+        {
             return Collections.emptyList();
         }
 
         Rectangle rect = getRectangle();
         coinEvents.clear();
 
-        for (int i = 0; i < coins.size(); i++) {
+        for (int i = 0; i < coins.size(); i++)
+        {
             Coin coin = coins.get(i);
 
-            if (! coin.isCollected() && rect.intersects(coin.getRectangle())) {
+            if ( ! coin.isCollected() && rect.intersects(coin.getRectangle()) )
+            {
                 coin.setCollected(true);
                 coinEvents.add( CoinEvent.instance() );
 
-                if (twoPlayerMode) {
+                if (twoPlayerMode)
+                {
                     EventMessage msg = EventMessage.obtain();
                     msg.coin(tickNum, true, coin.getColumn(), coin.getRow());
                     connection.enqueue(msg);
@@ -333,14 +361,46 @@ public class Player extends Character {
             }
         }
         
-        if (eventOccurred)
+        if (eventOccurred) {
             return SpringboardEvent.instance();
-        else
+        }
+        else {
             return null;
+        }
     }
 
-    public boolean fallingDeathCheck(float bottom) {
+    public boolean fallingDeathCheck(float bottom)
+    {
         return (getYPosition() > bottom);
     }
+    
+    protected void beKilled()
+    {
+        setState(State.DYING);
+        setAcceleration(0, GameModel.GRAVITY);
+        setVelocity(-1.5f, -8.0f);
+        hurt = true;
+    }
+    
+    private void startJump(int tickNumber)
+    {
+        jumped = true;
+        jumpStarted = tickNumber;
+        setState( State.JUMPING );
+        setYVelocity(JUMP_POWER);
+        setYAccel(JUMP_BOOST);
+        setXAccel(0);
+    }
+    
+    private void leftCollision(State state, Rectangle.Collision info)
+    {
+        setXAccel(0);
+        setXVelocity(0);
+        setXPosition( getXPosition() - info.getDistance() );
 
+        if (state == State.JUMPING && getYVelocity() > 0)
+        {
+            setState(State.FALLING);
+        }
+    }
 }

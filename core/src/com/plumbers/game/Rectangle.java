@@ -3,88 +3,111 @@ package com.plumbers.game;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 
-public final class Rectangle {
-
+/**
+ * An axis-aligned rectangle, defined by its position, width and height.
+ */
+public final class Rectangle
+{
     private float x;
     private float y;
     private float w;
     private float h;
 
-    public Rectangle(float x, float y, float w, float h) {
+    public Rectangle(float x, float y, float w, float h)
+    {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
     }
 
-    public Rectangle(Rectangle r) {
+    public Rectangle(Rectangle r)
+    {
         this.x = r.x;
         this.y = r.y;
         this.w = r.w;
         this.h = r.h;
     }
 
-    public float getX() {
+    public float getX()
+    {
         return x;
     }
 
-    public float getY() {
+    public float getY()
+    {
         return y;
     }
 
-    public float getW() {
+    public float getW()
+    {
         return w;
     }
 
-    public float getH() {
+    public float getH()
+    {
         return h;
     }
 
-    public void setX(float x) {
+    public void setX(float x)
+    {
         this.x = x;
     }
 
-    public void setY(float y) {
+    public void setY(float y)
+    {
         this.y = y;
     }
 
-    public void setW(float w) {
+    public void setW(float w)
+    {
         this.w = w;
     }
 
-    public void setH(float h) {
+    public void setH(float h)
+    {
         this.h = h;
     }
 
-    public boolean intersects(Rectangle other) {
+    public boolean intersects(Rectangle other)
+    {
         return !( this.x + this.w <= other.x || other.x + other.w <= this.x
                 || this.y + this.h < other.y || other.y + other.h < this.y );
     }
 
-    private static boolean intersectsX(Rectangle other, float x, float w) {
+    private static boolean intersectsX(Rectangle other, float x, float w)
+    {
         return !( x + w <= other.x || other.x + other.w <= x );
     }
 
-    private static boolean intersectsY(Rectangle other, float y, float h) {
+    private static boolean intersectsY(Rectangle other, float y, float h)
+    {
         return !( y + h <= other.y || other.y + other.h <= y );
     }
 
-    public Collision collisionInfo(Rectangle other, float prevX, float prevY) {
-        if ( ! this.intersects(other) ) {
+    public Collision collisionInfo(Rectangle other, float prevX, float prevY)
+    {
+        if ( ! this.intersects(other) )
+        {
             return null;
         }
         Collision coll = staticCollisionInfo(other);
 
-        if (coll == TOP_0) {
+        if (coll == TOP_0)
+        {
             return TOP_0;
-        } else {
+        }
+        else
+        {
             float distance = Float.NaN;
             Direction direction = resolveCollision(other, prevX, prevY);
 
-            if (direction == null)
+            if (direction == null) {
                 return coll;
-
-            switch (direction) {
+            }
+            
+            switch (direction)
+            {
                 case TOP: distance = topDistance(other); break;
                 case BOTTOM: distance = bottomDistance(other); break;
                 case LEFT: distance = leftDistance(other); break;
@@ -96,23 +119,28 @@ public final class Rectangle {
         }
     }
 
-    private float topDistance(Rectangle other) {
+    private float topDistance(Rectangle other)
+    {
         return (this.y + this.h) - other.y;
     }
 
-    private float bottomDistance(Rectangle other) {
+    private float bottomDistance(Rectangle other)
+    {
         return (other.y + other.h) - this.y;
     }
 
-    private float leftDistance(Rectangle other) {
+    private float leftDistance(Rectangle other)
+    {
         return (this.x + this.w) - other.x;
     }
 
-    private float rightDistance(Rectangle other) {
+    private float rightDistance(Rectangle other)
+    {
         return (other.x + other.w) - this.x;
     }
 
-    public Collision staticCollisionInfo(Rectangle other) {
+    public Collision staticCollisionInfo(Rectangle other)
+    {
         if ( ! this.intersects(other) ) {
             return null;
         }
@@ -142,19 +170,24 @@ public final class Rectangle {
 
         if (distance == topDistance) {
             direction = Direction.TOP;
-        } else if (distance == bottomDistance) {
+        }
+        else if (distance == bottomDistance) {
             direction = Direction.BOTTOM;
-        } else if (distance == leftDistance) {
+        }
+        else if (distance == leftDistance) {
             direction = Direction.LEFT;
-        }  else if (distance == rightDistance) {
+        }
+        else if (distance == rightDistance) {
             direction = Direction.RIGHT;
         }
-        else
+        else {
             throw new IllegalStateException();
-
+        }
+        
         if (direction == Direction.TOP && distance == 0) {
             return TOP_0;
-        } else {
+        } 
+        else {
             return Pools.get(CollisionImpl.class).obtain().set(direction, distance);
         }
     }
@@ -163,26 +196,34 @@ public final class Rectangle {
     {
         final Direction direction;
 
-        if ( intersectsX(other, prevX, w) ) {
+        if ( intersectsX(other, prevX, w) )
+        {
             if (prevY + h < other.y + other.h) {
                 direction = Direction.TOP;
-            } else {
+            }
+            else {
                 direction = Direction.BOTTOM;
             }
-        } else if ( intersectsY(other, prevY, h) ) {
+        }
+        else if ( intersectsY(other, prevY, h) )
+        {
             if (prevX + w <= other.x) {
                 direction = Direction.LEFT;
-            } else {
+            }
+            else {
                 direction = Direction.RIGHT;
             }
-        } else {
+        }
+        else
+        {
             direction = null;
         }
 
         return direction;
     }
 
-    public static void disposeOf(Collision obj) {
+    public static void disposeOf(Collision obj)
+    {
         if (obj == null || obj == TOP_0) {
             return;
         }
@@ -192,48 +233,59 @@ public final class Rectangle {
         }
     }
 
-    public static interface Collision {
+    public static interface Collision
+    {
         Direction getDirection();
         float getDistance();
     }
 
-    private static final Collision TOP_0 = new Collision() {
+    private static final Collision TOP_0 = new Collision()
+    {
         @Override
-        public Direction getDirection() {
+        public Direction getDirection()
+        {
             return Direction.TOP;
         }
 
         @Override
-        public float getDistance() {
+        public float getDistance()
+        {
             return 0;
         }
     };
 
-    private static class CollisionImpl implements Collision, Pool.Poolable {
+    private static class CollisionImpl implements Collision, Pool.Poolable
+    {
         private Direction direction;
         private float distance;
 
-        private CollisionImpl() {}
+        private CollisionImpl()
+        {
+        }
 
-        public Collision set(Direction dir, float dist) {
+        public Collision set(Direction dir, float dist)
+        {
             direction = dir;
             distance = dist;
             return this;
         }
 
         @Override
-        public void reset() {
+        public void reset()
+        {
             direction = null;
             distance = 0;
         }
 
         @Override
-        public Direction getDirection() {
+        public Direction getDirection()
+        {
             return direction;
         }
 
         @Override
-        public float getDistance() {
+        public float getDistance()
+        {
             return distance;
         }
     }

@@ -2,6 +2,9 @@ package com.plumbers.game;
 
 import com.badlogic.gdx.InputAdapter;
 
+/**
+ * Controller implementation for a touch screen.
+ */
 public class TouchscreenController extends InputAdapter implements Controller
 {
     private final int screenMidpoint;
@@ -9,18 +12,25 @@ public class TouchscreenController extends InputAdapter implements Controller
     private int runInputPointerNum = -1;
     private int jumpInputPointerNum = -1;
     
-    public TouchscreenController(int screenWidth) {
+    public TouchscreenController(int screenWidth)
+    {
         screenMidpoint = (int) (screenWidth / 2.0);
     }
     
     @Override
-    public boolean touchDown(int x, int y, int pointer, int button) {
-        if (x < screenMidpoint) {
-            if (runInputPointerNum == -1) {
+    public boolean touchDown(int x, int y, int pointer, int button)
+    {
+        if (x < screenMidpoint)
+        {
+            if (runInputPointerNum == -1)
+            {
                 runInputPointerNum = pointer;
             }
-        } else {
-            if (jumpInputPointerNum == -1) {
+        }
+        else
+        {
+            if (jumpInputPointerNum == -1)
+            {
                 jumpInputPointerNum = pointer;
             }
         }
@@ -28,27 +38,34 @@ public class TouchscreenController extends InputAdapter implements Controller
     }
     
     @Override
-    public boolean touchUp(int x, int y, int pointer, int button) {
-        if (pointer == runInputPointerNum) {
+    public boolean touchUp(int x, int y, int pointer, int button)
+    {
+        if (pointer == runInputPointerNum)
+        {
             runInputPointerNum = -1;
-        } else if (pointer == jumpInputPointerNum) {
+        }
+        else if (pointer == jumpInputPointerNum)
+        {
             jumpInputPointerNum = -1;
         }
         return true;
     }
     
     @Override
-    public boolean pollRunInput() {
+    public boolean pollRunInput()
+    {
         return runInputPointerNum != -1;
     }
 
     @Override
-    public boolean pollJumpInput() {
+    public boolean pollJumpInput()
+    {
         return jumpInputPointerNum != -1;
     }
 
     @Override
-    public boolean pollKillKey() {
+    public boolean pollKillKey()
+    {
         return false;
     }
 }

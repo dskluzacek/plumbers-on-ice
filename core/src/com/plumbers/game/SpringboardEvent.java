@@ -1,5 +1,8 @@
 package com.plumbers.game;
 
+/**
+ * An event indicating that a springboard has been bounced on.
+ */
 public class SpringboardEvent implements Event
 {
     private static SpringboardEvent instance;
@@ -10,8 +13,10 @@ public class SpringboardEvent implements Event
         context.apply(this);   
     }
     
-    public static SpringboardEvent instance() {
-        if (instance == null) {
+    public static SpringboardEvent instance()
+    {
+        if (instance == null) 
+        {
             instance = new SpringboardEvent();
         }
         return instance;

@@ -3,7 +3,8 @@ package com.plumbers.game;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public final class MovementAnimation {
+public final class MovementAnimation
+{
     private final Animation idleAnim;
     private final Animation runAnim;
     private final Animation jumpAnim;
@@ -22,15 +23,19 @@ public final class MovementAnimation {
         this.knockbackAnim = knockbackAnim;
     }
 
-    public void setAction(Action action) {
-        if (action == null)
+    public void setAction(Action action)
+    {
+        if (action == null) {
             throw new IllegalArgumentException();
-
+        }
+        
         this.action = action;
     }
 
-    public TextureRegion getFrame(float currentTime) {
-        switch (action) {
+    public TextureRegion getFrame(float currentTime)
+    {
+        switch (action)
+        {
         case IDLE:
             return idleAnim.getKeyFrame(currentTime, true);
         case JUMP:
@@ -45,7 +50,8 @@ public final class MovementAnimation {
         return null;
     }
 
-    public enum Action {
+    public enum Action
+    {
         IDLE,
         RUN,
         JUMP,
