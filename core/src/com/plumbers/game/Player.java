@@ -12,14 +12,17 @@ import com.plumbers.game.server.EventMessage;
 import com.plumbers.game.server.GameConnection;
 import com.plumbers.game.server.StateMessage;
 
+/**
+ * The human-controlled player character. 
+ */
 public class Player extends Character
 {
     private Controller controller;
     private GameConnection connection;
     private int coinsCollected = 0;
-    protected boolean jumped = false;
-    protected boolean hurt = false;
-    private int jumpStarted;
+    private boolean jumped = false;
+    private boolean hurt = false;
+    private int jumpStarted;   // tick number when the most recent jump started
     private boolean finished;
 
     /* ---- */
@@ -34,7 +37,17 @@ public class Player extends Character
                                JUMP_BOOST = -1/5f,
                                JUMP_FWD_ASSIST = 1.5f;
     private static final int JUMP_BOOST_DURATION = 12;
-
+    private static final float LOWER_LEFT_TOLERANCE = 2.0f,
+                               DEATH_VX = -1.5f,
+                               DEATH_VY = -8.0f;
+    
+    /**
+     * Constructs a Player using the given character name.
+     * 
+     * @param name The name of the character to use, corresponding to its texture regions
+     * @param textureAtlas The texture atlas on which the character is found
+     * @param controller The controller to use
+     */
     public Player(String name, TextureAtlas textureAtlas, Controller controller)
     {
         super(name);
@@ -111,16 +124,19 @@ public class Player extends Character
 
         if ( getState() == State.JUMPING )
         {
+            // allows player to control height of jump by holding the input, or not
             if ( tickNumber <= jumpStarted + JUMP_BOOST_DURATION
                     && controller.pollJumpInput() )
             {
-                // allow jump acceleration to continue
+                // then, allow jump acceleration to continue
             }
             else
             {
+                // else, let gravity take over once again
                 setYAccel(GameModel.GRAVITY);
             }
-
+            
+            // allows player to get a forward boost in mid-air by holding run input
             if ( controller.pollRunInput() )
             {
                 addXVelocityModifier(JUMP_FWD_ASSIST);
@@ -242,7 +258,7 @@ public class Player extends Character
             float blockBottom = blockRect.getY() + blockRect.getH();
             
             // don't make player fall from hitting bottom left corner
-            if (getRectangle().getY() > blockBottom - 2.0f)
+            if (getRectangle().getY() > blockBottom - LOWER_LEFT_TOLERANCE)
             {
                 setYPosition( blockBottom - rectOffsetY() );
             }
@@ -369,6 +385,8 @@ public class Player extends Character
                 {
                     leftCollision(getState(), coll);
                 }
+                /* --- */
+                Rectangle.disposeOf(coll);
             }
         }
         
@@ -389,7 +407,7 @@ public class Player extends Character
     {
         setState(State.DYING);
         setAcceleration(0, GameModel.GRAVITY);
-        setVelocity(-1.5f, -8.0f);
+        setVelocity(DEATH_VX, DEATH_VY);
         hurt = true;
     }
     
@@ -403,15 +421,17 @@ public class Player extends Character
         setXAccel(0);
     }
     
+    // respond to collision with an object's left edge, whether a block or something else
     private void leftCollision(State state, Rectangle.Collision info)
     {
         setXAccel(0);
         setXVelocity(0);
         setXPosition( getXPosition() - info.getDistance() );
 
-        if (state == State.JUMPING && getYVelocity() > 0)
+        if ((state == State.JUMPING || state == State.FALLING) && getYVelocity() > 0)
         {
             setState(State.FALLING);
+            setYVelocity(0);
         }
     }
 }

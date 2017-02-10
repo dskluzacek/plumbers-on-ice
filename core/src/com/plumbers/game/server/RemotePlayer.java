@@ -87,17 +87,20 @@ public class RemotePlayer extends Player {
     }
 
     @Override
-    public Event getEvent() {
-        boolean jumped = this.jumped;
-        boolean hurt = this.hurt;
-        this.jumped = false;
-        this.hurt = false;
+    public Event getEvent()
+    {
+        Event e = super.getEvent();
         
-        if (hurt) {
+        if (e instanceof DamageEvent)
+        {
             return DamageEvent.playerTwoInstance();
-        } else if (jumped && getState() == State.JUMPING) {
+        } 
+        else if (e instanceof JumpEvent)
+        {
             return JumpEvent.playerTwoInstance();
-        } else {
+        }
+        else
+        {
             return null;
         }
     }

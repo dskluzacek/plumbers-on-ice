@@ -76,7 +76,7 @@ public abstract class Motionable
     }
     
     /** 
-     * Sets this object's velocity to the value of the given vector.
+     * Sets this object's acceleration to the value of the given vector.
      */
     public final void setAcceleration(Vector acceleration)
     {
