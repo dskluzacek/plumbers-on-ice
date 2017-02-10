@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 /**
  * Controls the view dimensions, zoom level, and positioning and movement of the camera.
  */
-public class GameCamera
+public final class GameCamera
 {
     private CameraConfig currentConfig;
     private OrthographicCamera camera;

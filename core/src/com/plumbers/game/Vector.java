@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Pool;
 /**
  * A 2-dimensional vector, using x and y components.
  */
-public class Vector implements Pool.Poolable
+public final class Vector implements Pool.Poolable
 {
     private float x;
     private float y;

@@ -3,7 +3,7 @@ package com.plumbers.game;
 /**
  * An event indicating that the player has jumped.
  */
-public class JumpEvent implements Event
+public final class JumpEvent implements Event
 {
     private static JumpEvent instance1, instance2;
     private final int player;

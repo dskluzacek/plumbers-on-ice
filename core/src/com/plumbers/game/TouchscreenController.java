@@ -5,7 +5,7 @@ import com.badlogic.gdx.InputAdapter;
 /**
  * Controller implementation for a touch screen.
  */
-public class TouchscreenController extends InputAdapter implements Controller
+public final class TouchscreenController extends InputAdapter implements Controller
 {
     private final int screenMidpoint;
     

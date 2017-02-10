@@ -7,7 +7,7 @@ import com.badlogic.gdx.InputAdapter;
 /**
  * Controller implementation for a PC's keyboard.
  */
-public class KeyboardController extends InputAdapter implements Controller
+public final class KeyboardController extends InputAdapter implements Controller
 {    
     @Override
     public boolean pollRunInput()

@@ -3,7 +3,7 @@ package com.plumbers.game;
 /**
  * An event indicating that a coin has been collected.
  */
-public class CoinEvent implements Event
+public final class CoinEvent implements Event
 {
     private static CoinEvent instance;
 

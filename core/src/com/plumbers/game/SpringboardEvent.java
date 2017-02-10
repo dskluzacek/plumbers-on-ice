@@ -3,7 +3,7 @@ package com.plumbers.game;
 /**
  * An event indicating that a springboard has been bounced on.
  */
-public class SpringboardEvent implements Event
+public final class SpringboardEvent implements Event
 {
     private static SpringboardEvent instance;
     
