@@ -58,7 +58,7 @@ public final class Level
                                 CEILING_KEY = "ceiling",
                                 SOUNDTRACK_KEY = "soundtrack",
                                 SOUNDTRACK_DELAY_KEY = "soundtrack-delay",
-                                ENVIROMENT_KEY = "enviroment",
+                                ENVIRONMENT_KEY = "enviroment",
                                 GRASSLAND_STR = "grassland",
                                 WINTER_STR = "winter",
                                 AUTUMN_STR = "autumn",
@@ -255,69 +255,101 @@ public final class Level
 
                 if ( rectObj.getName().equalsIgnoreCase(START_NAME) )
                 {
-                    float x = rectObj.getRectangle().getX() * UNIT_SCALE;
-                    float y = rectObj.getRectangle().getY() * UNIT_SCALE;
-                    start = new Vector(x, y);
+                    loadStart(rectObj);
                 }
                 else if ( rectObj.getName().equalsIgnoreCase(FINISH_NAME) )
                 {
-                    com.badlogic.gdx.math.Rectangle rect = rectObj.getRectangle();
-
-                    finish = new Rectangle(rect.getX() * UNIT_SCALE,
-                                           rect.getY() * UNIT_SCALE,
-                                           rect.getWidth() * UNIT_SCALE,
-                                           rect.getHeight() * UNIT_SCALE);
+                    loadFinish(rectObj);
                 }
                 else if ( rectObj.getProperties().containsKey(ENEMY_TYPE_KEY) )
                 {
-                    MapProperties props = rectObj.getProperties();
-                    Enemy.Type type = Enemy.Type.getByName(
-                            props.get(ENEMY_TYPE_KEY, String.class) );
-                    
-                    int x = UNIT_SCALE * (int) rectObj.getRectangle().getX();
-                    int y = UNIT_SCALE * (int) rectObj.getRectangle().getY();
-
-                    if (type == null)
-                        return;
-
-                    if ( props.containsKey(SPAWN_DISTANCE_KEY) )
-                    {
-                        int spawnDistance = UNIT_SCALE * Integer.parseInt(
-                                props.get(SPAWN_DISTANCE_KEY, String.class) );
-
-                        spawners.add( new EnemySpawner(x, y, type, spawnDistance) );
-                    }
-                    else
-                    {
-                        spawners.add( new EnemySpawner(x, y, type) );
-                    }
+                    loadEnemySpawner(rectObj);
                 }
             }
         }
+    }
+    
+    private void loadStart(RectangleMapObject rectObj)
+    {
+        float x = rectObj.getRectangle().getX() * UNIT_SCALE;
+        float y = rectObj.getRectangle().getY() * UNIT_SCALE;
+        start = new Vector(x, y);
+    }
+    
+    private void loadFinish(RectangleMapObject rectObj)
+    {
+        com.badlogic.gdx.math.Rectangle rect = rectObj.getRectangle();
 
+        finish = new Rectangle(rect.getX() * UNIT_SCALE,
+                               rect.getY() * UNIT_SCALE,
+                               rect.getWidth() * UNIT_SCALE,
+                               rect.getHeight() * UNIT_SCALE);
+    }
+    
+    private void loadEnemySpawner(RectangleMapObject rectObj)
+    {
+        MapProperties props = rectObj.getProperties();
+        Enemy.Type type = Enemy.Type.getByName( props.get(ENEMY_TYPE_KEY, String.class) );
+        
+        if (type == null) {
+            return;
+        }
+        
+        int x = UNIT_SCALE * (int) rectObj.getRectangle().getX();
+        int y = UNIT_SCALE * (int) rectObj.getRectangle().getY();
+
+        if ( props.containsKey(SPAWN_DISTANCE_KEY) )
+        {
+            int spawnDistance = UNIT_SCALE * Integer.parseInt(
+                    props.get(SPAWN_DISTANCE_KEY, String.class) );
+
+            spawners.add( new EnemySpawner(x, y, type, spawnDistance) );
+        }
+        else
+        {
+            spawners.add( new EnemySpawner(x, y, type) );
+        }
     }
 
     private void getMapProperties()
     {
         MapProperties properties = tiledMap.getProperties();
 
+        loadUseCeiling(properties);
+        loadSoundtrack(properties);
+        loadSoundtrackDelay(properties);
+        loadEnvironment(properties);
+        loadBackgroundColor(properties);
+    }
+    
+    private void loadUseCeiling(MapProperties properties)
+    {
         useCeiling = nullToEmptyString(
                 properties.get(CEILING_KEY, String.class)).equalsIgnoreCase("true");
-
+    }
+    
+    private void loadSoundtrack(MapProperties properties)
+    {
         String musicStr = properties.get(SOUNDTRACK_KEY, String.class);
 
         if (musicStr != null)
         {
             soundtrack = Gdx.audio.newMusic( Gdx.files.internal(musicStr) );
         }
-
+    }
+    
+    private void loadSoundtrackDelay(MapProperties properties)
+    {
         if (properties.containsKey(SOUNDTRACK_DELAY_KEY))
         {
             soundtrackDelay = Integer.parseInt(
                     properties.get(SOUNDTRACK_DELAY_KEY, String.class).trim() );
         }
-        
-        String envStr = properties.get(ENVIROMENT_KEY, String.class);
+    }
+    
+    private void loadEnvironment(MapProperties properties)
+    {
+        String envStr = properties.get(ENVIRONMENT_KEY, String.class);
         
         if (envStr != null)
         {
@@ -357,7 +389,10 @@ public final class Level
                 background = new Background.ImageBackground(bg, UNIT_SCALE, 0.125);
             }
         }
-        
+    }
+    
+    private void loadBackgroundColor(MapProperties properties)
+    {
         String colorStr = properties.get(BACKGROUND_COLOR_KEY, String.class);
 
         if (colorStr != null)
@@ -385,15 +420,14 @@ public final class Level
             }
             else if ( props.get(SPECIAL_TILE_KEY).equals(SPIKES_STR) )
             {
-                hazards.add( new FixedHazard(
-                        new Rectangle(column * Block.SIZE + 4,
-                                      row * Block.SIZE + 20,
-                                      24, 12)) );
+                hazards.add( new Spikes(column, row) );
             }
             else if ( props.get(SPECIAL_TILE_KEY).equals(SPRINGBOARD_STR) )
             {
                 springboards.add( new Springboard(column, row) );
-                cell.setTile(null);
+                
+                // Springboard is a Drawable and not rendered by the map renderer
+                cell.setTile(null);  
             }
         }
         else if ( props.containsKey(COLL_OFFSET_X_KEY)
@@ -407,13 +441,13 @@ public final class Level
             String hStr = props.get(COLL_HEIGHT_KEY, String.class);
 
             int relativeX =
-                (relX == null ? 0 : Integer.parseInt(relX.trim()) * 2);
+                (relX == null ? 0 : Integer.parseInt(relX.trim()) * UNIT_SCALE);
             int relativeY =
-                (relY == null ? 0 : Integer.parseInt(relY.trim()) * 2); 
+                (relY == null ? 0 : Integer.parseInt(relY.trim()) * UNIT_SCALE); 
             int width =
-                (wStr == null ? Block.SIZE : Integer.parseInt(wStr.trim()) * 2);
+                (wStr == null ? Block.SIZE : Integer.parseInt(wStr.trim()) * UNIT_SCALE);
             int height =
-                (hStr == null ? Block.SIZE : Integer.parseInt(hStr.trim()) * 2);
+                (hStr == null ? Block.SIZE : Integer.parseInt(hStr.trim()) * UNIT_SCALE);
 
             Block b = new Block(column, row, cell, blockLayer,
                                 relativeX, relativeY, width, height);
@@ -428,48 +462,49 @@ public final class Level
         }
     }
     
+    // loads the waterfall animation from the dungeon environment
     private void loadWaterfallAnim(TiledMapTileSet tileset)
     {
-        final String WATERFALL_1_KEY = "waterfall1";
-        final String WATERFALL_2_KEY = "waterfall2";
+        final String WATERFALL_A_KEY = "waterfall1";
+        final String WATERFALL_B_KEY = "waterfall2";
         final int LENGTH = 16;
         
         StaticTiledMapTile[] framesA = new StaticTiledMapTile[LENGTH];
         StaticTiledMapTile[] framesB = new StaticTiledMapTile[LENGTH];
         
+        // search for waterfall frame tiles and load them into array by index
         for (TiledMapTile tile : tileset)
         {
             MapProperties properties = tile.getProperties();
             
-            if ( properties.containsKey(WATERFALL_1_KEY) )
+            if ( properties.containsKey(WATERFALL_A_KEY) )
             {
                 int index = Integer.parseInt(
-                        properties.get(WATERFALL_1_KEY, String.class).trim()
+                        properties.get(WATERFALL_A_KEY, String.class).trim()
                         );
                 framesA[index] = (StaticTiledMapTile) tile;
             }
-            else if ( properties.containsKey(WATERFALL_2_KEY) )
+            else if ( properties.containsKey(WATERFALL_B_KEY) )
             {
                 int index = Integer.parseInt(
-                        properties.get(WATERFALL_2_KEY, String.class).trim()
+                        properties.get(WATERFALL_B_KEY, String.class).trim()
                         );
                 framesB[index] = (StaticTiledMapTile) tile;
             }
         }
         
+        // create a 2-frame animated tile for each waterfall tile
         Array<StaticTiledMapTile> animFrames = new Array<StaticTiledMapTile>(2);
         
         for (int i = 0; i < framesA.length; i++)
-        {
-            System.out.println(framesA[i]);
-            System.out.println(framesB[i]);
-            
+        {   
             animFrames.add(framesA[i]);
             animFrames.add(framesB[i]);    
             final AnimatedTiledMapTile animatedTile = new AnimatedTiledMapTile(1/6f, animFrames);
             final int id = framesA[i].getId();
             
-            // have to do this because setting the tile in the tileset does nothing
+            // Search for the tile in the map layers and replace.
+            // Have to do this because setting the tile in the tileset does nothing.
             for (MapLayer mapLayer : tiledMap.getLayers())
             {
                 if (mapLayer instanceof TiledMapTileLayer)
