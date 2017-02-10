@@ -1,7 +1,7 @@
 package com.plumbers.game;
 
 import com.badlogic.gdx.utils.Pool;
-import com.badlogic.gdx.utils.Pools;
+import com.badlogic.gdx.utils.ReflectionPool;
 
 /**
  * An axis-aligned rectangle, defined by its position, width and height.
@@ -188,7 +188,7 @@ public final class Rectangle
             return TOP_0;
         } 
         else {
-            return Pools.get(CollisionImpl.class).obtain().set(direction, distance);
+            return CollisionImpl.pool.obtain().set(direction, distance);
         }
     }
 
@@ -229,7 +229,7 @@ public final class Rectangle
         }
 
         if (obj instanceof CollisionImpl) {
-            Pools.free(obj);
+            CollisionImpl.pool.free((CollisionImpl) obj);
         }
     }
 
@@ -258,6 +258,9 @@ public final class Rectangle
     {
         private Direction direction;
         private float distance;
+        
+        static Pool<CollisionImpl> pool
+                = new ReflectionPool<CollisionImpl>(CollisionImpl.class, 4);
 
         private CollisionImpl()
         {

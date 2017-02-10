@@ -27,21 +27,32 @@ public abstract class Character extends Motionable implements Drawable
      */
     private int columnBegin, columnEnd, rowBegin, rowEnd;
     // ----
-
+    
+    protected Character()
+    {
+        hitbox = new Rectangle(0, 0, 0, 0);
+    }
+    
     public Character(String characterName)
     {
-        this.characterName = characterName;
-        hitbox = new Rectangle(0, 0, 20, 26);
-        hitboxOffsetX = 4;
-        hitboxOffsetY = 4;
+        this(characterName, 4, 4, 20, 26);
     }
 
     public Character(String name, float offsetX, float offsetY, float w, float h)
     {
+        this();
+        init(name, offsetX, offsetY, w, h);
+    }
+    
+    public void init(String name, float offsetX, float offsetY, float w, float h)
+    {
         characterName = name;
-        hitbox = new Rectangle(0, 0, w, h);
         hitboxOffsetX = offsetX;
         hitboxOffsetY = offsetY;
+        hitbox.setX(0);
+        hitbox.setY(0);
+        hitbox.setW(w);
+        hitbox.setH(h);
     }
 
     public enum State
@@ -84,7 +95,8 @@ public abstract class Character extends Motionable implements Drawable
             frame.flip(true, false);
         }
         batch.draw(frame, getXPosition(), getYPosition(),
-                frame.getRegionWidth() * 2, frame.getRegionHeight() * 2);
+                frame.getRegionWidth() * Level.UNIT_SCALE,
+                frame.getRegionHeight() * Level.UNIT_SCALE);
     }
     
     // called to update the position of the hitbox after a change in position
@@ -101,10 +113,8 @@ public abstract class Character extends Motionable implements Drawable
             return;
         }
         updateHitbox();
-        hitboxToColumnsAndRows();
-        columnEnd = MathUtils.clamp(columnEnd, 0, blocks.length - 1);
-        rowEnd = MathUtils.clamp(rowEnd, 0, blocks[0].length - 1);
-
+        hitboxToColumnsAndRows(blocks.length, blocks[0].length);
+        
         doFallingCheck(blocks);
     }
 
@@ -149,9 +159,7 @@ public abstract class Character extends Motionable implements Drawable
             return;
         }
         updateHitbox();
-        hitboxToColumnsAndRows();
-        columnEnd = MathUtils.clamp(columnEnd, 0, blocks.length - 1);
-        rowEnd = MathUtils.clamp(rowEnd, 0, blocks[0].length - 1);
+        hitboxToColumnsAndRows(blocks.length, blocks[0].length);
 
         boolean flag = false;
 
@@ -192,24 +200,22 @@ public abstract class Character extends Motionable implements Drawable
     // Calculates the first and last row, and column, the Character
     // is intersecting, allowing collision checks against only blocks
     // in those cells.
-    private void hitboxToColumnsAndRows()
+    private void hitboxToColumnsAndRows(int columns, int rows)
     {
         float x1 = hitbox.getX();
         float y1 = hitbox.getY();
         int x2 = MathUtils.ceil(hitbox.getW() + x1);
         int y2 = MathUtils.ceil(hitbox.getH() + y1);
 
-        columnBegin = ((int) x1) / 32;
-        rowBegin = ((int) y1) / 32;
-        columnEnd = x2 / 32;
-        rowEnd = y2 / 32;
+        columnBegin = ((int) x1) / Block.SIZE;
+        rowBegin = ((int) y1) / Block.SIZE;
+        columnEnd = x2 / Block.SIZE;
+        rowEnd = y2 / Block.SIZE;
 
-        if (this.columnBegin < 0) {
-            this.columnBegin = 0;
-        }
-        if (this.rowBegin < 0) {
-            this.rowBegin = 0;
-        }
+        columnBegin = MathUtils.clamp(columnBegin, 0, columns - 1);
+        columnEnd = MathUtils.clamp(columnEnd, 0, columns - 1);        
+        rowBegin = MathUtils.clamp(rowBegin, 0, rows - 1);
+        rowEnd = MathUtils.clamp(rowEnd, 0, rows - 1);
     }
 
     public State getState()
@@ -253,22 +259,22 @@ public abstract class Character extends Motionable implements Drawable
         this.hitbox = hitbox;
     }
 
-    public float rectOffsetX()
+    public final float rectOffsetX()
     {
         return hitboxOffsetX;
     }
 
-    public float rectOffsetY()
+    public final float rectOffsetY()
     {
         return hitboxOffsetY;
     }
 
-    public MovementAnimation getMovementAnim()
+    public final MovementAnimation getMovementAnim()
     {
         return movementAnim;
     }
 
-    public void setMovementAnim(MovementAnimation movementAnim)
+    public final void setMovementAnim(MovementAnimation movementAnim)
     {
         this.movementAnim = movementAnim;
     }

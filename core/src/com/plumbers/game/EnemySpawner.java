@@ -1,12 +1,13 @@
 package com.plumbers.game;
 
+import com.badlogic.gdx.utils.Pool;
 import com.plumbers.game.Enemy.Type;
 
 /**
  * An object that creates an enemy at a certain position when
  * the player gets within a specific distance.
  */
-public class EnemySpawner
+public final class EnemySpawner
 {
     private final int x, y;
     private final Enemy.Type type;
@@ -35,14 +36,14 @@ public class EnemySpawner
      * Spawns the enemy if not yet spawned and
      * the given player X position is within the spawn distance.
      */
-    public Enemy spawn(float playerXPos)
+    public Enemy spawn(float playerXPos, Pool<Enemy> enemyPool)
     {
         if (spawned || playerXPos + spawnDistance < x)
         {
             return null;
         }
         spawned = true;
-        return new Enemy(type, x, y);
+        return enemyPool.obtain().init(type, x, y);
     }
 
     public void reset()

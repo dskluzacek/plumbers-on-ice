@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.utils.ReflectionPool;
+
 /**
  * The model. Represents the state of the game simulation. 
  */
@@ -20,7 +23,8 @@ public final class GameModel
     private final boolean twoPlayer;
     private int gameTicks = 0;
     private boolean finished = false;
-
+    private Pool<Enemy> enemyPool = new ReflectionPool<Enemy>(Enemy.class, 20);
+    
     public static final float GRAVITY = 0.4f;
 
     public GameModel(Level level, Player p1)
@@ -182,7 +186,7 @@ public final class GameModel
 
             for (int i = 0; i < spawners.size(); i++)
             {
-                addNotNull( list, spawners.get(i).spawn(playerX) );
+                addNotNull( list, spawners.get(i).spawn(playerX, enemyPool) );
             }
             return list;
         }

@@ -7,49 +7,35 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 
 /**
  * An enemy character.
  */
-public class Enemy extends Character implements Hazard
+public class Enemy extends Character implements Hazard, Pool.Poolable
 {
-    private final float walkSpeed;
+    private float walkSpeed = 0;
     private static TextureAtlas atlas = null;
-
-    public Enemy(Type type, float x, float y)
+    
+    public Enemy init(Type type, float x, float y)
     {
-        super(type.typeName(), type.offsetX, type.offsetY, type.width, type.height);
-        walkSpeed = type.speed;
+        super.init(type.typeName(), type.offsetX, type.offsetY, type.width, type.height);
+        walkSpeed = type.speed();
 
-        Array<TextureRegion> walkFrames = new Array<TextureRegion>();
-        
-        for (int i = 1; i <= 6; i++)
-        {
-            TextureRegion region = atlas.findRegion(type.typeName() + "-walk" + i);
-
-            if ( region != null )
-            {
-                walkFrames.add(region);
-            }
-        }
-
-        Animation walkAnim = new Animation(1/6f, walkFrames);
-        Animation jumpAnim = new Animation(1,
-            new TextureRegion[]{ atlas.findRegion(type.typeName() + "-jump") });
-        
-        // idle anim will never be used, for falling and knockback we reuse jump
-        setMovementAnim(
-            new MovementAnimation(jumpAnim, walkAnim, jumpAnim, jumpAnim, jumpAnim) );
-
+        setMovementAnim( type.movementAnim() );
         setState(State.FALLING);
         setPosition(x, y);
         setYAccel(GameModel.GRAVITY);
         setFlipped(true);
+        
+        return this;
     }
-
-    public static void setTextureAtlas(TextureAtlas atlas)
+    
+    @Override
+    public void reset()
     {
-        Enemy.atlas = atlas;
+        super.init(null, 0, 0, 0, 0);
+        walkSpeed = 0;
     }
     
     @Override
@@ -106,21 +92,32 @@ public class Enemy extends Character implements Hazard
         }
     }
 
+    public static void setTextureAtlas(TextureAtlas atlas)
+    {
+        Enemy.atlas = atlas;
+        
+        for (Type type : Type.values())
+        {
+            type.createMovementAnim();
+        }
+    }
+    
     public enum Type
     {
         BADGUY_1 ("badguy1", 4, 6, 24, 24, 1.4f),
         BADGUY_2 ("badguy2", 4, 2, 24, 28, 1.1f);
 
-        private String string;
+        private String typeName;
         private float speed;
-        protected float offsetX, offsetY, width, height;
+        private MovementAnimation animation;
+        private float offsetX, offsetY, width, height;
         
         private static Map<String, Type> map;
 
         private Type(String typeName, float relativeX, float relativeY,
                      float width, float height, float speed)
         {
-            this.string = typeName;
+            this.typeName = typeName;
             this.speed = speed;
 
             this.offsetX = relativeX;
@@ -131,12 +128,17 @@ public class Enemy extends Character implements Hazard
 
         public String typeName()
         {
-            return string;
+            return typeName;
         }
 
         public float speed()
         {
             return speed;
+        }
+        
+        public MovementAnimation movementAnim()
+        {
+            return animation;
         }
 
         public static Type getByName(String typeName)
@@ -150,9 +152,31 @@ public class Enemy extends Character implements Hazard
 
             for (Type type : Type.values())
             {
-                map.put(type.string, type);
+                map.put(type.typeName, type);
             }
         }
-    }
+        
+        private void createMovementAnim()
+        {
+            Array<TextureRegion> walkFrames = new Array<TextureRegion>(6);
+            
+            for (int i = 1; i <= 6; i++)
+            {
+                TextureRegion region = atlas.findRegion(typeName + "-walk" + i);
 
+                if ( region != null )
+                {
+                    walkFrames.add(region);
+                }
+            }
+
+            Animation walkAnim = new Animation(1/6f, walkFrames);
+            Animation jumpAnim = new Animation(1,
+                new TextureRegion[]{ atlas.findRegion(typeName + "-jump") });
+            
+            // idle anim will never be used, for falling and knockback we reuse jump
+            animation = new MovementAnimation(jumpAnim, walkAnim, jumpAnim, jumpAnim, jumpAnim);
+        }
+    }
+    
 }
