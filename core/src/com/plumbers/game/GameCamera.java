@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**
@@ -22,7 +23,14 @@ public final class GameCamera
     private float xDisplacement = 0;
     private float yLerpTarget = Float.NaN;
     
-    private static final float TABLET_DISP_HEIGHT_INCHES = 3.125f;
+    private static final float TABLET_DISP_HEIGHT_INCHES = 3.125f,
+                               HORIZONTAL_LERP_PROG = 0.125f,
+                               VERT_TARGET_BELOW_TOP_IN_TILES = 4.25f,
+                               VERT_PLATFORM_LERP_PROG = 0.05f,
+                               VERT_DOWN_LERP_PROG = 0.125f,
+                               VERT_UP_LERP_PROG = 0.1875f,
+                               DOWN_SCROLL_THRESHOLD = 0.4f;
+    private static final int UP_SCROLL_THRESHOLD = 0;
     
     private static final class CameraConfig
     { 
@@ -32,6 +40,9 @@ public final class GameCamera
         public int screenPixelsPerTile;
         public int scrollPositionX;
         public int downScrollPositionY;
+        public int downScrollOffsetY;
+        public int upScrollPositionY;
+        public int upScrollOffsetY;
         
         private CameraConfig()
         {
@@ -53,7 +64,12 @@ public final class GameCamera
             
             config.scrollPositionX =
                     (int) (config.virtualWidth - Math.min(0.7 * config.virtualWidth, 640));
-            config.downScrollPositionY = (int) (0.4 * config.virtualHeight);
+            
+            config.downScrollPositionY = (int) (DOWN_SCROLL_THRESHOLD * config.virtualHeight);
+            config.downScrollOffsetY = (config.virtualHeight / 2) - config.downScrollPositionY;
+            
+            config.upScrollPositionY = UP_SCROLL_THRESHOLD;
+            config.upScrollOffsetY = (config.virtualHeight / 2) - config.upScrollPositionY;
             
             return config;
         }
@@ -70,13 +86,10 @@ public final class GameCamera
         }
     }
     
-    public GameCamera(Viewport viewport)
-    {
-        this.viewport = viewport;
-        
+    public GameCamera()
+    {   
         camera = new OrthographicCamera();
         camera.setToOrtho(true);
-        viewport.setCamera(camera);
     }
     
     public OrthographicCamera getCamera()
@@ -84,9 +97,23 @@ public final class GameCamera
         return camera;
     }
     
-    public float getXDisplacement()
+    public void setLevel(Level level)
     {
-        return xDisplacement;
+        this.level = level;
+        xInitial = currentConfig.virtualWidth / 2.0f;
+        
+        float levelHeight = level.getHeightInTiles() * Block.SIZE;
+        yMax = levelHeight - (currentConfig.virtualHeight / 2.0f);
+        
+        if ( level.useCeiling() )
+        {
+            yMin = currentConfig.virtualHeight / 2.0f;
+        }
+        
+        yInitial = getTargetYPosition( level.getStartPosition().getY() );
+        
+        camera.position.x = xInitial;
+        camera.position.y = yInitial;
     }
     
     public void reset()
@@ -100,6 +127,11 @@ public final class GameCamera
     public void resize(int width, int height)
     {
         viewport.update(width, height);
+    }
+    
+    public float getXDisplacement()
+    {
+        return xDisplacement;
     }
     
     public int virtualWidth()
@@ -157,42 +189,12 @@ public final class GameCamera
         return currentConfig.downScrollPositionY;
     }
     
-    private float getTargetYPosition(float playerY)
+    public int upScrollPositionY()
     {
-        float proposed = playerY - (Block.SIZE * 4.5f) + (currentConfig.virtualHeight / 2.0f);
-                
-        if (proposed > yMax)
-        {
-            return yMax;
-        }
-        else if (level.useCeiling() && proposed < yMin)
-        {
-            return yMin;
-        }
-        else
-        {
-            return proposed;
-        }
+        return currentConfig.upScrollPositionY;
     }
     
-    public void setLevel(Level level)
-    {
-        this.level = level;
-        xInitial = currentConfig.virtualWidth / 2.0f;
-        
-        float levelHeight = level.getHeightInTiles() * Block.SIZE;
-        yMax = levelHeight - (currentConfig.virtualHeight / 2.0f);
-        
-        if ( level.useCeiling() )
-        {
-            yMin = currentConfig.virtualHeight / 2.0f;
-        }
-        
-        yInitial = getTargetYPosition( level.getStartPosition().getY() );
-        
-        camera.position.x = xInitial;
-        camera.position.y = yInitial;
-    }
+
 
     /**
      * Repositions the camera if needed based on player position.
@@ -209,7 +211,9 @@ public final class GameCamera
             if ( playerX - scrollX > xDisplacement )
             {   
                 float change = playerX - xDisplacement - scrollX;
-                change = MathUtils.lerp(0, change, 0.125f);
+                change = MathUtils.lerp(0, change, HORIZONTAL_LERP_PROG);
+                
+                change = MathUtils.floor(change);
                 
                 camera.translate(change, 0);
                 xDisplacement += change;
@@ -232,7 +236,9 @@ public final class GameCamera
         {
             if ( ! MathUtils.isEqual(camera.position.y, yLerpTarget) )
             {
-                camera.position.y = MathUtils.lerp(camera.position.y, yLerpTarget, 0.04f);
+              camera.position.y = MathUtils.lerp(camera.position.y, yLerpTarget,
+                                                 VERT_PLATFORM_LERP_PROG);
+//                camera.position.y = Interpolation.pow2In.apply(...);
                 camera.update();
                 flag = true;
             }
@@ -252,9 +258,11 @@ public final class GameCamera
                 yLerpTarget = yTarget;
             }
         }
-        else if ( camera.position.y < yMax && playerY > camera.position.y )
+        else if ( camera.position.y < yMax
+                 && playerY > camera.position.y - currentConfig.downScrollOffsetY )
         {
-            camera.position.y = MathUtils.lerp(camera.position.y, playerY, 0.08f);
+            camera.position.y = MathUtils.lerp(camera.position.y,
+                    playerY + currentConfig.downScrollOffsetY, VERT_DOWN_LERP_PROG);
             flag = true;
             yLerpTarget = Float.NaN;
             
@@ -264,8 +272,41 @@ public final class GameCamera
             }
             camera.update();
         }
+        else if ( (Float.isNaN(yMin) || camera.position.y > yMin)
+                 && playerY < camera.position.y - currentConfig.upScrollOffsetY )
+        {
+            camera.position.y = MathUtils.lerp(camera.position.y,
+                    playerY + currentConfig.upScrollOffsetY, VERT_UP_LERP_PROG);
+            flag = true;
+            yLerpTarget = Float.NaN;
+            
+            if (! Float.isNaN(yMin) && camera.position.y < yMin)
+            {
+                camera.position.y = yMin;
+            }
+            camera.update();
+        }
         
         return flag;
+    }
+    
+    private float getTargetYPosition(float playerY)
+    {
+        float proposed = playerY - (Block.SIZE * VERT_TARGET_BELOW_TOP_IN_TILES)
+                         + (currentConfig.virtualHeight / 2.0f);
+                
+        if (proposed > yMax)
+        {
+            return yMax;
+        }
+        else if (level.useCeiling() && proposed < yMin)
+        {
+            return yMin;
+        }
+        else
+        {
+            return proposed;
+        }
     }
     
     /**
@@ -276,11 +317,6 @@ public final class GameCamera
      */
     public void configure(int width, int height, float ppiY)
     {   
-        if (height == 320)
-        {
-            // TODO
-        }
-        
         boolean isDeviceTablet = (height / ppiY >= TABLET_DISP_HEIGHT_INCHES);
         
         ArrayList<Float> candidates = new ArrayList<Float>();
@@ -335,7 +371,11 @@ public final class GameCamera
         assert(lowestAbove17 > 17);
         assert(highestBelow14 < 14);
         
-        if (fifteen && !isDeviceTablet)
+        if (height == 320 && !isDeviceTablet)
+        {
+            currentConfig = CameraConfig.fromScreenMetrics(width, height, 320/24f);
+        }
+        else if (fifteen && !isDeviceTablet)
         {
             currentConfig = CameraConfig.fromScreenMetrics(width, height, 15);
         }
@@ -359,7 +399,7 @@ public final class GameCamera
                                                   width, height, closestTo15_25);
         }
         
-        viewport.update(width, height);
+        viewport = new ExtendViewport(1, currentConfig.virtualHeight, camera);
                 
         printDebugInfo(height, ppiY, isDeviceTablet, candidates, fifteen,
                 lowest, highest, closestTo15_25, closestTo18, lowestAbove17,

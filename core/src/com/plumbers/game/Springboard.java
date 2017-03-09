@@ -22,7 +22,7 @@ public final class Springboard implements Drawable
     private static TextureRegion frame3;
     
     private static final float PLAYER_VELOCITY = -13.0f,
-                               PLAYER_VELOCITY_WITH_JUMP = -13.35f,
+                               PLAYER_VELOCITY_WITH_JUMP = -13.325f,
                                PLAYER_JUMP_BOOST = -0.04f;
                               
     private static final float FRAME_2_DOWN_TIME  = 0.05f,

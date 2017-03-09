@@ -1,14 +1,15 @@
 package com.plumbers.game;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -355,40 +356,36 @@ public final class Level
         {
             if ( envStr.equalsIgnoreCase(AUTUMN_STR) )
             {
-                TextureRegion land = new TextureRegion( new Texture("fall.png") );
-                TextureRegion sky   = new TextureRegion( new Texture("fall-sky.png") );
-                land.flip(false, true);
-                sky.flip(false, true);
-                background = new Background.AutumnBackground(land, sky);
+                Texture texture = new Texture("autumn.png");
+                background = new Background.AutumnBackground(texture);
             }
             else if ( envStr.equalsIgnoreCase(GRASSLAND_STR) )
             {
-                TextureRegion land = new TextureRegion( new Texture("grassy.png") );
-                TextureRegion sky   = new TextureRegion( new Texture("grassy-sky.png") );
-                land.flip(false, true);
-                sky.flip(false, true);
-                background = new Background.GrasslandBackground(land, sky);
+                Texture texture = new Texture("grassland.png");
+                background = new Background.GrasslandBackground(texture);
+            }
+            else if ( envStr.equalsIgnoreCase(TROPICAL_STR) )
+            {
+                Texture texture = new Texture("tropical.png");
+                background = new Background.TropicalBackground(texture);
             }
             else if ( envStr.equalsIgnoreCase(WINTER_STR) )
             {
-                TextureRegion land = new TextureRegion( new Texture("winter.png") );
-                TextureRegion sky   = new TextureRegion( new Texture("winter-sky.png") );
-                land.flip(false, true);
-                sky.flip(false, true);
-                background = new Background.AutumnBackground(land, sky);
+                Texture texture = new Texture("winter.png");
+                background = new Background.WinterBackground(texture);
             }
         }
-        else
-        {
-            String bgStr = properties.get("background", String.class);
-    
-            if (bgStr != null)
-            {
-                TextureRegion bg = new TextureRegion( new Texture(bgStr) );
-                bg.flip(false, true);
-                background = new Background.ImageBackground(bg, UNIT_SCALE, 0.125);
-            }
-        }
+//        else
+//        {
+//            String bgStr = properties.get("background", String.class);
+//    
+//            if (bgStr != null)
+//            {
+//                TextureRegion bg = new TextureRegion( new Texture(bgStr) );
+//                bg.flip(false, true);
+//                background = new Background.ImageBackground(bg, UNIT_SCALE, 0.125);
+//            }
+//        }
     }
     
     private void loadBackgroundColor(MapProperties properties)
@@ -428,6 +425,12 @@ public final class Level
                 
                 // Springboard is a Drawable and not rendered by the map renderer
                 cell.setTile(null);  
+            }
+        }
+        else if ( props.containsKey("decorative") )
+        {
+            if ( props.get("decorative", String.class).equalsIgnoreCase("true") ) {
+                return;
             }
         }
         else if ( props.containsKey(COLL_OFFSET_X_KEY)
@@ -511,38 +514,77 @@ public final class Level
                 {
                     TiledMapTileLayer layer = (TiledMapTileLayer) mapLayer;
                     
-                    forEachCell(layer, new CellAction()
+                    for ( Cell cell : cellIterable(layer) )
                     {
-                        @Override
-                        public void apply(Cell cell)
+                        if (cell != null && cell.getTile().getId() == id)
                         {
-                            if (cell != null && cell.getTile().getId() == id)
-                            {
-                                cell.setTile(animatedTile);
-                            }
+                            cell.setTile(animatedTile);
                         }
-                    });
+                    }
                 }
             }
             animFrames.clear();
         }
     }
     
-    private static void forEachCell(TiledMapTileLayer layer, CellAction action)
+    private static Iterable<Cell> cellIterable(final TiledMapTileLayer layer)
     {
-        for (int column = 0; column < layer.getWidth(); column++)
+        return new Iterable<Cell>()
         {
-            for (int row = 0; row < layer.getHeight(); row++)
+            @Override
+            public Iterator<Cell> iterator()
             {
-                Cell cell = layer.getCell(column, row);
-                action.apply(cell);
+                return new CellIterator(layer);
             }
-        }
+        };
     }
     
-    private interface CellAction
+    private static class CellIterator implements Iterator<Cell>
     {
-        void apply(Cell c);
+        private TiledMapTileLayer layer;
+        private int column = 0;
+        private int row = 0;
+        private boolean hasNext = true;
+        
+        CellIterator(TiledMapTileLayer layer)
+        {
+            this.layer = layer; 
+        }
+        
+        @Override
+        public boolean hasNext()
+        {
+            return hasNext;
+        }
+        
+        @Override
+        public Cell next()
+        {
+            if (! hasNext) {
+                throw new NoSuchElementException();
+            }
+            
+            Cell result = layer.getCell(column, row);
+            
+            if ( row < layer.getHeight() ) {
+                row++;
+            }
+            else {
+                column++;
+                row = 0;
+                
+                if ( column >= layer.getWidth() ) {
+                    hasNext = false;
+                }
+            }
+            return result;
+        }
+        
+        @Override
+        public void remove()
+        {
+            throw new UnsupportedOperationException();
+        }
     }
 
     private static String nullToEmptyString(String str)

@@ -34,7 +34,7 @@ public final class MainMenu extends InputAdapter implements Screen
                                LEVEL_2_FILE = "grassy2.tmx",
                                LEVEL_3_FILE = "winter1.tmx",
                                LEVEL_4_FILE = "fall1.tmx",
-                               LEVEL_5_FILE = "castle1.tmx";
+                               LEVEL_5_FILE = "castle2.tmx";
 
     public MainMenu(Game game)
     {
@@ -51,16 +51,15 @@ public final class MainMenu extends InputAdapter implements Screen
         }
 
         batch = new SpriteBatch();
-        background = new Sprite(new Texture("menu.jpg"));
-        levelsBackground = new Sprite(new Texture("levels.jpg"));
+        background = new Sprite( new Texture("menu.jpg") );
+        levelsBackground = new Sprite( new Texture("levels.jpg") );
         background.setSize(1920, 1200);
         levelsBackground.setSize(1920, 1200);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1920, 1200);
         viewport = new FillViewport(1920, 1200, camera);
-        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
-                true);
+        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         viewport.apply(true);
         batch.setProjectionMatrix(camera.combined);
 
