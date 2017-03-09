@@ -1,8 +1,6 @@
 package com.plumbers.game.ui;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.plumbers.game.Controller;
 import com.plumbers.game.GameView;
 import com.plumbers.game.KeyboardController;
@@ -13,7 +11,6 @@ public final class PlumbersOnIceGame extends Game
     private static PlumbersOnIceGame instance;
     private MainMenu mainMenu;
     private GameView gameView;
-    private Viewport viewport;
     private Controller controller;
 
     public static PlumbersOnIceGame createAndroidInstance(int displayWidth)
@@ -22,9 +19,8 @@ public final class PlumbersOnIceGame extends Game
             throw new IllegalStateException();
         }
         
-        Viewport viewport = new ExtendViewport(1, 480);
         Controller controller = new TouchscreenController(displayWidth);
-        instance = new PlumbersOnIceGame(viewport, controller);
+        instance = new PlumbersOnIceGame(controller);
         return instance;
     }
     
@@ -34,8 +30,7 @@ public final class PlumbersOnIceGame extends Game
             throw new IllegalStateException();
         }
         
-        Viewport viewport = new ExtendViewport(1, 512);
-        instance = new PlumbersOnIceGame( viewport, new KeyboardController() );
+        instance = new PlumbersOnIceGame( new KeyboardController() );
         return instance;
     }
     
@@ -43,7 +38,6 @@ public final class PlumbersOnIceGame extends Game
     {
         instance.gameView = new GameView(level,
                                          character,
-                                         instance.viewport,
                                          instance.controller,
                                          0.5f);
         instance.gameView.load();
@@ -56,9 +50,8 @@ public final class PlumbersOnIceGame extends Game
         instance.setScreen(instance.mainMenu);
     }
     
-    private PlumbersOnIceGame(Viewport viewport, Controller controller) 
+    private PlumbersOnIceGame(Controller controller) 
     {
-        this.viewport = viewport;
         this.controller = controller;
     }
     

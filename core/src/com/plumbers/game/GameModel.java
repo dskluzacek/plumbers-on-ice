@@ -22,7 +22,6 @@ public final class GameModel
     private final int levelBottom;
     private final boolean twoPlayer;
     private int gameTicks = 0;
-    private boolean finished = false;
     private Pool<Enemy> enemyPool = new ReflectionPool<Enemy>(Enemy.class, 20);
     
     public static final float GRAVITY = 0.4f;
@@ -34,7 +33,7 @@ public final class GameModel
         player1 = p1;
         player2 = null;
         twoPlayer = false;
-        spawnStrategy = new SinglePlayerSpawner();
+        spawnStrategy = new SinglePlayerSpawnStrategy();
     }
 
     public GameModel(Level level,
@@ -52,7 +51,7 @@ public final class GameModel
             this.spawnStrategy = spawnStrategy;
         }
         else {
-            this.spawnStrategy = new SinglePlayerSpawner();
+            this.spawnStrategy = new SinglePlayerSpawnStrategy();
         }
     }
 
@@ -67,14 +66,12 @@ public final class GameModel
         {
             simulate(player2);
         }
+        
         enemies.addAll( spawnStrategy.spawnEnemies() );
 
         for (int i = 0; i < enemies.size(); i++)
         {
-            Enemy enemy = enemies.get(i);
-            enemy.simulate(gameTicks);
-            enemy.fallingCheck( currentLevel.getBlockArray() );
-            enemy.collisionCheck( currentLevel.getBlockArray() );
+            simulate( enemies.get(i) );
         }
 
         return occuringEvents;
@@ -96,32 +93,20 @@ public final class GameModel
                 p.coinCollectCheck(currentLevel.getCoins(), gameTicks) );
         addNotNull( occuringEvents,
                 p.springboardCheck(currentLevel.getSpringboards(), gameTicks) );
+        addNotNull( occuringEvents,
+                p.fallingDeathCheck(levelBottom) );
 
-        if ( p.fallingDeathCheck(levelBottom) )
+        if (! p.isLevelCompleted() && currentLevel.getFinish() != null)
         {
-            if (p == player1) {
-                occuringEvents.add( DeathEvent.playerOneInstance() );
-            }
-            else {
-                occuringEvents.add( DeathEvent.playerTwoInstance() );
-            }
+            addNotNull( occuringEvents, p.finishedLevelCheck(currentLevel.getFinish()) );
         }
-
-        if (finished)
-        {
-            return;
-        }
-
-        if ( currentLevel.getFinish() != null
-            && p.getRectangle().intersects(currentLevel.getFinish()) )
-        {
-            if (p == player1)
-            {
-                player1.finished();
-                occuringEvents.add( FinishEvent.playerOneInstance() );
-                finished = true;
-            }
-        }
+    }
+    
+    private void simulate(Enemy enemy)
+    {
+        enemy.simulate(gameTicks);
+        enemy.fallingCheck( currentLevel.getBlockArray() );
+        enemy.collisionCheck( currentLevel.getBlockArray() );
     }
 
     public List<Drawable> getDrawables()
@@ -159,10 +144,20 @@ public final class GameModel
     {
         return gameTicks;
     }
+    
+    public boolean isLevelCompleted()
+    {
+        return player1.isLevelCompleted();
+    }
 
     public int getLevelWidth()
     {
         return currentLevel.getWidthInTiles() * Block.SIZE;
+    }
+    
+    public int getLevelHeight()
+    {
+        return currentLevel.getHeightInTiles() * Block.SIZE;
     }
 
     private static <T> void addNotNull(Collection<T> c, T obj)
@@ -173,7 +168,7 @@ public final class GameModel
         }
     }
 
-    private class SinglePlayerSpawner implements SpawnStrategy
+    private class SinglePlayerSpawnStrategy implements SpawnStrategy
     {
         private List<Enemy> list = new ArrayList<Enemy>();
 

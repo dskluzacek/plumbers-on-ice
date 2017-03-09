@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.plumbers.game.server.EventMessage;
 import com.plumbers.game.server.GameConnection;
@@ -97,11 +99,9 @@ public class Player extends Character
         twoPlayerMode = twoPlayer;
     }
     
-    // TODO fix this
-    public final void finished()
+    public final boolean isLevelCompleted()
     {
-        finished = true;
-        setXAccel(DECELERATION);
+        return finished;
     }
 
     public final void setGameConnection(GameConnection connection)
@@ -222,6 +222,15 @@ public class Player extends Character
         {
             return null;
         }
+    }
+    
+    @Override
+    public void draw(Batch batch, float elapsedTime)
+    {
+        float xPos = getXPosition();
+        setXPosition( MathUtils.floor(xPos) );
+        super.draw(batch, elapsedTime);
+        setXPosition(xPos);
     }
     
     public void reset(Vector position) 
@@ -398,9 +407,28 @@ public class Player extends Character
         }
     }
 
-    public boolean fallingDeathCheck(float bottom)
+    public DeathEvent fallingDeathCheck(float bottom)
     {
-        return (getYPosition() > bottom);
+        if (getYPosition() > bottom) {
+            return DeathEvent.playerOneInstance();
+        }
+        else {
+            return null;
+        }
+    }
+    
+    public FinishEvent finishedLevelCheck(Rectangle goal)
+    {
+        if ( getRectangle().intersects(goal) )
+        {
+            setXAccel(DECELERATION);            
+            finished = true;
+            return FinishEvent.playerOneInstance();
+        }
+        else
+        {
+            return null;
+        }
     }
     
     protected void beKilled()

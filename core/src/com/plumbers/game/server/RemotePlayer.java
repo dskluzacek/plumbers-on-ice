@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Pools;
 import com.plumbers.game.Coin;
 import com.plumbers.game.DamageEvent;
+import com.plumbers.game.DeathEvent;
 import com.plumbers.game.Event;
 import com.plumbers.game.Hazard;
 import com.plumbers.game.JumpEvent;
@@ -115,9 +116,15 @@ public class RemotePlayer extends Player {
     }
 
     @Override
-    public boolean fallingDeathCheck(float bottom) {
+    public DeathEvent fallingDeathCheck(float bottom) {
         boolean died = dead;
         dead = false;
-        return died;
+        
+        if (died) {
+            return DeathEvent.playerTwoInstance();
+        }
+        else {
+            return null;
+        }
     }
 }

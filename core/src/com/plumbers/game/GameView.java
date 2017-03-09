@@ -18,7 +18,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.plumbers.game.server.*;
 import com.plumbers.game.ui.PlumbersOnIceGame;
 
@@ -53,8 +52,6 @@ public final class GameView implements Screen
     /** true when we are in the pause between player death and reset */
     private boolean death = false;
     
-    /** true on victory/finish */
-    private boolean finished = false;
     /** time of finish */
     private float finishedTime;
     /** score for the level, calculated at finish */
@@ -120,7 +117,6 @@ public final class GameView implements Screen
     /** Create a single-player GameView */
     public GameView(String levelFilePath,
                     String player1CharacterName,
-                    Viewport viewport,
                     Controller controller,
                     float musicVolume)
     {
@@ -129,7 +125,7 @@ public final class GameView implements Screen
         this.controller = controller;
         this.musicVolume = musicVolume;
 
-        camera = new GameCamera(viewport);
+        camera = new GameCamera();
         eventContext = new SinglePlayerEventContext();
         twoPlayerMode = false;
         player2CharacterName = null;
@@ -138,7 +134,6 @@ public final class GameView implements Screen
     /** Create a two-player GameView */
     public GameView(GameConnection connection,
                     String player1CharacterName,
-                    Viewport viewport,
                     Controller ctrl,
                     float musicVolume)
     {
@@ -147,7 +142,7 @@ public final class GameView implements Screen
         this.musicVolume = musicVolume;
         this.connection = connection; 
 
-        camera = new GameCamera(viewport);
+        camera = new GameCamera();
         eventContext = new TwoPlayerEventContext();
         twoPlayerMode = true;
     }
@@ -163,42 +158,12 @@ public final class GameView implements Screen
             levelFilePath = connection.getLevelFileName();
             player2CharacterName = connection.getOppCharacterName();
         }
+        
+        loadFont();
+        loadTextureAtlas();
+        loadLevel();
 
-        FreeTypeFontGenerator generator =
-                new FreeTypeFontGenerator( Gdx.files.internal(FONT_FILE) );
-        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-        parameter.size = 28;
-        parameter.borderWidth = 2;
-        parameter.borderColor = Color.BLACK;
-        parameter.flip = true;
-        mainFont = generator.generateFont(parameter);
-        generator.dispose();
-
-        textureAtlas = new TextureAtlas(Gdx.files.internal(TEXTURE_ATLAS_FILE), true);
         batch = new SpriteBatch();
-
-        coinAnimation = Coin.getAnimation(textureAtlas);
-        Coin.createCoinTile(textureAtlas);
-        Enemy.setTextureAtlas(textureAtlas);
-        Springboard.setTextureAtlas(textureAtlas);
-
-        try {
-            level = new Level(levelFilePath, textureAtlas);
-        }
-        catch (FileFormatException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        if ( level.hasBackground() ) {
-            background = level.getBackground();
-        }
-        else if ( level.hasBackgroundColor() ) {
-            bgColor = level.getBackgroundColor();
-        }
-        music = level.getSoundtrack();
-        musicDelay = level.getSoundtrackDelay();
-        mapRenderer = level.getRenderer();
 
         player1 = new Player(player1CharacterName, textureAtlas, controller);
         player1.setPosition( level.getStartPosition() );
@@ -218,16 +183,67 @@ public final class GameView implements Screen
             gameModel = new GameModel(level, player1);
         }
 
+        loadSounds();
+        
+        music.setOnCompletionListener( new MusicListener() );
+        music.setVolume(musicVolume);
+    }
+    
+    private void loadFont()
+    {
+        FreeTypeFontGenerator generator =
+                new FreeTypeFontGenerator( Gdx.files.internal(FONT_FILE) );
+        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        parameter.size = 28;
+        parameter.borderWidth = 2;
+        parameter.borderColor = Color.BLACK;
+        parameter.flip = true;
+        mainFont = generator.generateFont(parameter);
+        generator.dispose();
+    }
+    
+    private void loadTextureAtlas()
+    {
+        textureAtlas = new TextureAtlas(Gdx.files.internal(TEXTURE_ATLAS_FILE), true);
+        
+        coinAnimation = Coin.getAnimation(textureAtlas);
+        Coin.createCoinTile(textureAtlas);
+        Enemy.setTextureAtlas(textureAtlas);
+        Springboard.setTextureAtlas(textureAtlas);
+    }
+
+    private void loadLevel()
+    {
+        try {
+            level = new Level(levelFilePath, textureAtlas);
+        }
+        catch (FileFormatException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        if ( level.hasBackground() ) {
+            background = level.getBackground();
+            bgColor = background.getClearColor();
+        }
+        else if ( level.hasBackgroundColor() ) {
+            bgColor = level.getBackgroundColor();
+        }
+        
+        music = level.getSoundtrack();
+        musicDelay = level.getSoundtrackDelay();
+        mapRenderer = level.getRenderer();
+    }
+    
+    private void loadSounds()
+    {
         coinSound = Gdx.audio.newSound(Gdx.files.internal(COIN_SOUND_FILE));
         jumpSound = Gdx.audio.newSound(Gdx.files.internal(JUMP_SOUND_FILE));
         damageSound = Gdx.audio.newSound(Gdx.files.internal(DAMAGE_SOUND_FILE));
         springboardSound = Gdx.audio.newSound(Gdx.files.internal(SPRING_SOUND_FILE));
         deathSound = Gdx.audio.newSound(Gdx.files.internal(DEATH_SOUND_FILE));
-        
-        music.setOnCompletionListener( new MusicListener() );
-        music.setVolume(musicVolume);
     }
-
+    
     /**
      * Called by the Game when GameView becomes the active Screen.
      */
@@ -288,8 +304,6 @@ public final class GameView implements Screen
             events.get(i).applyTo(eventContext);
         }
         events.clear();
-
-
         
         // give camera the chance to reposition
         if ( camera.repositionCamera(player1.getXPosition(),
@@ -325,7 +339,7 @@ public final class GameView implements Screen
         renderTimer();
         renderCoinCounter();
 
-        if (finished)
+        if ( gameModel.isLevelCompleted() )
         {
             renderScore();   
         }
@@ -337,7 +351,7 @@ public final class GameView implements Screen
         {
             elapsedTime = 0;
         }
-        else if (finished && finishedTime + 10 < elapsedTime)
+        else if (gameModel.isLevelCompleted() && finishedTime + 10 < elapsedTime)
         {
             PlumbersOnIceGame.returnToMenu();
         }
@@ -396,7 +410,6 @@ public final class GameView implements Screen
         @Override
         public void apply(FinishEvent e)
         {
-            finished = true;
             finishedTime = elapsedTime;
 
             if (finishedTime < 90) {
@@ -512,7 +525,7 @@ public final class GameView implements Screen
         builder.setLength(0);
         float value;
 
-        if (! finished) {
+        if ( ! gameModel.isLevelCompleted() ) {
             value = elapsedTime;
         }
         else {
