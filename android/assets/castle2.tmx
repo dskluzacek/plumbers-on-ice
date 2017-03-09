@@ -8,7 +8,7 @@
   <property name="soundtrack-delay" value="0"/>
  </properties>
  <tileset firstgid="1" name="Special Tiles" tilewidth="16" tileheight="16" spacing="1">
-  <image source="special-tiles.png" width="101" height="33"/>
+  <image source="special-tiles.png" width="84" height="50"/>
   <tile id="6">
    <properties>
     <property name="special" value="spike"/>
@@ -20,20 +20,20 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="13" source="castle-tiles.tsx"/>
+ <tileset firstgid="16" source="castle-tiles.tsx"/>
  <layer name="Decorative layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztWLtOBDEM5AuORwFUSEADEtCABLRACw0dD/EBVHBHyePTcaSzZFlxHDtOdOgYycpudneSdSaevVtZicW20I7m4Fzecwu3p7+VozTflrxp2OnIncO+0Ho4LlnrAX+Wz0e7buHW+nPc0nhSP+cu5caTewtGautEaD0cLdpE8Gf5fLTrFm6tP8ctjSf1c+5SbmreZcLOXyDeIN4hpvMWMSX9s3nfa8UYEeC1xqMJfLZFmwirjiy1sVUTUl9pHpy7lJve9SppcpSueK3xaKKnD2o66umDlnoV4YOe3H8Y76/xwgOIQ8dcKHit8Wiipw9qOurpg7lcWDSY4y7lpjb33AstkGoW9dFTiDNynjz0AeLRMM6i+iDmLqcjmtfRPngj3DvCB1v0RKHVrE2IrcYxInwQc70MPiihVm/RPuiB9p21C7FXuL4KsQaxDrGR4U6w+KDmu5jbFh/k64Pz4fULz+laaPtZWnvrt7gFnFuaQ9R4tSjVrCOIYyMfzz33Qfre/Pcr9V303KfMGNZ9V9IDX4eW34MSpPmWNNDKnQPXYJTv5VCqWecQF438+N41Oaz1Xe9aT4Rj2se5pXlb1qRnnYj4/usFqWZ9Qnw1clveW/NdhGWfW/ck5Y7azxF1KYJ7pA8mSDUrol5Z3tvju/QbL7X4//CM3SdpRKpbEnp6R29E6fsb4qfy3lzNuoK4DppLDSJ0rOEv62JR0KqLW4i7oLnUYLSOazW2jFrMfYuiN2C9Qo9I7RM5fmb9yUPuleiJ0Tr+hw+e/f8LStxCkg==
+   eJztWLtOBDEM5BeORwFUSEADEtCABLRACw0dD/EBVHBHyePHcaSzZFlxHDtOdOgYycpudneSdSaevVtZicW20I7m4Fzecwu3p7+VozTflrxp2OnIncO+0Ho4LlnrAX+Wz0e7buHW+nPc0nhSP+cu5caTewtGautEaD0cLdpE8Gf5fLTrFm6tP8ctjSf1c+5SbmreZcLOXyDeIN4hpvMWMSX9s3nfa8UYEeC1xqMJfLZFmwirjiy1sVUTUl9pHpy7lJve9SppcpSueK3xaKKnD2o66umDlnoV4YOe3H8Y76/xwgOIQ8dcKHit8Wiipw9qOurpg7lcWDSY4y7lpjb33AstkGoW9dFTiDNynjz0AeLRMM6i+iDmLqcjmtfRPngj3DvCB1v0RKHVrE2IrcYxInwQc70MPiihVm/RPuiB9p21C7FXuL4KsQaxDrGR4U6w+KDmu5jbFh/k64Pz4fULz+laaPtZWnvrt7gFnFuaQ9R4tSjVrCOIYyMfzz33Qfre/Pcr9V303KfMGNZ9V9IDX4eW34MSpPmWNNDKnQPXYJTv5VCqWecQF438+N41Oaz1Xe9aT4Rj2se5pXlb1qRnnYj4/usFqWZ9Qnw1clveW/NdhGWfW/ck5Y7azxF1KYJ7pA8mSDUrol5Z3tvju/QbL7X4//CM3SdpRKpbEnp6R29E6fsb4qfy3lzNuoK4DppLDSJ0rOEv62JR0KqLW4i7oLnUYLSOazW2jFrMfYuiN2C9Qo9I7RM5fmb9yUPuleiJ0Tr+hw+e/f8Lxt5Gdg==
   </data>
  </layer>
  <layer name="Platform layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztWD1PwzAQ9ZqBH1AoYqFl6ABFagfowgBdGKBD2SvxIUQlFv4/d8InTlf7aidOnEp+0pNdp/HZzss7x8YUFNTDGXBr+QXcsHpBQROgtqSmNllHVNBXrCOuVWZXU9uWxlUQjipz/IH4/Qk8B46AY+AFuzZm7RPWXvJgQQgugVfAqS0JU9Y+N/+axFxY8mA6dOU1Wpw2xnADvAUubElxFqz9TowhJg9SLm0y9tw+H4I+6CMnZC68Nvv9aibulZ7ly6OUQ1+Bb8lmkA9y7UKvtY2jjLF983b5lTF+v0JIz/LpknLotyf2vncv5t2sGBE517ovyLkGrv1VZdx+hXB5lk+XLk0eA0+AQ+Api8f7TokUa+vrQ47XNf59c+qD/tsYQx2/QnDP0vxqtnvrDmLWnn+/jlg7z7nvATHrjKkrL9R8OrcOQ9/9kP3V3NM3eVaMX4VAe37a96uWc+ti4KlrbaH+1nc0+Ua4Bz4Al7ak/pas/VGJi57V1K9ioPmrpmH5rLXzYHr+oevK+06lnTZ9KbfnaeCeJXVp7G9Nkxq0eWv+GqphvsfDks6HJ+J/Po3E7qMOzac4cmrwGbiyJWFl+ZI4lstfjamvYcSP+cuvMt8T6uiir+dMXUGbf4ozzdR4Mn4dN9Ew5teQvWCoxg7Zo+oC57y2pDrlBvyWwjNMyhFD20b1D9GOOeQX3sNE4A==
+   eJztWD1PwzAQ9ZiRH1AoYqFl6ABFagfowgBdGKBD2SvxIUQlFn4+d8InTlf7aidOnEp+0pNdp/HZzss7x8YUFNTDGXBr+QXcsHpBQROgtqSmNllHVNBXrCOuVWZXU9uWxlUQjipz/IH4/Qk8B46AY+AFuzZm7RPWXvJgQQgugVfAqS0JU9Y+N/+axFxY8mA6dOU1Wpw2xnADvAUubElxFqz9TowhJg9SLm0y9tw+H4I+6CMnZC68Nvv9aibulZ7ly6OUQ1+Bb8lmkA9y7UKvtY2jjLF983b5lTF+v0JIz/LpknLotyf2vncv5t2sGBE517ovyLkGrv1VZdx+hXB5lk+XLk0eA0+AQ+Api8f7TokUa+vrQ47XNf59c+qD/tsYQx2/QnDP0vxqtnvrDmLWnn+/jlg7z7nvATHrjKkrL9R8OrcOQ9/9kP3V3NM3eVaMX4VAe37a96uWc+ti4KlrbaH+1nc0+Ua4Bz4Al7ak/pas/VGJi57V1K9ioPmrpmH5rLXzYHr+oevK+06lnTZ9KbfnaeCeJXVp7G9Nkxq0eWv+GqphvsfDks6HJ+J/Po3E7qMOzac4cmrwGbiyJWFl+ZI4lstfjamvYcSP+cuvMt8T6uiir+dMXUGbf4ozzdR4Mn4dN9Ew5teQvWCoxg7Zo+oC57y2pDrlBvyWwjNMyhFD20b1D9GOOeQX1jFIRg==
   </data>
  </layer>
  <layer name="Decorative layer 2" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJzt1CEOwlAURNEvqKG+1aBoUhQkrYZlwE6Arp1ZQgWfCcM9yXVPjHqlAMD3HdTgHoE4J3V2j0CcTvXuEYizU3v3CMQZ1dE9AnEe6ukegTj8K9Qwqdk9AnFeanGPQBz+FWq4qKt7BAB82EY17hH4CXd1W3m7VW3FLfhvb4+5BgU=
+   eJzt1CEOwlAURNEvqKA7aDUomhQFSathGbAToDtnllDBZ8JwT3LdE6NeKQDwfQc1uEcgzkmd3SMQp1O9ewTi7NTePQJxRnV0j0Cch3q6RyAO/wo1TGp2j0Ccl1rcIxCHf4UaLurqHgEAH7ZRjXsEfsJd3VbeblVbcQv+2xsXpwZL
   </data>
  </layer>
  <objectgroup name="Object layer" width="150" height="16">

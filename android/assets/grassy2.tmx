@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="150" height="21" tilewidth="16" tileheight="16">
+<map version="1.0" orientation="orthogonal" width="150" height="15" tilewidth="16" tileheight="16">
  <properties>
   <property name="enviroment" value="grassland"/>
   <property name="soundtrack" value="Grasslands-Theme.mp3"/>
@@ -26,22 +26,42 @@
  <tileset firstgid="16" name="Grassland tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
   <image source="grassland-tiles.png" width="144" height="126"/>
  </tileset>
- <layer name="Decorative layer" width="150" height="21">
+ <layer name="Decorative layer" width="150" height="15" opacity="0.9">
   <data encoding="base64" compression="zlib">
-   eJzt1rEJACAQA0BH0k7dfzC/tlAQbPQOUgQyQFICAAAAAAAAfpYjZdHhRI20SJ86AHCPH/evvp8c8+MAgBcM+foC6w==
+   eJzt2NEKQDAUxvFdcMHTcMfw/q/lXFidTmqjycb/V6dtiY6IrzkH4GsGqVGNzsyBOyapWY3ezAEASME/o3w2N5IjkYPNjWENAPi+WvJfSuax99JItc+0k0VJOS7WS0m9al6NKe/yIrUetbl7maeT6i+eY8V61X2GXr06FtZn1ykpx8V6Odu7rOWb9Cc8EwDAG3aLSQ2z
   </data>
  </layer>
- <layer name="Platform layer" width="150" height="21">
+ <layer name="Platform layer" width="150" height="15">
   <data encoding="base64" compression="zlib">
-   eJzt100OwiAQhmGim55AF+rCv4WN9z+fdUGCOEMZKtjq+ySTJtUKhi8wdQ4AAAAAAAAAAAD/rPv2BPCTVhV+czfUPqhDhTHQzlz2nvNQl6C27jVncZG7dlLrIK1JF10l0me59yziXI3VM3dkq43cNbkGz4zlQTrzcu9ZaLm6C0W22irJ1VxIueqV794c2WqpZq5qnH3e2r3nSsuUR7basfQmqT44fjebWtqah+NsXH6mvDhbU+YCnaXvTe1h1h66dH+0nH2aMFtL7QHmbum5OhX+7+MH5gLdA7hJJZE=
+   eJztWNsOwjAIrfHBfYE+qA/eHjT+//e5RRcJKxTaujLDSchctsoBzihpCA6Hw+FwOP4R3cesYt/bQWDHVgQdE3TEb0u49HYV2C68tWU1jtbwvHwx5EKqK6gtxxSryv+H95Gl5H3kvQ1yXbXsW3P5s9J38Pc+5D01p1jgrulTtfuWNv4OXaWQzI2wF0j84Gfaeym09bEyp5ToqiSOXI3k5Esay03hB+932nspqPo8I2ZFW9xcxfGu1bfmijtHV1YQq8+DePce2moLzoKxuUrC20L/hXFwul6qrtZhqiuqNiNi2sLYFHCC52W41tzep+Ed01bu+Rd3fkatgXFwvjV7Oudbesannee4XMDvPlWbEVhbuVwk8cJ1lK5yeGuN6gmc1nPW1DLou7Y/TVzS2ozQ1ijGRRJvKj+/5u26yo/rTLyXwqmQS6mu5uDdUlcvY0VQ5w==
   </data>
  </layer>
- <objectgroup name="Object layer" width="150" height="21">
-  <object name="Goal" x="2328" y="-48" width="72" height="320">
+ <objectgroup name="Object layer" width="150" height="15">
+  <object name="Goal" x="2328" y="0" width="72" height="176">
    <properties>
     <property name="type" value="goal"/>
    </properties>
   </object>
-  <object name="Start" x="0" y="208"/>
+  <object name="Start" x="0" y="112"/>
+  <object name="Enemy" x="912" y="100">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="Enemy" x="1392" y="180">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="Enemy" x="1680" y="36">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
+  <object name="Enemy" x="448" y="180">
+   <properties>
+    <property name="type" value="badguy2"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

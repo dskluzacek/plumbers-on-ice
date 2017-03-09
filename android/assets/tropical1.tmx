@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="151" height="16" tilewidth="16" tileheight="16">
  <properties>
-  <property name="background" value="tropical.png"/>
+  <property name="enviroment" value="tropical"/>
   <property name="soundtrack" value="tropical-theme.mp3"/>
   <property name="soundtrack-delay" value="2"/>
  </properties>
  <tileset firstgid="1" name="Special Tiles" tilewidth="16" tileheight="16" spacing="1">
-  <image source="special-tiles.png" width="101" height="33"/>
+  <image source="special-tiles.png" width="84" height="50"/>
+  <tile id="2">
+   <properties>
+    <property name="special" value="springboard"/>
+   </properties>
+  </tile>
   <tile id="6">
    <properties>
     <property name="special" value="spike"/>
@@ -18,17 +23,17 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="13" name="tropical-tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
+ <tileset firstgid="16" name="tropical-tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
   <image source="tropical-tiles.png" width="108" height="108"/>
  </tileset>
  <layer name="Platform layer" width="151" height="16">
   <data encoding="base64" compression="zlib">
-   eJztl91uwyAMhblsbrZKrJG2Vko67f2fcSAFzUI22IkhrPInHYWY1OXnBIhzhmEYhqHDVLk3DCklD5m/DA08ER/BXyO0oSWTo/tYqhuV1N7kqeWshjAYaWynynVPrpZMTLVgZE8lWs8BNr4914uPoBnce2ZdK2p9L62xkR5tfDXimF0qVw75HHwFPUA9fN/XoG+iLs+HraHRm7dNMyNeai+3TrJe9XyH93r+higfM2wfeAt633QtxCJr0LMg6AEOaQ5yb2kSc983PRhxT5TdgXgPOB7du0ffEbWaLyl5n/M5gN6Cz+ZlbOx85Sr11kKUvTDOJd/zNdHKzfEWtR5RZ1rt9Zr6bjqybi2Vq9Rbtf/hxrlI+069e5iPtPaDnusWdq7JY9jeQs3DGvTj/nxf0xXNgqPlrVZozT+W50xvXTalc+0MYikOY5LzxCcon/kt/mreor5BNLwFc0Pt8RYcX45SPqoNsL/QW2fyn71F7XNUf456S+KHVt4q/S49Y97iUZp/yi+9vfULBK4h3Q==
+   eJztl2GLwyAMhoX7sH69O3Ar7DbWu/3/v3gNKARJNNroZOSBUBc7q+Y1aZ0zDMMwDB2Wwm/DqCWnIdOXoYFn/DPoa4Y59GRx/BpzfbMS5xs1tb1qIgJm2tulcG0ZqyeL0Hows6YivWNA7e/IfHHebUW/vbCvF6W153IsMGKO7wbs2alwlZDG4Ge3O+rH5/13tyfTl45H5VDQ5iXYKvDn5ivtq8lXI89wq+YvhKV7RtWBz92+gn1nfADE+S9jWAMSYgxSbWkCY9+C3QV+z7TdAf8IJBptrdE3wnrFq5Z0zWkMsLbwvWmb2jtfuNZqa2PavtIvJa35mmiNLdEWl4+4d1rtfM19Nx3JW1vhWqut0nOkfim1a+fOHqUjrXowMm9R7zWpj6otXBxgDx6OruuSWp9DS1u90Io/Nc4rtXUKFt9rV+SL/tZvtCtql842jrPEavbr3bTFfYNoaAuPja0lBpKYwhgf4f6oF24OeL1YWyVMWzRcnePWc1RbNXHQ0BbUqpjProL/xWeatmTk4s/pZbS2/gHN3Smw
   </data>
  </layer>
  <layer name="Decorative layer 2" width="151" height="16">
   <data encoding="base64" compression="zlib">
-   eJzt1T0OgCAMhmEHXXTSRS/gxP3vZxcSBqX8m8D7JJ2qmNT6OU0AAAAA0NYudST0AM0pdSX0Qmi7ye6GsXOKmVfvs/3aTaP0e3Rn3GvnFDMv7Vrj6Y2q5Ex6/7bxn1K5OfqO5mQy/Eb6t+diD9/VzCf37FlqKXRuzrscPY9bqplP7tmr1FbpOTHI43rIbwCI9wCxzQUx
+   eJzt1T0OgCAMhmEHHXTWRS/gxP2PZxcSBqX8m8D7JJ2qmNT6OU0AAAAA0NYudST0AM0pdSX0Qmi7ye6GsXOKmVfvs/3aTaP0e3Rn3GvnFDMv7Vrj6Y2q5Ex6/7bxn1K5OfqO5mQy/Eb6t+diD9/VzCf37FlqKXRuzrscPY9bqplP7tmr1FbpOTHI43rIbwCI9wCPagXX
   </data>
  </layer>
  <objectgroup name="Object layer" width="151" height="16">
