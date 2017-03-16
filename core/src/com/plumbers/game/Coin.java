@@ -18,7 +18,7 @@ public final class Coin
     private final Rectangle hitbox;
 
     private boolean collected;
-    private TiledMapTileLayer.Cell cell;
+    private final TiledMapTileLayer.Cell cell;
 
     private static AnimatedTiledMapTile coinTile;
     private static final float COIN_FRAME_DURATION = 1/5f;

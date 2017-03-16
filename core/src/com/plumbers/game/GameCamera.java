@@ -193,8 +193,6 @@ public final class GameCamera
     {
         return currentConfig.upScrollPositionY;
     }
-    
-
 
     /**
      * Repositions the camera if needed based on player position.
@@ -358,7 +356,6 @@ public final class GameCamera
                 if (heightInTiles > 17 && (heightInTiles - 17) < (lowestAbove17 - 17)) {
                     lowestAbove17 = heightInTiles;
                 }
-
             }
             else if (heightInTiles < 10)
             {

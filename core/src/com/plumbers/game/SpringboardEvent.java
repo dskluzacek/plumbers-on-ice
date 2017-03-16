@@ -7,6 +7,8 @@ public final class SpringboardEvent implements Event
 {
     private static SpringboardEvent instance;
     
+    private SpringboardEvent() {}
+    
     @Override
     public void applyTo(EventContext context)
     {
