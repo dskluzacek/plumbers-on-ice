@@ -1,9 +1,10 @@
 package com.plumbers.game;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.ReflectionPool;
 
@@ -17,8 +18,8 @@ public final class GameModel
     private final Level currentLevel;
     private final SpawnStrategy spawnStrategy;
     private final List<Event> occuringEvents = new ArrayList<Event>(); 
-    private final List<Enemy> enemies = new ArrayList<Enemy>(); 
     private final List<Drawable> drawables = new ArrayList<Drawable>();
+    private final Array<Enemy> enemies = new Array<Enemy>(); 
     private final int levelBottom;
     private final boolean twoPlayer;
     private int gameTicks = 0;
@@ -67,11 +68,11 @@ public final class GameModel
             simulate(player2);
         }
         
-        enemies.addAll( spawnStrategy.spawnEnemies() );
+        Util.addAll( enemies, spawnStrategy.spawnEnemies() );
 
-        for (int i = 0; i < enemies.size(); i++)
+        for (Enemy enemy : enemies)
         {
-            simulate( enemies.get(i) );
+            simulate(enemy);
         }
 
         return occuringEvents;
@@ -87,18 +88,18 @@ public final class GameModel
         p.fallingCheck( currentLevel.getBlockArray() );
         p.collisionCheck( currentLevel.getBlockArray() );
         p.hazardCollisionCheck( currentLevel.getHazards() );
-        p.hazardCollisionCheck(enemies);
-        addNotNull( occuringEvents, p.getEvent() );
+        p.hazardCollisionCheck( enemies.iterator() );
+        Util.addNotNull( occuringEvents, p.getEvent() );
         occuringEvents.addAll(
                 p.coinCollectCheck(currentLevel.getCoins(), gameTicks) );
-        addNotNull( occuringEvents,
+        Util.addNotNull( occuringEvents,
                 p.springboardCheck(currentLevel.getSpringboards(), gameTicks) );
-        addNotNull( occuringEvents,
+        Util.addNotNull( occuringEvents,
                 p.fallingDeathCheck(levelBottom) );
 
         if (! p.isLevelCompleted() && currentLevel.getFinish() != null)
         {
-            addNotNull( occuringEvents, p.finishedLevelCheck(currentLevel.getFinish()) );
+            Util.addNotNull( occuringEvents, p.finishedLevelCheck(currentLevel.getFinish()) );
         }
     }
     
@@ -112,10 +113,10 @@ public final class GameModel
     public List<Drawable> getDrawables()
     {
         drawables.clear();
-        drawables.addAll(currentLevel.getSpringboards());
+        Util.addAll( drawables, currentLevel.getSpringboards() );
         drawables.add(player1);
-        addNotNull(drawables, player2);
-        drawables.addAll(enemies);
+        Util.addNotNull(drawables, player2);
+        Util.addAll( drawables, enemies.iterator() );
         return drawables;
     }
 
@@ -126,14 +127,8 @@ public final class GameModel
             throw new IllegalStateException();
         }
 
-        List<EnemySpawner> spawners = currentLevel.getSpawners();
-
-        for (int i = 0; i < spawners.size(); i++) 
-        {
-            spawners.get(i).reset();
-        }
-
         enemies.clear();
+        currentLevel.resetEnemySpawners();
         currentLevel.resetCoins();
         currentLevel.resetSpringboards();
         gameTicks = 0;
@@ -160,30 +155,22 @@ public final class GameModel
         return currentLevel.getHeightInTiles() * Block.SIZE;
     }
 
-    private static <T> void addNotNull(Collection<T> c, T obj)
+    private final class SinglePlayerSpawnStrategy implements SpawnStrategy
     {
-        if (obj != null)
-        {
-            c.add(obj);
-        }
-    }
-
-    private class SinglePlayerSpawnStrategy implements SpawnStrategy
-    {
-        private List<Enemy> list = new ArrayList<Enemy>();
+        private Array<Enemy> list = new Array<Enemy>();
 
         @Override
-        public List<Enemy> spawnEnemies()
+        public Iterator<Enemy> spawnEnemies()
         {
             list.clear();
-            List<EnemySpawner> spawners = currentLevel.getSpawners();
+            Iterator<EnemySpawner> spawners = currentLevel.getSpawners();
             float playerX = player1.getXPosition();
 
-            for (int i = 0; i < spawners.size(); i++)
+            while ( spawners.hasNext() )
             {
-                addNotNull( list, spawners.get(i).spawn(playerX, enemyPool) );
+                Util.addNotNull( list, spawners.next().spawn(playerX, enemyPool) );
             }
-            return list;
+            return list.iterator();
         }
     }
 

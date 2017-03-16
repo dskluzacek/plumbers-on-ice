@@ -1,8 +1,8 @@
 package com.plumbers.game;
 
-import java.util.List;
+import java.util.Iterator;
 
 public interface SpawnStrategy
 {
-    List<Enemy> spawnEnemies();
+    Iterator<Enemy> spawnEnemies();
 }

@@ -33,7 +33,7 @@ public final class MainMenu extends InputAdapter implements Screen
     public static final String LEVEL_1_FILE = "grassy1.tmx",
                                LEVEL_2_FILE = "grassy2.tmx",
                                LEVEL_3_FILE = "winter1.tmx",
-                               LEVEL_4_FILE = "fall1.tmx",
+                               LEVEL_4_FILE = "tropical1.tmx",
                                LEVEL_5_FILE = "castle2.tmx";
 
     public MainMenu(Game game)

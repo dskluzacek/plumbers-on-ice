@@ -1,6 +1,7 @@
 package com.plumbers.game.server;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -107,11 +108,11 @@ public class RemotePlayer extends Player {
     }
 
     @Override
-    public void hazardCollisionCheck(List<? extends Hazard> hazards) {
+    public void hazardCollisionCheck(Iterator<? extends Hazard> hazards) {
     }
 
     @Override
-    public List<Event> coinCollectCheck(List<Coin> coins, int tickNum) {
+    public List<Event> coinCollectCheck(Iterator<Coin> coins, int tickNum) {
         return Collections.emptyList();
     }
 

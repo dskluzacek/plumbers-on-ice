@@ -215,7 +215,7 @@ public final class GameView implements Screen
     private void loadLevel()
     {
         try {
-            level = new Level(levelFilePath, textureAtlas);
+            level = new Level(levelFilePath);
         }
         catch (FileFormatException e) {
             e.printStackTrace();
@@ -440,7 +440,6 @@ public final class GameView implements Screen
         public void apply(DeathEvent e) {
             if ( e.getPlayerNum() == 1 && ! death ) {
                 death = true;
-//                timeAccumulator = 0;
                 deathSound.play(0.8f);
 
                 EventMessage m = EventMessage.obtain();

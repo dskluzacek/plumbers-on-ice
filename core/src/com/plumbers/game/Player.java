@@ -2,6 +2,7 @@ package com.plumbers.game;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -24,7 +25,7 @@ public class Player extends Character
     private int coinsCollected = 0;
     private boolean jumped = false;
     private boolean hurt = false;
-    private int jumpStarted;   // tick number when the most recent jump started
+    private int jumpStartedTick;   // tick number when the most recent jump started
     private boolean finished;
 
     /* ---- */
@@ -125,7 +126,7 @@ public class Player extends Character
         if ( getState() == State.JUMPING )
         {
             // allows player to control height of jump by holding the input, or not
-            if ( tickNumber <= jumpStarted + JUMP_BOOST_DURATION
+            if ( tickNumber <= jumpStartedTick + JUMP_BOOST_DURATION
                     && controller.pollJumpInput() )
             {
                 // then, allow jump acceleration to continue
@@ -307,7 +308,7 @@ public class Player extends Character
         }
     }
 
-    public void hazardCollisionCheck(List<? extends Hazard> hazards)
+    public void hazardCollisionCheck(Iterator<? extends Hazard> hazards)
     {
         if ( getState() == State.DYING )
         {
@@ -315,16 +316,16 @@ public class Player extends Character
         }
         Rectangle rect = getRectangle();
 
-        for (int i = 0; i < hazards.size(); i++)
+        while ( hazards.hasNext() )
         {
-            if (rect.intersects( hazards.get(i).getRectangle() ))
+            if ( rect.intersects(hazards.next().getRectangle()) )
             {
                 beKilled();
             }
         }
     }
 
-    public List<Event> coinCollectCheck(List<Coin> coins, int tickNum)
+    public List<Event> coinCollectCheck(Iterator<Coin> coins, int tickNum)
     {
         if ( getState() == State.DYING )
         {
@@ -334,9 +335,9 @@ public class Player extends Character
         Rectangle rect = getRectangle();
         coinEvents.clear();
 
-        for (int i = 0; i < coins.size(); i++)
+        while ( coins.hasNext() )
         {
-            Coin coin = coins.get(i);
+            Coin coin = coins.next();
 
             if ( ! coin.isCollected() && rect.intersects(coin.getRectangle()) )
             {
@@ -354,7 +355,7 @@ public class Player extends Character
         return coinEvents;
     }
     
-    public Event springboardCheck(List<Springboard> springboards, int tickNumber)
+    public Event springboardCheck(Iterator<Springboard> springboards, int tickNumber)
     {
         if ( getState() == State.DYING ) {
             return null;
@@ -362,9 +363,9 @@ public class Player extends Character
         Rectangle rect = getRectangle();
         boolean eventOccurred = false;
         
-        for (int i = 0; i < springboards.size(); i++)
+        while ( springboards.hasNext() )
         {
-            Springboard sb = springboards.get(i);
+            Springboard sb = springboards.next();
             
             if ( rect.intersects(sb.getRectangle()) )
             {
@@ -442,7 +443,7 @@ public class Player extends Character
     private void startJump(int tickNumber)
     {
         jumped = true;
-        jumpStarted = tickNumber;
+        jumpStartedTick = tickNumber;
         setState( State.JUMPING );
         setYVelocity(JUMP_POWER);
         setYAccel(JUMP_BOOST);

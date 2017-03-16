@@ -1,15 +1,11 @@
 package com.plumbers.game;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -32,12 +28,12 @@ import com.badlogic.gdx.utils.Array;
 public final class Level
 { 
     private final OrthogonalTiledMapRenderer renderer;
-    private final List<Block> blocks = new ArrayList<Block>();
+//    private final List<Block> blocks = new ArrayList<Block>();
     private final Block[][] blockArray;
-    private final List<Coin> coins = new ArrayList<Coin>();
-    private final List<EnemySpawner> spawners = new ArrayList<EnemySpawner>();
-    private final List<FixedHazard> hazards = new ArrayList<FixedHazard>();
-    private final List<Springboard> springboards = new ArrayList<Springboard>();
+    private final Array<Coin> coins = new Array<Coin>(64);
+    private final Array<EnemySpawner> spawners = new Array<EnemySpawner>();
+    private final Array<FixedHazard> hazards = new Array<FixedHazard>();
+    private final Array<Springboard> springboards = new Array<Springboard>();
     private final TiledMap tiledMap;
     private Vector start;
     private Rectangle finish;
@@ -66,10 +62,6 @@ public final class Level
                                 TROPICAL_STR = "tropical",
                                 DUNGEON_STR = "dungeon",
                                 BACKGROUND_COLOR_KEY = "background-color",
-                                SPECIAL_TILE_KEY = "special",
-                                COIN_STR = "coin",
-                                SPIKES_STR = "spike",
-                                SPRINGBOARD_STR = "springboard",
                                 ENEMY_TYPE_KEY = "type",
                                 SPAWN_DISTANCE_KEY = "spawndistance",
                                 COLL_OFFSET_X_KEY = "relativeX",
@@ -77,8 +69,166 @@ public final class Level
                                 COLL_WIDTH_KEY = "width",
                                 COLL_HEIGHT_KEY = "height";
     
-    public Level(String filename, TextureAtlas atlas)
-            throws FileFormatException
+    private enum MapProperty
+    {
+        ENVIRONMENT ("enviroment")
+        {
+            @Override void apply(String value, Level level) throws FileFormatException
+            {
+                if ( value.isEmpty() ) {
+                    return;
+                }
+                Environment env = Environment.getByName(value);
+                
+                if (env == null) {
+                    throw new FileFormatException("Invalid value for 'environment' property");
+                }
+                level.background = env.createBackground();
+                
+                if (level.background == null && level.backgroundColor == null) {
+                    level.backgroundColor = env.getDefaultBackgroundColor();
+                }
+            }
+        },
+        USE_CEILING ("ceiling")
+        {
+            @Override void apply(String value, Level level)
+            {
+                level.useCeiling = value.equalsIgnoreCase("true");
+            }
+        },
+        SOUNDTRACK ("soundtrack")
+        {
+            @Override void apply(String value, Level level)
+            {
+                if ( ! value.isEmpty() ) {
+                    level.soundtrack = Gdx.audio.newMusic( Gdx.files.internal(value) );
+                }
+            }
+        },
+        SOUNDTRACK_DELAY ("soundtrack-delay")
+        {
+            @Override void apply(String value, Level level)
+            {
+                level.soundtrackDelay = Integer.parseInt(value);
+            }
+        },
+        BACKGROUND_COLOR ("background-color")
+        {
+            @Override void apply(String value, Level level)
+            {
+                String[] strArr = value.split(",");
+                int red = Integer.parseInt( strArr[0].trim() );
+                int green = Integer.parseInt( strArr[1].trim() );
+                int blue = Integer.parseInt( strArr[2].trim() );
+
+                level.backgroundColor = new Color(red / 255f, green / 255f, blue / 255f, 1);
+            }
+        };
+        
+        private final String key;
+        
+        private MapProperty(String key)
+        {
+            this.key = key;
+        }
+        
+        abstract void apply(String value, Level level) throws FileFormatException;
+        
+        String getKey()
+        {
+            return key;
+        }
+    }
+    
+    private enum TileProperty
+    {
+        DECORATIVE ("decorative")
+        {
+            @Override
+            boolean apply(String value, int col, int row, Cell cell, Level level)
+            {
+                return ( value.equalsIgnoreCase("true") );
+            }
+        },
+        SPECIAL ("special")
+        {
+            @Override
+            boolean apply(String value, int col, int row, Cell cell, Level level)
+            {
+                for (SpecialTile special : SpecialTile.values())
+                {
+                    if ( special.getValue().equalsIgnoreCase(value) )
+                    {
+                        special.apply(col, row, cell, level);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        
+        private final String key;
+        
+        private TileProperty(String key)
+        {
+            this.key = key;
+        }
+        
+        /**
+         * Returns true if the tile with this property should be ignored for collision purposes.
+         */
+        abstract boolean apply(String value, int column, int row, Cell cell, Level level);
+        
+        String getKey()
+        {
+            return key;
+        }
+    }
+    
+    private enum SpecialTile
+    {
+        COIN ("coin")
+        {
+            @Override void apply(int column, int row, Cell cell, Level level)
+            {
+                level.coins.add( new Coin(column, row, cell) );
+            }
+        },
+        SPIKES ("spike")
+        {
+            @Override void apply(int column, int row, Cell cell, Level level)
+            {
+                level.hazards.add( new Spikes(column, row) );
+            }
+        },
+        SPRINGBOARD ("springboard")
+        {
+            @Override void apply(int column, int row, Cell cell, Level level)
+            {
+                level.springboards.add( new Springboard(column, row) );
+                
+                // Springboard is a Drawable and not rendered by the map renderer
+                cell.setTile(null);
+            }
+        };
+        
+        private final String value;
+        
+        private SpecialTile(String value)
+        {
+            this.value = value;
+        }
+        
+        abstract void apply(int column, int row, Cell cell, Level level);
+        
+        String getValue()
+        {
+            return value;
+        }
+    }
+    
+    public Level(String filename) throws FileFormatException
     {
         // load the map
         TmxMapLoader.Parameters mapParams = new TmxMapLoader.Parameters();
@@ -147,34 +297,50 @@ public final class Level
         return finish;
     }
 
-    public List<Block> getBlocks()
-    {
-        return blocks;
-    }
+//    public List<Block> getBlocks()
+//    {
+//        return blocks;
+//    }
 
     public Block[][] getBlockArray()
     {
         return blockArray;
     }
-
-    public List<Coin> getCoins()
+    
+    /**
+     * Returns an iterator for the level's <code>Coin</code>s.
+     * The same iterator instance is returned for each call to this method.
+     */
+    public Iterator<Coin> getCoins()
     {
-        return coins;
+        return coins.iterator();
     }
-
-    public List<FixedHazard> getHazards()
+    
+    /**
+     * Returns an iterator for the level's <code>FixedHazard</code>s.
+     * The same iterator instance is returned for each call to this method.
+     */
+    public Iterator<FixedHazard> getHazards()
     {
-        return hazards;
+        return hazards.iterator();
     }
-
-    public List<EnemySpawner> getSpawners()
+    
+    /**
+     * Returns an iterator for the level's <code>EnemySpawner</code>s.
+     * The same iterator instance is returned for each call to this method.
+     */
+    public Iterator<EnemySpawner> getSpawners()
     {
-        return spawners;
+        return spawners.iterator();
     }
-
-    public List<Springboard> getSpringboards()
+    
+    /**
+     * Returns an iterator for the level's <code>Springboard</code>s.
+     * The same iterator instance is returned for each call to this method.
+     */
+    public Iterator<Springboard> getSpringboards()
     {
-        return springboards;
+        return springboards.iterator();
     }
 
     public boolean hasBackground()
@@ -240,6 +406,29 @@ public final class Level
         for (Springboard sb : springboards)
         {
             sb.reset();
+        }
+    }
+    
+    public void resetEnemySpawners()
+    {
+        for (EnemySpawner s : spawners)
+        {
+            s.reset();
+        }
+    }
+    
+    private void getMapProperties() throws FileFormatException
+    {
+        MapProperties properties = tiledMap.getProperties();
+        
+        for (MapProperty property : MapProperty.values())
+        {
+            String key =  property.getKey();
+            
+            if ( properties.containsKey(key) )
+            {
+                property.apply(properties.get(key, String.class).trim(), this);
+            }
         }
     }
 
@@ -312,126 +501,28 @@ public final class Level
         }
     }
 
-    private void getMapProperties()
-    {
-        MapProperties properties = tiledMap.getProperties();
-
-        loadUseCeiling(properties);
-        loadSoundtrack(properties);
-        loadSoundtrackDelay(properties);
-        loadEnvironment(properties);
-        loadBackgroundColor(properties);
-    }
-    
-    private void loadUseCeiling(MapProperties properties)
-    {
-        useCeiling = nullToEmptyString(
-                properties.get(CEILING_KEY, String.class)).equalsIgnoreCase("true");
-    }
-    
-    private void loadSoundtrack(MapProperties properties)
-    {
-        String musicStr = properties.get(SOUNDTRACK_KEY, String.class);
-
-        if (musicStr != null)
-        {
-            soundtrack = Gdx.audio.newMusic( Gdx.files.internal(musicStr) );
-        }
-    }
-    
-    private void loadSoundtrackDelay(MapProperties properties)
-    {
-        if (properties.containsKey(SOUNDTRACK_DELAY_KEY))
-        {
-            soundtrackDelay = Integer.parseInt(
-                    properties.get(SOUNDTRACK_DELAY_KEY, String.class).trim() );
-        }
-    }
-    
-    private void loadEnvironment(MapProperties properties)
-    {
-        String envStr = properties.get(ENVIRONMENT_KEY, String.class);
-        
-        if (envStr != null)
-        {
-            if ( envStr.equalsIgnoreCase(AUTUMN_STR) )
-            {
-                Texture texture = new Texture("autumn.png");
-                background = new Background.AutumnBackground(texture);
-            }
-            else if ( envStr.equalsIgnoreCase(GRASSLAND_STR) )
-            {
-                Texture texture = new Texture("grassland.png");
-                background = new Background.GrasslandBackground(texture);
-            }
-            else if ( envStr.equalsIgnoreCase(TROPICAL_STR) )
-            {
-                Texture texture = new Texture("tropical.png");
-                background = new Background.TropicalBackground(texture);
-            }
-            else if ( envStr.equalsIgnoreCase(WINTER_STR) )
-            {
-                Texture texture = new Texture("winter.png");
-                background = new Background.WinterBackground(texture);
-            }
-        }
-//        else
-//        {
-//            String bgStr = properties.get("background", String.class);
-//    
-//            if (bgStr != null)
-//            {
-//                TextureRegion bg = new TextureRegion( new Texture(bgStr) );
-//                bg.flip(false, true);
-//                background = new Background.ImageBackground(bg, UNIT_SCALE, 0.125);
-//            }
-//        }
-    }
-    
-    private void loadBackgroundColor(MapProperties properties)
-    {
-        String colorStr = properties.get(BACKGROUND_COLOR_KEY, String.class);
-
-        if (colorStr != null)
-        {
-            String[] strArr = colorStr.split(",");
-            int red = Integer.parseInt( strArr[0].trim() );
-            int green = Integer.parseInt( strArr[1].trim() );
-            int blue = Integer.parseInt( strArr[2].trim() );
-
-            backgroundColor = new Color(red / 255f, green / 255f, blue / 255f, 1);
-        }
-    }
-
     private void getTileProperties(int column, int row,
             Cell cell, TiledMapTileLayer blockLayer)
                     throws NumberFormatException
     {
         MapProperties props = cell.getTile().getProperties();
+        boolean propertyApplied = false;
         
-        if ( props.containsKey(SPECIAL_TILE_KEY) )
+        for (TileProperty property : TileProperty.values())
         {
-            if ( props.get(SPECIAL_TILE_KEY).equals(COIN_STR) )
+            String key = property.getKey();
+            
+            if ( props.containsKey(key)
+                 && property.apply( props.get(key, String.class).trim(),
+                                              column, row, cell, this) )
             {
-                coins.add( new Coin(column, row, cell) );
-            }
-            else if ( props.get(SPECIAL_TILE_KEY).equals(SPIKES_STR) )
-            {
-                hazards.add( new Spikes(column, row) );
-            }
-            else if ( props.get(SPECIAL_TILE_KEY).equals(SPRINGBOARD_STR) )
-            {
-                springboards.add( new Springboard(column, row) );
-                
-                // Springboard is a Drawable and not rendered by the map renderer
-                cell.setTile(null);  
+                propertyApplied = true;
             }
         }
-        else if ( props.containsKey("decorative") )
+        
+        if (propertyApplied)
         {
-            if ( props.get("decorative", String.class).equalsIgnoreCase("true") ) {
-                return;
-            }
+            return;
         }
         else if ( props.containsKey(COLL_OFFSET_X_KEY)
                   || props.containsKey(COLL_OFFSET_Y_KEY)
@@ -443,9 +534,9 @@ public final class Level
             String wStr = props.get(COLL_WIDTH_KEY, String.class);
             String hStr = props.get(COLL_HEIGHT_KEY, String.class);
 
-            int relativeX =
+            int offsetX =
                 (relX == null ? 0 : Integer.parseInt(relX.trim()) * UNIT_SCALE);
-            int relativeY =
+            int offsetY =
                 (relY == null ? 0 : Integer.parseInt(relY.trim()) * UNIT_SCALE); 
             int width =
                 (wStr == null ? Block.SIZE : Integer.parseInt(wStr.trim()) * UNIT_SCALE);
@@ -453,14 +544,14 @@ public final class Level
                 (hStr == null ? Block.SIZE : Integer.parseInt(hStr.trim()) * UNIT_SCALE);
 
             Block b = new Block(column, row, cell, blockLayer,
-                                relativeX, relativeY, width, height);
-            blocks.add(b);
+                                offsetX, offsetY, width, height);
+//            blocks.add(b);
             blockArray[column][row] = b;
         }
         else
         {
             Block b =  new Block(column, row, cell, blockLayer);
-            blocks.add(b);
+//            blocks.add(b);
             blockArray[column][row] = b;
         }
     }
@@ -505,6 +596,8 @@ public final class Level
             animFrames.add(framesB[i]);    
             final AnimatedTiledMapTile animatedTile = new AnimatedTiledMapTile(1/6f, animFrames);
             final int id = framesA[i].getId();
+            
+            animatedTile.getProperties().put("decorative", "true");
             
             // Search for the tile in the map layers and replace.
             // Have to do this because setting the tile in the tileset does nothing.
@@ -587,8 +680,8 @@ public final class Level
         }
     }
 
-    private static String nullToEmptyString(String str)
-    {
-        return (str == null ? "" : str);
-    }
+//    private static String nullToEmptyString(String str)
+//    {
+//        return (str == null ? "" : str);
+//    }
 }
