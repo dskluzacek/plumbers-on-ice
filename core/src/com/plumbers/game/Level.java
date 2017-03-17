@@ -479,7 +479,7 @@ public final class Level
     private void loadEnemySpawner(RectangleMapObject rectObj)
     {
         MapProperties props = rectObj.getProperties();
-        Enemy.Type type = Enemy.Type.getByName( props.get(ENEMY_TYPE_KEY, String.class) );
+        EnemyType type = EnemyType.getByName( props.get(ENEMY_TYPE_KEY, String.class) );
         
         if (type == null) {
             return;
@@ -493,11 +493,11 @@ public final class Level
             int spawnDistance = UNIT_SCALE * Integer.parseInt(
                     props.get(SPAWN_DISTANCE_KEY, String.class) );
 
-            spawners.add( new EnemySpawner(x, y, type, spawnDistance) );
+            spawners.add( new EnemySpawner(x, y, type.newInstance(), spawnDistance) );
         }
         else
         {
-            spawners.add( new EnemySpawner(x, y, type) );
+            spawners.add( new EnemySpawner(x, y, type.newInstance()) );
         }
     }
 
@@ -556,7 +556,7 @@ public final class Level
         }
     }
     
-    // loads the waterfall animation from the dungeon environment
+    // loads the waterfall animation for the dungeon environment
     private void loadWaterfallAnim(TiledMapTileSet tileset)
     {
         final String WATERFALL_A_KEY = "waterfall1";

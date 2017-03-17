@@ -10,13 +10,13 @@ import com.plumbers.game.MovementAnimation.Action;
  */
 public abstract class Character extends Motionable implements Drawable
 {
-    private String characterName;  // corresponds to names of texture regions
-    private Rectangle hitbox;
+    private String characterName;
+    private Rectangle hitbox = new Rectangle(0, 0, 0, 0);
     private float hitboxOffsetX, hitboxOffsetY;  // offsets to the position of the hitbox
                                                  // from the character object coordinates
     private MovementAnimation movementAnim;
-    private State state = State.RUNNING;
-    private boolean flipped = false;  // true if the character is facing left instead of right
+    private State state;
+    private boolean flipped;  // true if the character is facing left instead of right
     
     /* ----
      * Used to store the results of hitboxToColumnsAndRows, allowing us to
@@ -28,11 +28,6 @@ public abstract class Character extends Motionable implements Drawable
     private int columnBegin, columnEnd, rowBegin, rowEnd;
     // ----
     
-    protected Character()
-    {
-        hitbox = new Rectangle(0, 0, 0, 0);
-    }
-    
     public Character(String characterName)
     {
         this(characterName, 4, 4, 20, 26);
@@ -40,7 +35,6 @@ public abstract class Character extends Motionable implements Drawable
 
     public Character(String name, float offsetX, float offsetY, float w, float h)
     {
-        this();
         init(name, offsetX, offsetY, w, h);
     }
     
@@ -53,6 +47,9 @@ public abstract class Character extends Motionable implements Drawable
         hitbox.setY(0);
         hitbox.setW(w);
         hitbox.setH(h);
+        movementAnim = null;
+        state = State.RUNNING;
+        flipped = false;
     }
 
     public enum State

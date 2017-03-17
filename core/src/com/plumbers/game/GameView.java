@@ -208,7 +208,7 @@ public final class GameView implements Screen
         
         coinAnimation = Coin.getAnimation(textureAtlas);
         Coin.createCoinTile(textureAtlas);
-        Enemy.setTextureAtlas(textureAtlas);
+        BasicEnemy.setTextureAtlas(textureAtlas);
         Springboard.setTextureAtlas(textureAtlas);
     }
 

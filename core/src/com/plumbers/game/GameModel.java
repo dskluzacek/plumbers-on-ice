@@ -3,10 +3,7 @@ package com.plumbers.game;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
-import com.badlogic.gdx.utils.ReflectionPool;
 
 /**
  * The model. Represents the state of the game simulation. 
@@ -23,7 +20,6 @@ public final class GameModel
     private final int levelBottom;
     private final boolean twoPlayer;
     private int gameTicks = 0;
-    private Pool<Enemy> enemyPool = new ReflectionPool<Enemy>(Enemy.class, 20);
     
     public static final float GRAVITY = 0.4f;
 
@@ -105,9 +101,7 @@ public final class GameModel
     
     private void simulate(Enemy enemy)
     {
-        enemy.simulate(gameTicks);
-        enemy.fallingCheck( currentLevel.getBlockArray() );
-        enemy.collisionCheck( currentLevel.getBlockArray() );
+        enemy.gameTick( gameTicks, currentLevel.getBlockArray() );
     }
 
     public List<Drawable> getDrawables()
@@ -168,7 +162,7 @@ public final class GameModel
 
             while ( spawners.hasNext() )
             {
-                Util.addNotNull( list, spawners.next().spawn(playerX, enemyPool) );
+                Util.addNotNull( list, spawners.next().spawn(playerX) );
             }
             return list.iterator();
         }
