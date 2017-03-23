@@ -7,6 +7,16 @@
  </properties>
  <tileset firstgid="1" name="special tiles" tilewidth="16" tileheight="16" spacing="1">
   <image source="special-tiles.png" width="84" height="50"/>
+  <tile id="3">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
   <tile id="6">
    <properties>
     <property name="special" value="spike"/>
@@ -17,26 +27,71 @@
     <property name="special" value="coin"/>
    </properties>
   </tile>
+  <tile id="8">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="9">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
  </tileset>
  <tileset firstgid="16" name="winter-tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
   <image source="winter-tiles.png" width="108" height="108"/>
+  <tile id="4">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="11">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="24">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="25">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="26">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="27">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="Decorative layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJzt2FEOgyAMgOEeYnvRC7jt/vcbJjYhJG4yaUfx/5LGN7FQCyoCAADQn+XfD1DpkeK5BWzdUtwDjxOttkem7+0rxZRiNhxL1916HGvrnC1b6NzBT+T+4dW7r6aHmvBc2zJfy56qeZVXkTY5194j37NarHvtPbzf4ej75R7Nq7yKtMnZet4+1cEvdTnqOl/N2f5AHfjr4fzwzdG64Iw5rrVO839t+TnIuobpS4C/CHtT73QO829HAP7e8lAKtg==
-  </data>
- </layer>
- <layer name="Decorative layer 2" width="150" height="16">
-  <data encoding="base64" compression="zlib">
-   eJztzrENACAIAEEKLXT/gWUKSeAu+f4jAGCWle3qCdo52a2eAAAAAAAAAL57T1kAHQ==
+   eJztzrENACAIAEHWQfffDwt7Ckxs7pLvPwIAgKk8rRsAAAAA8M7+PQAA0ChbdQCp
   </data>
  </layer>
  <layer name="Platform layer" width="150" height="16">
   <data encoding="base64" compression="zlib">
-   eJztl9tqwzAMhn23XO4AbQdpk3WHq41B3//hFrEIhCrJUuKmofUPJsGOZdX6LLkpVVVV3ZOaaztQdfOqjFU1aTkObom3Ji27d/cm3NeNMbY2bYe2I61qvWrJu8SYpNLcedaFNfdDO5BWVV787L5OtNMq7yCe07T4z+WMr4vi683l6mloz6S9TLCxNpU+43yPOzL24JiPMZO44vFshW+5pvw+yQe6Nu2Hc9Snmq9K6nF80thxrt5SPn/R+6rEisYP7/fWyxzflg+g4/iUaiC0ndKiuTt6Jhr2XjJnRGzRmkV/c8QG/RbsfQ3tI53v9WHs/8zY83DF84knb4FovbFqDXJj1WKUxJXWMHc37KnJEwd+7/AwLTFncbhNsTNB96RjY1HWYe2TYhuaxhPGGuPs4Sr3nCqtzmq2pRro4QqUY8tzZwB5uebxjWgfnE99gnqVYxIYkM45Z4rb5kxZzF6KK23NDRnX6qxkW6uBJWKr5SApPiW4yjFscYW+Ut+ku5DFlpQrgTXKFMYJbVOm0AerBi2dr2BOk+SzcWTfcV2KK82uNN/rA7/nRu5/Fle4fif0RdjKCff/PZ0z1Rv+8fmludLu9D/pvw5/O/1CRWugFttIDprD1RzuS3AlsSXlSVo/MIfBXkvxoTG4Flfa/ehkjGvzpzAVieWtcuXJm79CX6/M6x2+o5bkyvN/TxrPxfIPJAQ8hA==
+   eJztmGlPwzAMhv0BtMInzo1jRxkMjUtI/P8fRyxqzXh24rTZwegrWZ3SJnHjJ3Y6gF69ev0nVbt2oNfB6y8wdhTseNdOHLAqKMPB0jnXvugk2GmH/hWUW7tD11Ww68w+tK7DyL0S83jkYRs1CnbDrFd5vQR7DfYW7C7Yfctxxuy3xhiK4k7zlN7r1rxcOOck2JRZrnDNlo3R2vX6Lbl3b1uOM1Z+E0cyp1nx78rZ2GiX83m4iuXU82AXzC7z3NxLld7jco1nTTsyMXD0p5hpXMl4jpVnpfj7eeul5gOfm7fjPqphnStZQ7vk7pToveQVoMwZIXcMXrO8Zwmus+ZKscMxJFcPYOcv8pefVzVWLH5ke6puUWxTfMd8QM2bq1YD0W4My83d3j1P7yWvFZThOXcMXrP4O+ecjzlTON5zsCdYX+tp075I+OvhSuYTT95C8XoTqzXEjcUVl8aVZZS7K3G15OFKnjs8TGvfnbFv0RHE94Tkgq/JTDyrzRHjFuf+MsZGW2idYBVrirOHq9S1raw6a42t1UAPV6gUW5RTU3XEy7WMb44mif6SC+4T1iti0qqnyIC2zyVTcmzJVGwfboora84hu2/VWW1sqwaWiK2Vg7SckcsVckrnH7IBrL5HNcW4Il+5b9pZCO9beUnLlcgaZ4riRGNzpsiHWA3adr7CPhXoe2MunpPaFFfWuFp/rw/ynJtz/otxRfPPlDaNrbai9X+EdabqiH+yf2murDP9B/zU4XenXyg6S9aQx5UW25wc1IWrLtyX4EqyRf8P8G9HFK8flMNwrbX48BjsiivrfPQVuW/1b8NUTiwPlStP3vxU2mqjX+3wnbRNrjzfe9r9VCy/AWlpRpU=
   </data>
  </layer>
- <objectgroup name="Object layer" width="0" height="0">
+ <objectgroup name="Object layer" width="0" height="0" visible="0">
   <object name="badguy1" x="128" y="212">
    <properties>
     <property name="type" value="badguy1"/>

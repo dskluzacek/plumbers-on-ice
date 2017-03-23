@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="155" height="20" tilewidth="16" tileheight="16">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="155" height="20" tilewidth="16" tileheight="16" nextobjectid="10">
  <properties>
   <property name="enviroment" value="autumn"/>
   <property name="soundtrack" value="Fall-Theme.mp3"/>
   <property name="soundtrack-delay" value="2"/>
  </properties>
- <tileset firstgid="1" name="Special Tiles" tilewidth="16" tileheight="16" spacing="1">
+ <tileset firstgid="1" name="Special Tiles" tilewidth="16" tileheight="16" spacing="1" tilecount="15" columns="5">
   <image source="special-tiles.png" width="84" height="50"/>
+  <tile id="3">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
   <tile id="6">
    <properties>
     <property name="special" value="spike"/>
@@ -17,62 +27,65 @@
     <property name="special" value="coin"/>
    </properties>
   </tile>
+  <tile id="8">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="9">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
  </tileset>
- <tileset firstgid="16" name="autumn-tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
-  <image source="autumn-tiles.png" width="144" height="126"/>
- </tileset>
+ <tileset firstgid="16" source="autumn-tiles.tsx"/>
  <layer name="Decorative layer" width="155" height="20">
   <data encoding="base64" compression="zlib">
-   eJzt1ksKgCAUBdCWVLM+tv9t5SSKBmFUJnYO3IkTHw/B2zQAAAAA/Fkb0yWcwV19zJBwthrfHQcAKIy//zq9fVPKLqaYsMv87TiPOevtf5N7F8c3FTLeDVCrUnoD9dOhAKjFAjKHBuY=
+   eJzt0jEKwCAQRFGPFDtD9P7XcsuQPiy478Hvp5jWAAAAAKjsinr2CEoY0Z09AgAAfvRE89XKncMBvp+auXMAAAAoaAPU5AMq
   </data>
  </layer>
  <layer name="Platform layer" width="155" height="20">
   <data encoding="base64" compression="zlib">
-   eJztmcluAyEMhrl1jpHaprtEV3WJeu217/9UjZWgOq5/bGAySjr8kgUxzGa+8QAJYRzdr+0J2MNI1+jqInXWuqZSZ61rKnXW6jQU+rs6a7U6KfR3hfC2ttXWWliz3udDft8HUVr9btZ2u7Y7w9+FJXPcXFjzKuWsx7CJz7Ph79rVEH45QKzxPoes3D2iZ5A5DZ0j5SyyZdjE54L5uH+urJVw4slrcj4y9u8WDaDuvR5qo3OlnOWxL8f9efz/TfS+pvkFn7uRvSt9zxQ737afNrbX6BL4+fhdhd38Y9m1cr4S1jzvqOXfl/b5jaI4a7FLohhaOT8x9jnWTTWK8/UK/Fz0Dnk50VihGC4rj1+wc1w7/KUcHFKupO8imuMTQxRDi7XvTNtUz8Q5iqAP90vuSniT8crtC3nzGhoH7j/2/ZIcax/h71xWPi/xOFY+a+Eysvqro09U2r28yXi15kWShzX0DcrNQxeszo9fgD77VI611C7XU9xejPNP9Rwx03ap9EH9Pdxo8WrJiyQPa9ZYWWo9HgmxIfcRPaylGK0Uq91j0xjkvlxfbU8U5TJSFKWsS1ncoGeuzYukWta0dQ2af5eyJucZaA2FnlPOvazrp7VnWnMOYXetkhtjj2q+m949UZnPImvjdU05bqx4TcmaNldE91fKWnRcK2de1lrXvlbeqjk+yctaBKWsIyFurPGqyYtzZg3pRJStqpnP5VjT1qOylPWcNG488SrNi3Nmjf/n4rWp/lOWrKH9jghKWbckufGOV0lenDNrJfvg6Nz7kmQtsjatLktZ94jHuWS8vCwcM2s/HC1cXA==
+   eJztmdtOwzAMhnMBWuFqEjDGACkcNQ5CcMXhivd/KmJtEZ5nx0560KD5JavBydrG+eo6xbludBXsVrDrjq5RVQWqrFUNpcpa1VCqrJWpyfRXVdZKNcn0Vzn3EOx5bW1Y057nXX7eG3LUxp0Huwh2qfirZNEcNxbWrIo568at4nOn+Ks21bhfDiTW8JhdVuoe6Rxeg7257ZwmnSPmLLCZW8XnFPmwf6ys5XBiyWu0Hun67zZqhDZ3vY9gn0LfF3PemLMs9m64P4v/vwme11hf4NoN7JEZe8zYybr/qGV/ieaCH6/fmdvMP5otmPPlsGZ5RjV/X+rzHQVx5mIXBTHUcn5k7KWrm2opzNdS8GPBM2TlhGMFYjgr/P0UnWNh8OdysEu5Et6LUo0PDEEMNda+E31DzQlz5IUx2E+5y+GNxiv1Xcia16R1wP62OY6++/tUrHexUqw9ue1als4XeCzJZxyDVi65eXjUXjpeXmhHWXmj8WqbF0EW1rh3EI0FjeEUtfHvp8KYlOK19oLtJ8YB01y9m2It9tP9FLZ75f6s88gRNw+fGD9nxkjjLdxw8WqTF0EW1rgxXCwkaWutKV7rINgh8kts0O+IFtZijJ4ZK/3GxjGIfamx3DdRKZeBPDnSNpXGjTTn0rwIKmWN29dI9Xcua7TOkPZQ0jxp7aVdP+49456zcZt7ldQaW1RSz1m/idJ85lEfbnNKcaPFa0jWuFpRur9c1rzhWimzspa796V1g5a3NKXGWlnzwpG2JUncaOtVkhfHzJqkCTlG5dQNWCX1XIo1bj9Kj7SdEseNJV65eXHMrOH/uVhtqP8pU9ak7x1eONK2JsqNdb1y8uKYWcv5Di6duy9R1jzq49r0SNsW4TjnrJeVhb/M2g+xcGIS
   </data>
  </layer>
- <layer name="Decorative layer 2" width="155" height="20">
-  <data encoding="base64" compression="zlib">
-   eJzt0iESgDAQBMEIIuA1xAH/fxhrYpGkIN1V406suFIAAAAAAAAA5rGnNnoEn9X/Z0n14e5KRzrfGMUv9f9Z0zZ4CwAAAPO6AV2/Afs=
-  </data>
- </layer>
- <objectgroup name="Object layer" width="155" height="20">
-  <object name="Goal" x="2424" y="0" width="56" height="224"/>
-  <object name="Badguy1" x="406" y="198">
+ <objectgroup name="Object layer">
+  <object id="1" name="Goal" x="2424" y="0" width="56" height="224"/>
+  <object id="2" name="Badguy1" x="406" y="198">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Badguy2" x="471" y="281">
+  <object id="3" name="Badguy2" x="471" y="281">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="Badguy1" x="919" y="215">
+  <object id="4" name="Badguy1" x="919" y="215">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Badguy2" x="1240" y="135">
+  <object id="5" name="Badguy2" x="1240" y="135">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="Badguy1" x="1349" y="134">
+  <object id="6" name="Badguy1" x="1349" y="134">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Badguy1" x="2041" y="216">
+  <object id="7" name="Badguy1" x="2041" y="216">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Badguy2" x="2153" y="181">
+  <object id="8" name="Badguy2" x="2153" y="181">
    <properties>
     <property name="badguy2" value=""/>
    </properties>
   </object>
-  <object name="Start" x="0" y="208"/>
+  <object id="9" name="Start" x="0" y="208"/>
  </objectgroup>
 </map>

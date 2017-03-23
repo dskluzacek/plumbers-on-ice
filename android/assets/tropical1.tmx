@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="151" height="16" tilewidth="16" tileheight="16">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="151" height="16" tilewidth="16" tileheight="16" nextobjectid="14">
  <properties>
   <property name="enviroment" value="tropical"/>
   <property name="soundtrack" value="tropical-theme.mp3"/>
   <property name="soundtrack-delay" value="2"/>
  </properties>
- <tileset firstgid="1" name="Special Tiles" tilewidth="16" tileheight="16" spacing="1">
+ <tileset firstgid="1" name="Special Tiles" tilewidth="16" tileheight="16" spacing="1" tilecount="15" columns="5">
   <image source="special-tiles.png" width="84" height="50"/>
   <tile id="2">
    <properties>
@@ -23,76 +23,121 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="16" name="tropical-tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
+ <tileset firstgid="16" name="tropical-tiles" tilewidth="16" tileheight="16" spacing="2" margin="1" tilecount="36" columns="6">
   <image source="tropical-tiles.png" width="108" height="108"/>
+  <tile id="4">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="11">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="24">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="25">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="26">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="27">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
+  <tile id="30">
+   <properties>
+    <property name="decorative" value="true"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="Platform layer" width="151" height="16">
   <data encoding="base64" compression="zlib">
-   eJztl2GLwyAMhoX7sH69O3Ar7DbWu/3/v3gNKARJNNroZOSBUBc7q+Y1aZ0zDMMwDB2Wwm/DqCWnIdOXoYFn/DPoa4Y59GRx/BpzfbMS5xs1tb1qIgJm2tulcG0ZqyeL0Hows6YivWNA7e/IfHHebUW/vbCvF6W153IsMGKO7wbs2alwlZDG4Ge3O+rH5/13tyfTl45H5VDQ5iXYKvDn5ivtq8lXI89wq+YvhKV7RtWBz92+gn1nfADE+S9jWAMSYgxSbWkCY9+C3QV+z7TdAf8IJBptrdE3wnrFq5Z0zWkMsLbwvWmb2jtfuNZqa2PavtIvJa35mmiNLdEWl4+4d1rtfM19Nx3JW1vhWqut0nOkfim1a+fOHqUjrXowMm9R7zWpj6otXBxgDx6OruuSWp9DS1u90Io/Nc4rtXUKFt9rV+SL/tZvtCtql842jrPEavbr3bTFfYNoaAuPja0lBpKYwhgf4f6oF24OeL1YWyVMWzRcnePWc1RbNXHQ0BbUqpjProL/xWeatmTk4s/pZbS2/gHN3Smw
+   eJztV21rxDAILuxD+3Vv3d3Wu2PdBvt0///nLYEKEtRokr4wfEDSmtYm+kRt1zkcDofD0QZD5t7hsAI4dBfmHI4ajIz+CPw6whrWxNDxe5TmjgpYL3Bq3mshChzJt0NmLLG1JgalrIFpJbstod37S5BXNFrsU/3mVpx+C3JG96NyrgZUDwTI7V3KsRFHzVe/Fe++B/lAYwvgGESf9ZlRgzQGlyA3NI9j8hXkh5lL7VE5NHLztMhZoZfWC7gLcxGWfLXlGS49lydCUp9RdeAxyNMiz4IuIsb5WxDMAQ2AJym3WiLavi5yU+hH5roz6PfIVxqOlq7rSsha8bIC9gw5OY0N5hb2T3pN+W7MjFZuzcz1qNCX9FdpzW+JVrY13OLyEdfTts7X3Lmm8pa2N5gzo5VbHDjeTMIzvcKuNWdzZ4/ikdU216fX5i1Ln0f1NamOqi1cTo4++Ozouq6p9RL25JYmj7XqByg7Vttcn17CrX4R6GvPSAf60n807Ndcncdx1ojFX3twqyfmpPVJ30/PPPcP0oJb2DaWkhhoYhptPCzPg6+4NeD9WnqP/8atdMytj/s+V+e4/dRyyxKHFtyKtQry2aR4D77p3KrnFseXrbn1B2DKLpI=
   </data>
  </layer>
- <layer name="Decorative layer 2" width="151" height="16">
+ <layer name="Decorative layer" width="151" height="16">
   <data encoding="base64" compression="zlib">
-   eJzt1T0OgCAMhmEHHXTWRS/gxP2PZxcSBqX8m8D7JJ2qmNT6OU0AAAAA0NYudST0AM0pdSX0Qmi7ye6GsXOKmVfvs/3aTaP0e3Rn3GvnFDMv7Vrj6Y2q5Ex6/7bxn1K5OfqO5mQy/Eb6t+diD9/VzCf37FlqKXRuzrscPY9bqplP7tmr1FbpOTHI43rIbwCI9wCPagXX
+   eJzt1TEKgDAMBdAOOuisi97/nvYCErEapbwHmToEwk9aCgAAQK6l1nrjDSJbrf3G2xVRNmX3Pb3PNspma3Y5Z7bf6n23+c5Tuy2jvMX/Q6us+zTUGhP6RNzjPFn3aao1J/SJuMcA/MkB0nMDaw==
   </data>
  </layer>
- <objectgroup name="Object layer" width="151" height="16">
-  <object name="Badguy1" x="183" y="165">
+ <objectgroup name="Object layer">
+  <object id="1" name="Badguy1" x="183" y="165">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Badguy2" x="280" y="133">
+  <object id="2" name="Badguy2" x="280" y="133">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="Badguy2" x="327" y="134">
+  <object id="3" name="Badguy2" x="327" y="134">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="Badguy1" x="475" y="216">
+  <object id="4" name="Badguy1" x="475" y="216">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Badguy2" x="536" y="216">
+  <object id="5" name="Badguy2" x="536" y="216">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="Badguy1" x="822" y="181">
+  <object id="6" name="Badguy1" x="822" y="181">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Badguy2" x="874" y="185">
+  <object id="7" name="Badguy2" x="874" y="185">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="Badguy2" x="950" y="182">
+  <object id="8" name="Badguy2" x="950" y="182">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="Badguy2" x="1158" y="119">
+  <object id="9" name="Badguy2" x="1158" y="119">
    <properties>
     <property name="type" value="badguy2"/>
    </properties>
   </object>
-  <object name="Badguy1" x="1258" y="117">
+  <object id="10" name="Badguy1" x="1258" y="117">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Badguy1" x="1993" y="198">
+  <object id="11" name="Badguy1" x="1993" y="198">
    <properties>
     <property name="type" value="badguy1"/>
    </properties>
   </object>
-  <object name="Start" x="0" y="128"/>
-  <object name="Goal" x="2376" y="0" width="48" height="208"/>
+  <object id="12" name="Start" x="0" y="128"/>
+  <object id="13" name="Goal" x="2376" y="0" width="48" height="208"/>
  </objectgroup>
 </map>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="64" height="18" tilewidth="16" tileheight="16" nextobjectid="4">
+ <properties>
+  <property name="enviroment" value="autumn"/>
+ </properties>
+ <tileset firstgid="1" source="autumn-tiles.tsx"/>
+ <layer name="Decorative layer" width="64" height="18">
+  <data encoding="base64" compression="zlib">
+   eJztzrENADAIwDAOKvx/Hh24gQ61peyJAAAAgB3nllM9foGfNIEKALU=
+  </data>
+ </layer>
+ <layer name="Platform layer" width="64" height="18">
+  <data encoding="base64" compression="zlib">
+   eJzlV00LwjAMjXrxoB5EPQgedCf1HxQV/Jr7/79oKbQ01Nl23dbO7sGDQLcm7y0ZBEBhjzzAcHFEnmIX0QEy5AdZiDgjZ3ONi+DVxcVa4xTS84B/+xthQc50/dSDc9gyo6BKf6p9UIVf+ofigUn/v3swRk6QTItfyFw8Y9Of+v/ARX+f++DS8H1X/an2wQ78PGgbciblfL5BzWgdjEh8JbGcf5pLYgv98CAmfD1oOgt1dq478iFi1jBvFUL3AfeO7lw2L5kg9+EJyos2EdKDGXzvX3QPk/8BG/Mad7rAxwOfXCvDnRvHWru6c2m4x4UuufqgvwTAtx50
+  </data>
+ </layer>
+ <layer name="Coin layer" width="64" height="18">
+  <data encoding="base64" compression="zlib">
+   eJzt0kENAEAIBDFU4V8aWQP3hUtaBfOYKnjr7QBO8AHhA8IHhA8IHwD8YwC34wFF
+  </data>
+ </layer>
+ <objectgroup name="Object layer">
+  <object id="1" name="Start" x="0" y="16"/>
+ </objectgroup>
+</map>

@@ -23,17 +23,15 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="16" name="Grassland tiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
-  <image source="grassland-tiles.png" width="144" height="126"/>
- </tileset>
- <layer name="Decorative layer" width="150" height="15" opacity="0.9">
+ <tileset firstgid="16" source="grassland-tiles.tsx"/>
+ <layer name="Decorative layer" width="150" height="15">
   <data encoding="base64" compression="zlib">
-   eJzt2NEKQDAUxvFdcMHTcMfw/q/lXFidTmqjycb/V6dtiY6IrzkH4GsGqVGNzsyBOyapWY3ezAEASME/o3w2N5IjkYPNjWENAPi+WvJfSuax99JItc+0k0VJOS7WS0m9al6NKe/yIrUetbl7maeT6i+eY8V61X2GXr06FtZn1ykpx8V6Odu7rOWb9Cc8EwDAG3aLSQ2z
+   eJztzrENACAMwLAOMMBJ/H8YfYGpqLKl7IkAAAAAAABejGxWT9DOynb1RGOnegAA+MIFFWkAVw==
   </data>
  </layer>
  <layer name="Platform layer" width="150" height="15">
   <data encoding="base64" compression="zlib">
-   eJztWNsOwjAIrfHBfYE+qA/eHjT+//e5RRcJKxTaujLDSchctsoBzihpCA6Hw+FwOP4R3cesYt/bQWDHVgQdE3TEb0u49HYV2C68tWU1jtbwvHwx5EKqK6gtxxSryv+H95Gl5H3kvQ1yXbXsW3P5s9J38Pc+5D01p1jgrulTtfuWNv4OXaWQzI2wF0j84Gfaeym09bEyp5ToqiSOXI3k5Esay03hB+932nspqPo8I2ZFW9xcxfGu1bfmijtHV1YQq8+DePce2moLzoKxuUrC20L/hXFwul6qrtZhqiuqNiNi2sLYFHCC52W41tzep+Ed01bu+Rd3fkatgXFwvjV7Oudbesannee4XMDvPlWbEVhbuVwk8cJ1lK5yeGuN6gmc1nPW1DLou7Y/TVzS2ozQ1ijGRRJvKj+/5u26yo/rTLyXwqmQS6mu5uDdUlcvY0VQ5w==
+   eJztWMtOxDAMzIoD/QI4wB54HRZxgBvbhf//LbJiI1lu4oydlKQoI1lp1IfH8dSx4tzAwMB/w7u3DzI6dj0wYMGntyMZZ3Y90B+mi/WKO2/3gO1bERxYYEpc94Qnb8+A3bpfbfUaR2usuS5b2zPOa4Hqimpry+B9Y60+clfhGxR8H9nKugfeNw7XVcu6Vcsf7xvDvLafUvD//bzuuT6lB+6aOlW7bmnjn9iIAukbaS1A/PB72jkKbX566VNKdFUSh1UjlvVCY3lR+OH7nXaOIpWft4i11lao/VJfJfGuVbdycSM9D9LLWnS1FrR9XCw/r4lnD06nrRwXLVfaC8b6KoQ3UrdmMiL5P3n7uti3W/Y8UhySrrW6ynGlPAPXmdwL89h3cjFRXLmlrlK5CYhpi+Ma5BI7u6TnZVyz0t6n4R3TlvX8Szo/S71D45B8a/Z0yTd6xqft56S1oP99LjcBXFtWLki89L2Uriy8tZbaayStW96pZdR3bX+auNDcBGhzFOOCxJtbn7V5D13Z43pMPJfDQyGXUl39Be+WuvoBYBZeCQ==
   </data>
  </layer>
  <objectgroup name="Object layer" width="150" height="15">

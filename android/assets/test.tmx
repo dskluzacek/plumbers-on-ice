@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="96" height="18" tilewidth="16" tileheight="16" nextobjectid="4">
+ <properties>
+  <property name="enviroment" value="grassland"/>
+ </properties>
+ <tileset firstgid="1" source="grassland-tiles.tsx"/>
+ <layer name="Decorative layer" width="96" height="18">
+  <data encoding="base64" compression="zlib">
+   eJztzkERAAAIA6D1sX8/U+x8CAlIAAAAAABomesAwEMLBuMALA==
+  </data>
+ </layer>
+ <layer name="Platform layer" width="96" height="18">
+  <data encoding="base64" compression="zlib">
+   eJztmE8LAiEQxedWh+oQ1SHoULfq3sEg6N/u9/9GKSgb5q46ueqgP3isCzKM76GCAB17rgNUUnHkOqVuojDmmhaGOZeoHZXFWtMUzBlUxkH3/zuDc8K+SsHkf90H8ejzv2YQhyH/awbjY/Of+n1wS92ABRf/Ke+DNnUDFlz9p7oPcvd/B7gMQvPiariYHL/lPxZ17uTuv2ALeWQQklb75g42g3/PIp83vzvXQ46ZZS41/wWx94HIzuXN7yq/TErk8IQuCxMU/RfEzGAGv+9/6g1Q3QGuaiz1KIHJALPm1UA9X8+E95OeehvPWjmwBL8MMGvu8x/jWchaMfkAl4kdqA==
+  </data>
+ </layer>
+ <layer name="Coin layer" width="96" height="18">
+  <data encoding="base64" compression="zlib">
+   eJzt07ENADAIAzCu4v/TuneomApC9sIapCQCeMnuADCAHYAdULe5K5t/g6qJO5iYid10Dv7K6wJQcwCTRAId
+  </data>
+ </layer>
+ <objectgroup name="Object layer">
+  <object id="1" name="Start" x="0" y="16"/>
+ </objectgroup>
+</map>

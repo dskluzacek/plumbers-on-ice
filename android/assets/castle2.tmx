@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="150" height="16" tilewidth="16" tileheight="16">
  <properties>
-  <property name="background-color" value="20, 12, 28"/>
   <property name="ceiling" value="true"/>
   <property name="enviroment" value="dungeon"/>
   <property name="soundtrack" value="Castle-Theme.mp3"/>
