@@ -53,7 +53,7 @@ public class Player extends Character
      */
     public Player(String name, TextureAtlas textureAtlas, Controller controller)
     {
-        super(name);
+        super(name, 4, 2, 20, 28);
         this.controller = controller;
 
         Array<TextureRegion> walkFrames = new Array<TextureRegion>();
@@ -342,8 +342,9 @@ public class Player extends Character
             if ( ! coin.isCollected() && rect.intersects(coin.getRectangle()) )
             {
                 coin.setCollected(true);
-                coinEvents.add( CoinEvent.instance() );
-
+                CoinEvent event = CoinEvent.getPool().obtain().init(coin);
+                coinEvents.add(event);
+                
                 if (twoPlayerMode)
                 {
                     EventMessage msg = EventMessage.obtain();

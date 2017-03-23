@@ -27,11 +27,6 @@ public abstract class Character extends Motionable implements Drawable
      */
     private int columnBegin, columnEnd, rowBegin, rowEnd;
     // ----
-    
-    public Character(String characterName)
-    {
-        this(characterName, 4, 4, 20, 26);
-    }
 
     public Character(String name, float offsetX, float offsetY, float w, float h)
     {
@@ -133,7 +128,7 @@ public abstract class Character extends Motionable implements Drawable
                     continue;
                 }
                 Rectangle.Collision coll
-                = hitbox.staticCollisionInfo( b.getRectangle() );
+                    = hitbox.staticCollisionInfo( b.getRectangle() );
 
                 if (coll != null && coll.getDirection() == Direction.TOP) {
                     flag = true;
