@@ -6,7 +6,9 @@ import java.util.NoSuchElementException;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
@@ -28,13 +30,13 @@ import com.badlogic.gdx.utils.Array;
 public final class Level
 { 
     private final OrthogonalTiledMapRenderer renderer;
-//    private final List<Block> blocks = new ArrayList<Block>();
     private final Block[][] blockArray;
     private final Array<Coin> coins = new Array<Coin>(64);
     private final Array<EnemySpawner> spawners = new Array<EnemySpawner>();
     private final Array<FixedHazard> hazards = new Array<FixedHazard>();
     private final Array<Springboard> springboards = new Array<Springboard>();
     private final TiledMap tiledMap;
+    private final String filename;
     private Vector start;
     private Rectangle finish;
     private final int widthInTiles, heightInTiles;
@@ -48,20 +50,11 @@ public final class Level
     public static final int UNIT_SCALE = 2;
     
     private static final String PLATFORM_LAYER_NAME = "Platform layer",
-                                OBJECT_LAYER_NAME   = "Object layer";
-    @SuppressWarnings("unused")
+                                OBJECT_LAYER_NAME   = "Object layer",
+                                COIN_LAYER_NAME     = "Coin layer";
+    
     private static final String START_NAME =  "Start",
                                 FINISH_NAME = "Goal",
-                                CEILING_KEY = "ceiling",
-                                SOUNDTRACK_KEY = "soundtrack",
-                                SOUNDTRACK_DELAY_KEY = "soundtrack-delay",
-                                ENVIRONMENT_KEY = "enviroment",
-                                GRASSLAND_STR = "grassland",
-                                WINTER_STR = "winter",
-                                AUTUMN_STR = "autumn",
-                                TROPICAL_STR = "tropical",
-                                DUNGEON_STR = "dungeon",
-                                BACKGROUND_COLOR_KEY = "background-color",
                                 ENEMY_TYPE_KEY = "type",
                                 SPAWN_DISTANCE_KEY = "spawndistance",
                                 COLL_OFFSET_X_KEY = "relativeX",
@@ -81,7 +74,8 @@ public final class Level
                 Environment env = Environment.getByName(value);
                 
                 if (env == null) {
-                    throw new FileFormatException("Invalid value for 'environment' property");
+                    throw new FileFormatException( "Invalid value ('" + value + "') for '"
+                        + ENVIRONMENT.key + "' property in level file: " + level.filename);
                 }
                 level.background = env.createBackground();
                 
@@ -158,7 +152,7 @@ public final class Level
             {
                 for (SpecialTile special : SpecialTile.values())
                 {
-                    if ( special.getValue().equalsIgnoreCase(value) )
+                    if ( special.getValue().equals(value) )
                     {
                         special.apply(col, row, cell, level);
                         return true;
@@ -186,13 +180,23 @@ public final class Level
         }
     }
     
+    // Represents possible values for the "special" tile property
     private enum SpecialTile
     {
         COIN ("coin")
         {
-            @Override void apply(int column, int row, Cell cell, Level level)
+            @Override void apply(int column, int row, Cell platformCell, Level level)
             {
-                level.coins.add( new Coin(column, row, cell) );
+                TiledMapTileLayer coinLayer =
+                    (TiledMapTileLayer) level.tiledMap.getLayers().get(COIN_LAYER_NAME);
+                Cell cell = coinLayer.getCell(column, row);
+                
+                if (cell == null) {
+                    cell = new Cell();
+                    coinLayer.setCell(column, row, cell);
+                    level.coins.add( new Coin(column, row, cell) );
+                }                
+                platformCell.setTile(null);
             }
         },
         SPIKES ("spike")
@@ -230,10 +234,20 @@ public final class Level
     
     public Level(String filename) throws FileFormatException
     {
+        this.filename = filename;
+        
         // load the map
         TmxMapLoader.Parameters mapParams = new TmxMapLoader.Parameters();
         mapParams.flipY = false;
         tiledMap = new TmxMapLoader().load(filename, mapParams);
+        
+        if (tiledMap.getLayers().get(PLATFORM_LAYER_NAME) == null) {
+            throw new FileFormatException(
+                "No layer '" + PLATFORM_LAYER_NAME + "' found in level file: " + filename);
+        }
+        if ( ! tiledMap.getTileSets().iterator().hasNext() ) {
+            throw new FileFormatException("No tilesets found in level file: " + filename);
+        }
         
         // set every tile in every tileset to be flipped vertically
         for ( TiledMapTileSet tileset : tiledMap.getTileSets() )
@@ -244,8 +258,7 @@ public final class Level
             }
             
             // special case enabling waterfall animated tiles
-            if ( tileset.getName().equalsIgnoreCase("castle-tiles") )
-            {
+            if ( tileset.getName().equalsIgnoreCase("castle-tiles") ) {
                 loadWaterfallAnim(tileset);
             }
         }
@@ -257,6 +270,11 @@ public final class Level
         widthInTiles = blockLayer.getWidth();
         heightInTiles = blockLayer.getHeight();
         blockArray = new Block[widthInTiles][heightInTiles];
+        
+        if ( ! ensureCoinLayerExists() ) {
+            // map had its own coin layer
+            loadCoinLayerCoins();
+        }
         
         try
         {
@@ -280,7 +298,12 @@ public final class Level
         catch (NumberFormatException nfe)
         {
             throw new FileFormatException(
-                    "Error trying to parse an integer in " + filename, nfe);
+                    "Error trying to parse an integer in level file: " + filename, nfe);
+        }
+        
+        if (start == null) {
+            throw new FileFormatException(
+                    "No '" + START_NAME + "' object found in level file: " + filename);
         }
         
         // finally, construct the renderer
@@ -296,11 +319,6 @@ public final class Level
     {
         return finish;
     }
-
-//    public List<Block> getBlocks()
-//    {
-//        return blocks;
-//    }
 
     public Block[][] getBlockArray()
     {
@@ -373,6 +391,11 @@ public final class Level
         return soundtrackDelay;
     }
 
+//    public OrthogonalTiledMapRenderer createRenderer(Batch batch)
+//    {
+//        return new OrthogonalTiledMapRenderer(tiledMap, UNIT_SCALE, batch);
+//    }
+    
     public OrthogonalTiledMapRenderer getRenderer()
     {
         return renderer;
@@ -556,6 +579,74 @@ public final class Level
         }
     }
     
+    /** Returns true if the Coin layer is programmatically added */
+    private boolean ensureCoinLayerExists()
+    {
+        MapLayers layers = tiledMap.getLayers();
+        MapLayer coinLayer = layers.get(COIN_LAYER_NAME);
+        
+        if (coinLayer != null)
+        {
+            if (coinLayer instanceof TiledMapTileLayer) {
+                return false;
+            }
+            else {
+                layers.remove(coinLayer);
+            }
+        }
+        
+        TiledMapTileLayer platformLayer = (TiledMapTileLayer) layers.get(PLATFORM_LAYER_NAME);
+        coinLayer = new TiledMapTileLayer( platformLayer.getWidth(),
+                                           platformLayer.getHeight(),
+                                           (int) platformLayer.getTileWidth(),
+                                           (int) platformLayer.getTileHeight() );
+        coinLayer.setName(COIN_LAYER_NAME);
+        Array<MapLayer> array = new Array<MapLayer>();
+        
+        for (MapLayer layer : layers) {
+            array.add(layer);
+            
+            if (layer == platformLayer) {
+                array.add(coinLayer);
+            }
+        }
+        
+        while (layers.getCount() > 0) {
+            layers.remove(layers.getCount() - 1);
+        }
+        
+        for (MapLayer layer : array) {
+            layers.add(layer);
+        }
+        return true;
+    }
+    
+    private void loadCoinLayerCoins()
+    {
+        TiledMapTileLayer coinLayer =
+                (TiledMapTileLayer) tiledMap.getLayers().get(COIN_LAYER_NAME);
+        
+        for (int column = 0; column < coinLayer.getWidth(); column++)
+        {
+            for (int row = 0; row < coinLayer.getHeight(); row++)
+            {
+                Cell cell = coinLayer.getCell(column, row);
+
+                if (cell != null)
+                {
+                    Object value = cell.getTile().getProperties().get(TileProperty.SPECIAL.key);
+                    
+                    if (value != null && value.equals(SpecialTile.COIN.value)) {
+                        coins.add( new Coin(column, row, cell) );
+                    }
+                    else {
+                        coinLayer.setCell(column, row, null);
+                    }
+                }       
+            }
+        }
+    }
+    
     // loads the waterfall animation for the dungeon environment
     private void loadWaterfallAnim(TiledMapTileSet tileset)
     {
@@ -679,9 +770,4 @@ public final class Level
             throw new UnsupportedOperationException();
         }
     }
-
-//    private static String nullToEmptyString(String str)
-//    {
-//        return (str == null ? "" : str);
-//    }
 }
