@@ -1,6 +1,7 @@
 package com.plumbers.game;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -18,6 +19,9 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.utils.ReflectionPool;
 import com.plumbers.game.server.*;
 import com.plumbers.game.ui.PlumbersOnIceGame;
 
@@ -35,6 +39,10 @@ public final class GameView implements Screen
     private Background background;
     private Controller controller;
     private GameCamera camera;
+    
+    private Array<Effect> effects = new Array<Effect>(false, 64);
+    private Pool<CoinCollectEffect> coinEffectPool
+            = new ReflectionPool<CoinCollectEffect>(CoinCollectEffect.class, 64);
 
     /** true if this is a two-player network game */
     private final boolean twoPlayerMode;
@@ -110,10 +118,6 @@ public final class GameView implements Screen
     private static final String DAMAGE_SOUND_FILE = "hurt.wav";
     private static final String DEATH_SOUND_FILE = "death.wav";
 
-//    /** game viewport dimensions in game units */
-//    public final int VIRTUAL_WIDTH;// = 853;
-//    public static final int VIRTUAL_HEIGHT = 512;  
-
     /** Create a single-player GameView */
     public GameView(String levelFilePath,
                     String player1CharacterName,
@@ -164,7 +168,8 @@ public final class GameView implements Screen
         loadLevel();
 
         batch = new SpriteBatch();
-
+        mapRenderer = level.createRenderer(batch);
+        
         player1 = new Player(player1CharacterName, textureAtlas, controller);
         player1.setPosition( level.getStartPosition() );
 
@@ -185,8 +190,14 @@ public final class GameView implements Screen
 
         loadSounds();
         
-        music.setOnCompletionListener( new MusicListener() );
-        music.setVolume(musicVolume);
+        if (music != null)
+        {
+            music.setOnCompletionListener( new MusicListener() );
+            music.setVolume(musicVolume);
+        }
+        
+        Util.preFillPool(coinEffectPool, 32);
+        System.gc();
     }
     
     private void loadFont()
@@ -206,8 +217,9 @@ public final class GameView implements Screen
     {
         textureAtlas = new TextureAtlas(Gdx.files.internal(TEXTURE_ATLAS_FILE), true);
         
-        coinAnimation = Coin.getAnimation(textureAtlas);
+        coinAnimation = Coin.createAnimation(textureAtlas);
         Coin.createCoinTile(textureAtlas);
+        CoinCollectEffect.setTextureAtlas(textureAtlas);
         BasicEnemy.setTextureAtlas(textureAtlas);
         Springboard.setTextureAtlas(textureAtlas);
     }
@@ -232,7 +244,6 @@ public final class GameView implements Screen
         
         music = level.getSoundtrack();
         musicDelay = level.getSoundtrackDelay();
-        mapRenderer = level.getRenderer();
     }
     
     private void loadSounds()
@@ -254,9 +265,11 @@ public final class GameView implements Screen
                           Gdx.graphics.getHeight(),
                           Gdx.graphics.getPpiY() );
         camera.setLevel(level);
-
         Gdx.input.setInputProcessor(controller);
-        music.play();
+        
+        if (music != null) {
+            music.play();
+        }
     }
     
     /** This is called at the start, and again when the window is resized,
@@ -306,26 +319,30 @@ public final class GameView implements Screen
         events.clear();
         
         // give camera the chance to reposition
-        if ( camera.repositionCamera(player1.getXPosition(),
-                                     player1.getYPosition(),
-                                     player1.getState()) )
-        {
-            mapRenderer.setView( camera.getCamera() );
-        }
+        camera.repositionCamera( player1.getXPosition(),
+                                 player1.getYPosition(),
+                                 player1.getState() );
         
         // render the background
         if (background != null)
         {
             background.render(batch, MathUtils.floor(camera.getXDisplacement()), elapsedTime);
         }
+        
+        // render the map
+        mapRenderer.setView( camera.getCamera() );
         mapRenderer.render();
         
         // render drawables
         batch.setProjectionMatrix( camera.combined() );
         batch.begin();
 
+        for (Effect e : effects)
+        {
+            e.draw(batch, elapsedTime);
+        }
         List<Drawable> drawables = gameModel.getDrawables();
-
+        
         for (int i = 0; i < drawables.size(); i++)
         {
             drawables.get(i).draw(batch, elapsedTime);
@@ -345,16 +362,48 @@ public final class GameView implements Screen
         }
         batch.end();
         
+        // housekeeping checks
+        collectEffects();
         musicCheck();
         
         if (death)
         {
             elapsedTime = 0;
+            clearEffects();
         }
         else if (gameModel.isLevelCompleted() && finishedTime + 10 < elapsedTime)
         {
             PlumbersOnIceGame.returnToMenu();
         }
+    }
+    
+    private void collectEffects()
+    {
+        Iterator<Effect> iterator = effects.iterator();
+        
+        while ( iterator.hasNext() )
+        {
+            Effect effect = iterator.next();
+            
+            if (effect.isComplete(elapsedTime)) {
+                iterator.remove();
+                
+                if (effect instanceof CoinCollectEffect) {
+                    coinEffectPool.free((CoinCollectEffect) effect);
+                }
+            }
+        }
+    }
+    
+    private void clearEffects()
+    {
+        for (Effect e : effects)
+        {
+            if (e instanceof CoinCollectEffect) {
+                coinEffectPool.free((CoinCollectEffect) e);
+            }
+        }
+        effects.clear();
     }
 
     /** contains the behavior for events during a single player game */
@@ -370,11 +419,20 @@ public final class GameView implements Screen
                 coinSound.play();
                 coinFrameNumber = frameId;
             }
-
+            
+            Coin coin = e.getCoin();
+            Effect effect = coinEffectPool.obtain()
+                                          .init(coin.getColumn() * Block.SIZE,
+                                                coin.getRow() * Block.SIZE,
+                                                elapsedTime);
+            effects.add(effect);
+            System.out.println(effects.size);
+            
             // this is not ideal but it keeps things simpler
             if (! twoPlayerMode) {
                 player1.incrementCoins();
             }
+            CoinEvent.getPool().free(e);
         }
 
         @Override
@@ -392,7 +450,10 @@ public final class GameView implements Screen
 
             death = true;
             deathSound.play();
-            music.stop();
+            
+            if (music != null) {
+                music.stop();
+            }
         }
 
         @Override
@@ -498,7 +559,10 @@ public final class GameView implements Screen
         elapsedTime = 0;
         camera.reset();
         mapRenderer.setView( camera.getCamera() );
-        music.play();
+        
+        if (music != null) {
+            music.play();   
+        }
     }
 
     private void renderScore()
@@ -579,30 +643,36 @@ public final class GameView implements Screen
     @Override
     public void pause()
     {
-        music.pause();
+//        music.pause();
     }
 
     @Override
     public void resume()
     {
-        music.play();
+//        music.play();
     }
 
     @Override
     public void hide()
     {
-        music.stop();
+        if (music != null) {
+            music.stop();
+        }
     }
 
     /** release resources needing dispose() */
     @Override
     public void dispose()
     {
-        music.dispose();
+        if (music != null) {
+            music.dispose();
+        }
+        
         coinSound.dispose();
         jumpSound.dispose();
         damageSound.dispose();
         deathSound.dispose();
+        springboardSound.dispose();
         mapRenderer.dispose();
         mainFont.dispose();
         batch.dispose();

@@ -29,7 +29,7 @@ import com.badlogic.gdx.utils.Array;
  */
 public final class Level
 { 
-    private final OrthogonalTiledMapRenderer renderer;
+//    private final OrthogonalTiledMapRenderer renderer;
     private final Block[][] blockArray;
     private final Array<Coin> coins = new Array<Coin>(64);
     private final Array<EnemySpawner> spawners = new Array<EnemySpawner>();
@@ -306,8 +306,8 @@ public final class Level
                     "No '" + START_NAME + "' object found in level file: " + filename);
         }
         
-        // finally, construct the renderer
-        renderer = new OrthogonalTiledMapRenderer(tiledMap, UNIT_SCALE);
+//        // finally, construct the renderer
+//        renderer = new OrthogonalTiledMapRenderer(tiledMap, UNIT_SCALE);
     }
 
     public Vector getStartPosition()
@@ -391,16 +391,11 @@ public final class Level
         return soundtrackDelay;
     }
 
-//    public OrthogonalTiledMapRenderer createRenderer(Batch batch)
-//    {
-//        return new OrthogonalTiledMapRenderer(tiledMap, UNIT_SCALE, batch);
-//    }
-    
-    public OrthogonalTiledMapRenderer getRenderer()
+    public OrthogonalTiledMapRenderer createRenderer(Batch batch)
     {
-        return renderer;
+        return new OrthogonalTiledMapRenderer(tiledMap, UNIT_SCALE, batch);
     }
-
+    
     public int getWidthInTiles()
     {
         return widthInTiles;

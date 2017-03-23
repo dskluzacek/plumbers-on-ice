@@ -11,14 +11,14 @@ badguy1-jump
   orig: 16, 16
   offset: 0, 0
   index: -1
-badguy1-walk2
+badguy1-walk1
   rotate: false
   xy: 2, 92
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-badguy1-walk1
+badguy1-walk2
   rotate: false
   xy: 20, 110
   size: 16, 16
@@ -130,170 +130,198 @@ coin-4
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-idle1
+coin-collect-1
   rotate: false
   xy: 38, 56
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-idle2
+coin-collect-2
   rotate: false
   xy: 56, 74
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-idle3
+coin-collect-3
   rotate: false
   xy: 74, 92
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-jump
+coin-collect-4
   rotate: false
   xy: 92, 110
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-knockback
+greenbot-idle1
   rotate: false
   xy: 110, 110
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-land
+greenbot-idle2
   rotate: false
   xy: 20, 20
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-walk1
+greenbot-idle3
   rotate: false
   xy: 20, 2
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-walk2
+greenbot-jump
   rotate: false
   xy: 38, 38
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-walk3
+greenbot-knockback
   rotate: false
   xy: 56, 56
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-walk4
+greenbot-land
   rotate: false
   xy: 74, 74
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-walk5
+greenbot-walk1
   rotate: false
   xy: 92, 92
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-greenbot-walk6
+greenbot-walk2
   rotate: false
   xy: 110, 92
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-hero-idle1
+greenbot-walk3
   rotate: false
   xy: 38, 20
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-hero-idle2
+greenbot-walk4
   rotate: false
   xy: 38, 2
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-hero-idle3
+greenbot-walk5
   rotate: false
   xy: 56, 38
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-hero-jump
+greenbot-walk6
   rotate: false
   xy: 74, 56
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-hero-knockback
+hero-idle1
   rotate: false
   xy: 92, 74
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-hero-land
+hero-idle2
   rotate: false
   xy: 110, 74
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-hero-walk1
+hero-idle3
   rotate: false
   xy: 56, 20
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-hero-walk2
+hero-jump
   rotate: false
   xy: 56, 2
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-hero-walk3
+hero-knockback
   rotate: false
   xy: 74, 38
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-springboard-1
+hero-land
   rotate: false
   xy: 92, 56
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-springboard-2
+hero-walk1
   rotate: false
   xy: 110, 56
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-springboard-3
+hero-walk2
   rotate: false
   xy: 74, 20
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+hero-walk3
+  rotate: false
+  xy: 74, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+springboard-1
+  rotate: false
+  xy: 92, 38
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+springboard-2
+  rotate: false
+  xy: 110, 38
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+springboard-3
+  rotate: false
+  xy: 92, 20
   size: 16, 16
   orig: 16, 16
   offset: 0, 0

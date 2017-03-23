@@ -25,17 +25,17 @@ public final class Coin
     
     /**
      * Constructs a coin located at the given row and column.
+     * @param column The column number
      * @param row The row number
-     * @param col The column number
      * @param cell The Tiled map cell located at the given row and column
      */
-    public Coin(int row, int col, TiledMapTileLayer.Cell cell)
+    public Coin(int column, int row, TiledMapTileLayer.Cell cell)
     {
         this.row = row;
-        this.column = col;
+        this.column = column;
         this.cell = cell;
-        hitbox = new Rectangle(row * Block.SIZE,
-                               col * Block.SIZE,
+        hitbox = new Rectangle(column * Block.SIZE,
+                               row * Block.SIZE,
                                Block.SIZE,
                                Block.SIZE);
         cell.setTile(coinTile);
@@ -75,6 +75,11 @@ public final class Coin
         return hitbox;
     }
     
+    public static AnimatedTiledMapTile getCoinTile()
+    {
+        return coinTile;
+    }
+    
     /**
      * Initializes the coin animated map tile.
      */
@@ -91,7 +96,7 @@ public final class Coin
     /**
      * Creates the coin animation for the on-screen coin count display.
      */
-    public static Animation getAnimation(TextureAtlas textureAtlas)
+    public static Animation createAnimation(TextureAtlas textureAtlas)
     {
         TextureRegion[] coinFrames = new TextureRegion[] {
                 textureAtlas.findRegion("coin-1"),
