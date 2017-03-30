@@ -165,7 +165,7 @@ public abstract class Character extends Motionable implements Drawable
                     continue;
                 }
                 Rectangle.Collision coll
-                = hitbox.collisionInfo(b.getRectangle(),
+                    = hitbox.collisionInfo(b.getRectangle(),
                         getPreviousX() + hitboxOffsetX,
                         getPreviousY() + hitboxOffsetY);
 

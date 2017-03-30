@@ -197,7 +197,6 @@ public final class GameView implements Screen
         }
         
         Util.preFillPool(coinEffectPool, 32);
-        System.gc();
     }
     
     private void loadFont()
@@ -426,7 +425,6 @@ public final class GameView implements Screen
                                                 coin.getRow() * Block.SIZE,
                                                 elapsedTime);
             effects.add(effect);
-            System.out.println(effects.size);
             
             // this is not ideal but it keeps things simpler
             if (! twoPlayerMode) {
