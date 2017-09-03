@@ -3,7 +3,7 @@ package com.plumbers.game;
 /** 
  * Used to represent a non-moving hazard that has one collision box.
  */
-public class FixedHazard implements Hazard
+public class FixedHazard implements InteractiveMapObject
 {
     private final Rectangle rectangle;
 
@@ -12,8 +12,14 @@ public class FixedHazard implements Hazard
         this.rectangle = new Rectangle(rectangle);
     }
 
-    public Rectangle getRectangle()
+    public final Rectangle getRectangle()
     {
         return rectangle;
+    }
+
+    @Override
+    public final void activate(IPlayer p, Rectangle.Collision coll, int t)
+    {
+        p.kill();
     }
 }

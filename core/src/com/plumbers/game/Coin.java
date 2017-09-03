@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Array;
 /**
  * A coin within a game level, able to be collected by the player.
  */
-public final class Coin
+public final class Coin implements TileObject
 {
     private final int row;
     private final int column;
@@ -69,10 +69,29 @@ public final class Coin
     {
         return column;
     }
-
+    
+    @Override
     public Rectangle getRectangle()
     {
         return hitbox;
+    }
+    
+    @Override
+    public void onCollision(IPlayer player, Rectangle.Collision c)
+    {
+        if (collected) {
+            return;
+        }
+        
+        setCollected(true);
+        player.incrementCoins();
+        player.addEvent( CoinEvent.getPool().obtain().init(this) );
+    }
+
+    @Override
+    public boolean isSolidTo(CharacterType ct)
+    {
+        return false;
     }
     
     public static AnimatedTiledMapTile getCoinTile()

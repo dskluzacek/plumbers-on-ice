@@ -34,7 +34,7 @@ public final class MainMenu extends InputAdapter implements Screen
                                LEVEL_2_FILE = "grassy2.tmx",
                                LEVEL_3_FILE = "winter1.tmx",
                                LEVEL_4_FILE = "tropical1.tmx",
-                               LEVEL_5_FILE = "castle2.tmx";
+                               LEVEL_5_FILE = "castle1.tmx";
 
     public MainMenu(Game game)
     {

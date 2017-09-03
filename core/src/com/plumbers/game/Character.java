@@ -58,15 +58,17 @@ public abstract class Character extends Motionable implements Drawable
     
     /**
      * Defined by subclasses to customize behavior
-     * in response to a collision with a block.
+     * in response to a collision with a TileObject.
      */
-    public abstract void respondToCollision(Block b, Rectangle.Collision info);
+    public abstract void respondToCollision(TileObject b, Rectangle.Collision info);
     
     /**
      * Defined by subclasses to customize behavior in response
      * to not being held up by a block - not standing on anything.
      */
     public abstract void respondToUnsupported();
+    
+    public abstract CharacterType getCharacterType();
 
     @Override
     public void draw(Batch batch, float time)
@@ -98,41 +100,32 @@ public abstract class Character extends Motionable implements Drawable
         hitbox.setY( getYPosition() + hitboxOffsetY );
     }
 
-    public void fallingCheck(Block[][] blocks)
+    public void fallingCheck(TileObject[][] tiles)
     {
         if (state != State.STANDING && state != State.RUNNING)
         {
             return;
         }
         updateHitbox();
-        hitboxToColumnsAndRows(blocks.length, blocks[0].length);
+        hitboxToColumnsAndRows(tiles.length, tiles[0].length);
         
-        doFallingCheck(blocks);
-    }
-
-    private void doFallingCheck(Block[][] blocks)
-    {
-        if (state != State.STANDING && state != State.RUNNING)
-        {
-            return;
-        }
         boolean flag = false;
 
-        for (int x = columnBegin; x <= columnEnd; x++)
+        for (int x = columnBegin; x <= columnEnd && flag == false; x++)
         {
-            for (int y = rowBegin; y <= rowEnd; y++)
+            for (int y = rowBegin; y <= rowEnd && flag == false; y++)
             {
-                Block b = blocks[x][y];
+                TileObject obj = tiles[x][y];
 
-                if (b == null) {
+                if ( obj == null || ! obj.isSolidTo(this.getCharacterType()) )
+                {
                     continue;
                 }
                 Rectangle.Collision coll
-                    = hitbox.staticCollisionInfo( b.getRectangle() );
+                    = hitbox.staticCollisionInfo( obj.getRectangle() );
 
                 if (coll != null && coll.getDirection() == Direction.TOP) {
                     flag = true;
-                    break;
                 }
                 /* ---- */
                 Rectangle.disposeOf(coll);
@@ -144,48 +137,79 @@ public abstract class Character extends Motionable implements Drawable
         }
     }
 
-    public void collisionCheck(Block[][] blocks)
+    public void collisionCheck(TileObject[][] tiles)
     {
         if (state == State.DYING)
         {
             return;
         }
         updateHitbox();
-        hitboxToColumnsAndRows(blocks.length, blocks[0].length);
-
-        boolean flag = false;
+        hitboxToColumnsAndRows(tiles.length, tiles[0].length);
 
         for (int x = columnBegin; x <= columnEnd; x++)
         {
             for (int y = rowBegin; y <= rowEnd; y++)
             {
-                Block b = blocks[x][y];
-
-                if (b == null) {
+                TileObject gridObject = tiles[x][y];
+                
+                if (gridObject == null)
+                {
                     continue;
                 }
+                // we can ignore this object if the character is not the player
+                // AND this object is not solid to the CharacterType of this Character
+                if ( this.getCharacterType() != CharacterType.PLAYER
+                     && ! gridObject.isSolidTo(this.getCharacterType()) )
+                {
+                    continue;
+                }
+                
                 Rectangle.Collision coll
-                    = hitbox.collisionInfo(b.getRectangle(),
+                    = hitbox.collisionInfo(gridObject.getRectangle(),
                         getPreviousX() + hitboxOffsetX,
                         getPreviousY() + hitboxOffsetY);
-
-                if (coll != null
-                    && (coll.getDirection() != Direction.TOP || coll.getDistance() != 0.0f)
-                    && (coll.getDirection() != Direction.BOTTOM || blocks[x][y + 1] == null))
-                     // ^^ this line ensures a bottom collision with a block that has
-                     //    a block below it - i.e., part of a vertical wall, is ignored
-                {
-                    respondToCollision(blocks[x][y], coll);
+                
+                if ( !(coll == null
+                       || standingOnBlock(coll, gridObject) 
+                       || (y + 1 < tiles[x].length
+                           && partOfVerticalWall(coll, y, gridObject, tiles[x][y + 1]))) )
+                {   
+                    respondToCollision(gridObject, coll);
                     updateHitbox();
-                    flag = true;
                 }
                 /* ---- */
                 Rectangle.disposeOf(coll);
             }
         }
-        if (flag)
+    }
+    
+    private boolean standingOnBlock(Rectangle.Collision coll, TileObject tile)
+    {
+        return coll.getDirection() == Direction.TOP
+                && coll.getDistance() == 0.0f
+                && tile instanceof Block;
+    }
+    
+    // this method ensures a bottom collision with a block that has
+    // a block below it - i.e., part of a vertical wall, is ignored
+    private boolean partOfVerticalWall(Rectangle.Collision coll,
+                                       int y,
+                                       TileObject currentObject,
+                                       TileObject objectBelow)
+    {
+        if ( objectBelow == null || coll.getDirection() != Direction.BOTTOM
+                || ! objectBelow.isSolidTo(this.getCharacterType()) )
         {
-            fallingCheck(blocks);
+            return false;
+        }
+        else
+        {
+            Rectangle currentObjectRect = currentObject.getRectangle();
+            y = (y + 1) * Block.SIZE;
+            
+            return objectBelow.getRectangle().getY() == y
+                   && currentObjectRect.getY() + currentObjectRect.getH() == y
+                   && objectBelow.getRectangle().getX() == currentObjectRect.getX();
         }
     }
     

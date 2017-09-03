@@ -1,8 +1,6 @@
 package com.plumbers.game;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -55,7 +53,6 @@ public final class GameView implements Screen
 
     /* -- state fields needed by the View -- */
     private float elapsedTime = 0;
-    private List<Event> events = new ArrayList<Event>();
 
     /** true when we are in the pause between player death and reset */
     private boolean death = false;
@@ -179,9 +176,9 @@ public final class GameView implements Screen
             player2.setPosition( level.getStartPosition() );
             gameModel = new GameModel(level, player1, player2, null);
             connection.setPlayers(player1, player2);
-            player1.set2PlayerMode(true);
-            player1.setGameConnection(connection);
-            player2.setGameConnection(connection);
+//            player1.set2PlayerMode(true);
+//            player1.setGameConnection(connection);
+//            player2.setGameConnection(connection);
         }
         else
         {
@@ -308,14 +305,13 @@ public final class GameView implements Screen
         elapsedTime += deltaTime;
         
         // simulate one game tick and get events
-        events.addAll( gameModel.gameTick() );
+        Iterable<Event> events = gameModel.gameTick();
         
         // apply events to the event context
-        for (int i = 0; i < events.size(); i++)
+        for (Event e : events)
         {
-            events.get(i).applyTo(eventContext);
+            e.applyTo(eventContext);
         }
-        events.clear();
         
         // give camera the chance to reposition
         camera.repositionCamera( player1.getXPosition(),
@@ -340,11 +336,11 @@ public final class GameView implements Screen
         {
             e.draw(batch, elapsedTime);
         }
-        List<Drawable> drawables = gameModel.getDrawables();
+        Array<Drawable> drawables = gameModel.getDrawables();
         
-        for (int i = 0; i < drawables.size(); i++)
+        for (Drawable drawable : drawables)
         {
-            drawables.get(i).draw(batch, elapsedTime);
+            drawable.draw(batch, elapsedTime);
         }
         batch.end();
         

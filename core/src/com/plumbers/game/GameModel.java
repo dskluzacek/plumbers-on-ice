@@ -1,8 +1,6 @@
 package com.plumbers.game;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -14,8 +12,8 @@ public final class GameModel
     private final Player player2; 
     private final Level currentLevel;
     private final SpawnStrategy spawnStrategy;
-    private final List<Event> occuringEvents = new ArrayList<Event>(); 
-    private final List<Drawable> drawables = new ArrayList<Drawable>();
+    private final Array<Event> occuringEvents = new Array<Event>(); 
+    private final Array<Drawable> drawables = new Array<Drawable>();
     private final Array<Enemy> enemies = new Array<Enemy>(); 
     private final int levelBottom;
     private final boolean twoPlayer;
@@ -52,7 +50,7 @@ public final class GameModel
         }
     }
 
-    public List<Event> gameTick()
+    public Iterable<Event> gameTick()
     {
         ++gameTicks;
         occuringEvents.clear();
@@ -83,11 +81,12 @@ public final class GameModel
         }
         p.fallingCheck( currentLevel.getBlockArray() );
         p.collisionCheck( currentLevel.getBlockArray() );
-        p.hazardCollisionCheck( currentLevel.getHazards() );
+//        p.hazardCollisionCheck( currentLevel.getHazards() );
         p.hazardCollisionCheck( enemies.iterator() );
-        Util.addNotNull( occuringEvents, p.getEvent() );
-        occuringEvents.addAll(
-                p.coinCollectCheck(currentLevel.getCoins(), gameTicks) );
+        
+        Util.addAll( occuringEvents, p.getEvents() );
+        p.clearEvents();
+
         Util.addNotNull( occuringEvents,
                 p.springboardCheck(currentLevel.getSpringboards(), gameTicks) );
         Util.addNotNull( occuringEvents,
@@ -104,7 +103,7 @@ public final class GameModel
         enemy.gameTick( gameTicks, currentLevel.getBlockArray() );
     }
 
-    public List<Drawable> getDrawables()
+    public Array<Drawable> getDrawables()
     {
         drawables.clear();
         Util.addAll( drawables, currentLevel.getSpringboards() );

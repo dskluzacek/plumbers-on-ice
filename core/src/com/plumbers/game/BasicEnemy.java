@@ -38,22 +38,22 @@ public class BasicEnemy extends Character implements Enemy
     }
 
     @Override
-    public void gameTick(int tickNum, Block[][] blockArray)
+    public void gameTick(int tickNum, TileObject[][] tiles)
     {
         simulate(tickNum);
-        fallingCheck(blockArray);
-        collisionCheck(blockArray);
+        fallingCheck(tiles);
+        collisionCheck(tiles);
     }
     
     @Override
-    public void fallingCheck(Block[][] blocks)
+    public void fallingCheck(TileObject[][] tiles)
     {
         // causes the enemy to turn around 
         // when it is one enemy-width away from falling
         
         float x = getXPosition();
         setXPosition( x + Math.copySign(getRectangle().getW(), getXVelocity()) );
-        super.fallingCheck(blocks);
+        super.fallingCheck(tiles);
         setXPosition(x);
     }
     
@@ -70,13 +70,17 @@ public class BasicEnemy extends Character implements Enemy
     }
 
     @Override
-    public void respondToCollision(Block block, Rectangle.Collision info)
+    public void respondToCollision(TileObject tile, Rectangle.Collision info)
     {	    
+        if ( ! tile.isSolidTo(CharacterType.ENEMY) ) {
+            return;
+        }
+        
         if (info.getDirection() == Direction.TOP)
         {
             setYAccel(0);
             setYVelocity(0);
-            setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectOffsetY() );
+            setYPosition( tile.getRectangle().getY() - getRectangle().getH() - rectOffsetY() );
 
             if ( getState() != State.RUNNING )
             {
@@ -97,6 +101,12 @@ public class BasicEnemy extends Character implements Enemy
             setFlipped(true);
             setXPosition( getXPosition() - info.getDistance() );
         }
+    }
+    
+    @Override
+    public final CharacterType getCharacterType()
+    {
+        return CharacterType.ENEMY;
     }
 
     public static void setTextureAtlas(TextureAtlas atlas)
@@ -168,4 +178,5 @@ public class BasicEnemy extends Character implements Enemy
             animation = new MovementAnimation(jumpAnim, walkAnim, jumpAnim, jumpAnim, jumpAnim);
         }
     }
+
 }

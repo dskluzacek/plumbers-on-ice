@@ -35,11 +35,11 @@ public final class Util
         }
     }
     
-    public static <T> void addAll(Array<? super T> collection, Iterator<T> iter)
+    public static <T> void addAll(Array<? super T> array, Iterator<T> iter)
     {
         while ( iter.hasNext() )
         {
-            collection.add( iter.next() );
+            array.add( iter.next() );
         }
     }
     

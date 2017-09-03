@@ -3,12 +3,13 @@ package com.plumbers.game;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.plumbers.game.Rectangle.Collision;
 
 /**
  * A "springboard" or "trampoline" in the game, which the player can bounce on
  * to jump higher.
  */
-public final class Springboard implements Drawable
+public final class Springboard implements InteractiveMapObject, Drawable
 {
     private final int column;
     private final int row;
@@ -132,6 +133,21 @@ public final class Springboard implements Drawable
         frame1 = atlas.findRegion("springboard-1");
         frame2 = atlas.findRegion("springboard-2");
         frame3 = atlas.findRegion("springboard-3");
+    }
+
+    @Override
+    public void activate(IPlayer p, Collision coll, int tickNumber)
+    {
+        if (tickNumber <= lastActivationTickNumber + REACTIVATION_TICKS)
+        {
+            return;
+        }
+        
+        state = State.FRAME_2_DOWN;
+        lastActivationTickNumber = tickNumber;
+        currentStateStartTime = Float.NaN;  // will be set upon next call to draw() 
+        
+        
     }
 
 }

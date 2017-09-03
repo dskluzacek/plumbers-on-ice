@@ -1,18 +1,13 @@
 package com.plumbers.game.server;
 
-import java.util.Collections;
+
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Pools;
-import com.plumbers.game.Coin;
-import com.plumbers.game.DamageEvent;
 import com.plumbers.game.DeathEvent;
-import com.plumbers.game.Event;
 import com.plumbers.game.Hazard;
-import com.plumbers.game.JumpEvent;
 import com.plumbers.game.Player;
 import com.plumbers.game.server.EventMessage.MsgType;
 
@@ -23,7 +18,7 @@ public class RemotePlayer extends Player {
     
     public RemotePlayer(String name, TextureAtlas textureAtlas) {
         super(name, textureAtlas, null);
-        set2PlayerMode(true);
+//        set2PlayerMode(true);
     }
     
     public void putStateMessage(StateMessage m) {
@@ -88,33 +83,33 @@ public class RemotePlayer extends Player {
         }
     }
 
-    @Override
-    public Event getEvent()
-    {
-        Event e = super.getEvent();
-        
-        if (e instanceof DamageEvent)
-        {
-            return DamageEvent.playerTwoInstance();
-        } 
-        else if (e instanceof JumpEvent)
-        {
-            return JumpEvent.playerTwoInstance();
-        }
-        else
-        {
-            return null;
-        }
-    }
+//    @Override
+//    public Event getEvent()
+//    {
+//        Event e = super.getEvent();
+//        
+//        if (e instanceof DamageEvent)
+//        {
+//            return DamageEvent.playerTwoInstance();
+//        } 
+//        else if (e instanceof JumpEvent)
+//        {
+//            return JumpEvent.playerTwoInstance();
+//        }
+//        else
+//        {
+//            return null;
+//        }
+//    }
 
     @Override
     public void hazardCollisionCheck(Iterator<? extends Hazard> hazards) {
     }
 
-    @Override
-    public List<Event> coinCollectCheck(Iterator<Coin> coins, int tickNum) {
-        return Collections.emptyList();
-    }
+//    @Override
+//    public List<Event> coinCollectCheck(Iterator<Coin> coins, int tickNum) {
+//        return Collections.emptyList();
+//    }
 
     @Override
     public DeathEvent fallingDeathCheck(float bottom) {

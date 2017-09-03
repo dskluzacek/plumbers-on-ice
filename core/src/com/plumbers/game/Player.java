@@ -1,9 +1,6 @@
 package com.plumbers.game;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -11,27 +8,21 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
-import com.plumbers.game.server.EventMessage;
-import com.plumbers.game.server.GameConnection;
-import com.plumbers.game.server.StateMessage;
 
 /**
  * The human-controlled player character. 
  */
-public class Player extends Character
+public class Player extends Character implements IPlayer
 {
     private Controller controller;
-    private GameConnection connection;
+//    private GameConnection connection;
     private int coinsCollected = 0;
     private boolean jumped = false;
     private boolean hurt = false;
     private int jumpStartedTick;   // tick number when the most recent jump started
     private boolean finished;
-
-    /* ---- */
-    private boolean twoPlayerMode;
-    private final List<Event> coinEvents = new ArrayList<Event>();
-    /* ---- */
+    
+    private final Array<Event> events = new Array<Event>(8);
 
     private static final float ACCELERATION = 11/75f, //1/14f,
                                DECELERATION = -1.2f, 
@@ -84,30 +75,33 @@ public class Player extends Character
         setMovementAnim( new MovementAnimation(idleAnimation, walkAnimation,
                                  jumpAnimation, landAnimation, knockbackAnimation) );
     }
-
-    public final int getCoinsCollected()
+    
+    @Override
+    public final CharacterType getCharacterType()
     {
-        return coinsCollected;
+        return CharacterType.PLAYER;
     }
-
+    
+    @Override
+    public final void addEvent(Event e)
+    {
+        events.add(e);
+    }
+    
+    @Override
     public final void incrementCoins()
     {
         ++coinsCollected;
     }
 
-    public final void set2PlayerMode(boolean twoPlayer)
+    public final int getCoinsCollected()
     {
-        twoPlayerMode = twoPlayer;
+        return coinsCollected;
     }
     
     public final boolean isLevelCompleted()
     {
         return finished;
-    }
-
-    public final void setGameConnection(GameConnection connection)
-    {
-        this.connection = connection;
     }
 
     public final void setController(Controller c)
@@ -193,18 +187,23 @@ public class Player extends Character
             beKilled();
         }
 
-        if (twoPlayerMode && tickNumber % 8 == 0)
-        {
-            StateMessage msg = StateMessage.obtain();
-            msg.setValues(this, tickNumber);
-            connection.enqueue(msg);
-        }
+//        if (twoPlayerMode && tickNumber % 8 == 0)
+//        {
+//            StateMessage msg = StateMessage.obtain();
+//            msg.setValues(this, tickNumber);
+//            connection.enqueue(msg);
+//        }
+    }
+    
+    public final void clearEvents()
+    {
+        events.clear();
     }
     
     /**
      * Returns any outstanding events resulting from simulation logic.
      */
-    public Event getEvent()
+    public Iterator<Event> getEvents()
     {
         boolean jumped = this.jumped;
         boolean hurt = this.hurt;
@@ -213,16 +212,16 @@ public class Player extends Character
 
         if (hurt)
         {
-            return DamageEvent.playerOneInstance();
+            //return DamageEvent.playerOneInstance();
+            events.add( DamageEvent.playerOneInstance() );
         }
         else if (jumped && getState() == State.JUMPING)
         {
-            return JumpEvent.playerOneInstance();
+            //return JumpEvent.playerOneInstance();
+            events.add( JumpEvent.playerOneInstance() );
         }
-        else
-        {
-            return null;
-        }
+        
+        return events.iterator();
     }
     
     @Override
@@ -236,10 +235,10 @@ public class Player extends Character
     
     public void reset(Vector position) 
     {
-        if (! twoPlayerMode)
-        {
-            coinsCollected = 0;
-        }
+//        if (! twoPlayerMode)
+//        {
+        coinsCollected = 0;
+//        }
         setPosition(position);
         setVelocity(0, 0);
         setAcceleration(0, GameModel.GRAVITY);
@@ -247,46 +246,13 @@ public class Player extends Character
     }
 
     @Override
-    public void respondToCollision(Block block, Rectangle.Collision info)
+    public void respondToCollision(TileObject object, Rectangle.Collision info)
     {
-        State state = getState();
+        object.onCollision(this, info);
         
-        if (info.getDirection() == Direction.TOP)
+        if ( object.isSolidTo(CharacterType.PLAYER) )
         {
-            setYAccel(0);
-            setYVelocity(0);
-            setYPosition( block.getRectangle().getY() - getRectangle().getH() - rectOffsetY() );
-
-            if (state == State.JUMPING || state == State.FALLING)
-            {
-                setState(State.RUNNING);
-            }     
-        }
-        else if (info.getDirection() == Direction.LEFT)
-        {
-            Rectangle blockRect = block.getRectangle();
-            float blockBottom = blockRect.getY() + blockRect.getH();
-            
-            // don't make player fall from hitting bottom left corner
-            if (getRectangle().getY() > blockBottom - LOWER_LEFT_TOLERANCE)
-            {
-                setYPosition( blockBottom - rectOffsetY() );
-            }
-            else
-            {
-                leftCollision(state, info);
-            }
-        }
-        else if (info.getDirection() == Direction.BOTTOM)
-        {
-            setYVelocity(0);
-            setYPosition( getYPosition() + info.getDistance() );
-        }
-        else if (info.getDirection() == Direction.RIGHT)
-        {
-            setXAccel(0);
-            setXVelocity(0);
-            setXPosition( getXPosition() + info.getDistance() );
+            solidTileCollision(object, info);
         }
     }
     
@@ -323,37 +289,6 @@ public class Player extends Character
                 beKilled();
             }
         }
-    }
-
-    public List<Event> coinCollectCheck(Iterator<Coin> coins, int tickNum)
-    {
-        if ( getState() == State.DYING )
-        {
-            return Collections.emptyList();
-        }
-
-        Rectangle rect = getRectangle();
-        coinEvents.clear();
-
-        while ( coins.hasNext() )
-        {
-            Coin coin = coins.next();
-
-            if ( ! coin.isCollected() && rect.intersects(coin.getRectangle()) )
-            {
-                coin.setCollected(true);
-                CoinEvent event = CoinEvent.getPool().obtain().init(coin);
-                coinEvents.add(event);
-                
-                if (twoPlayerMode)
-                {
-                    EventMessage msg = EventMessage.obtain();
-                    msg.coin(tickNum, true, coin.getColumn(), coin.getRow());
-                    connection.enqueue(msg);
-                }
-            }
-        }
-        return coinEvents;
     }
     
     public Event springboardCheck(Iterator<Springboard> springboards, int tickNumber)
@@ -451,6 +386,49 @@ public class Player extends Character
         setXAccel(0);
     }
     
+    private void solidTileCollision(TileObject tile, Rectangle.Collision info)
+    {
+        State state = getState();
+        
+        if (info.getDirection() == Direction.TOP)
+        {
+            setYAccel(0);
+            setYVelocity(0);
+            setYPosition( tile.getRectangle().getY() - getRectangle().getH() - rectOffsetY() );
+
+            if (state == State.JUMPING || state == State.FALLING)
+            {
+                setState(State.RUNNING);
+            }     
+        }
+        else if (info.getDirection() == Direction.LEFT)
+        {
+            Rectangle blockRect = tile.getRectangle();
+            float blockBottom = blockRect.getY() + blockRect.getH();
+            
+            // don't make player fall from hitting bottom left corner
+            if (getRectangle().getY() > blockBottom - LOWER_LEFT_TOLERANCE)
+            {
+                setYPosition( blockBottom - rectOffsetY() );
+            }
+            else
+            {
+                leftCollision(state, info);
+            }
+        }
+        else if (info.getDirection() == Direction.BOTTOM)
+        {
+            setYVelocity(0);
+            setYPosition( getYPosition() + info.getDistance() );
+        }
+        else if (info.getDirection() == Direction.RIGHT)
+        {
+            setXAccel(0);
+            setXVelocity(0);
+            setXPosition( getXPosition() + info.getDistance() );
+        }
+    }
+    
     // respond to collision with an object's left edge, whether a block or something else
     private void leftCollision(State state, Rectangle.Collision info)
     {
@@ -463,5 +441,11 @@ public class Player extends Character
             setState(State.FALLING);
             setYVelocity(0);
         }
+    }
+        
+    @Override
+    public void kill()
+    {
+        beKilled();
     }
 }

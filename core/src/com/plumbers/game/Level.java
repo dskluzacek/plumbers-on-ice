@@ -29,8 +29,7 @@ import com.badlogic.gdx.utils.Array;
  */
 public final class Level
 { 
-//    private final OrthogonalTiledMapRenderer renderer;
-    private final Block[][] blockArray;
+    private final TileObject[][] tileObjArray;
     private final Array<Coin> coins = new Array<Coin>(64);
     private final Array<EnemySpawner> spawners = new Array<EnemySpawner>();
     private final Array<FixedHazard> hazards = new Array<FixedHazard>();
@@ -194,7 +193,7 @@ public final class Level
                 if (cell == null) {
                     cell = new Cell();
                     coinLayer.setCell(column, row, cell);
-                    level.coins.add( new Coin(column, row, cell) );
+                    level.addNewCoin(column, row, cell);
                 }                
                 platformCell.setTile(null);
             }
@@ -203,7 +202,7 @@ public final class Level
         {
             @Override void apply(int column, int row, Cell cell, Level level)
             {
-                level.hazards.add( new Spikes(column, row) );
+                level.tileObjArray[column][row] = new Spikes(column, row);
             }
         },
         SPRINGBOARD ("springboard")
@@ -269,7 +268,7 @@ public final class Level
                 (TiledMapTileLayer) tiledMap.getLayers().get(PLATFORM_LAYER_NAME);
         widthInTiles = blockLayer.getWidth();
         heightInTiles = blockLayer.getHeight();
-        blockArray = new Block[widthInTiles][heightInTiles];
+        tileObjArray = new TileObject[widthInTiles][heightInTiles];
         
         if ( ! ensureCoinLayerExists() ) {
             // map had its own coin layer
@@ -320,9 +319,9 @@ public final class Level
         return finish;
     }
 
-    public Block[][] getBlockArray()
+    public TileObject[][] getBlockArray()
     {
-        return blockArray;
+        return tileObjArray;
     }
     
     /**
@@ -561,20 +560,20 @@ public final class Level
             int height =
                 (hStr == null ? Block.SIZE : Integer.parseInt(hStr.trim()) * UNIT_SCALE);
 
-            Block b = new Block(column, row, cell, blockLayer,
-                                offsetX, offsetY, width, height);
-//            blocks.add(b);
-            blockArray[column][row] = b;
+            Block b = new Block(column, row, offsetX, offsetY, width, height);
+            tileObjArray[column][row] = b;
         }
         else
         {
-            Block b =  new Block(column, row, cell, blockLayer);
-//            blocks.add(b);
-            blockArray[column][row] = b;
+            Block b =  new Block(column, row);
+            tileObjArray[column][row] = b;
         }
     }
     
-    /** Returns true if the Coin layer is programmatically added */
+    /** 
+     * Checks for the coin layer and adds one if it does not exist.
+     * @return true if the Coin layer is programmatically added
+     */
     private boolean ensureCoinLayerExists()
     {
         MapLayers layers = tiledMap.getLayers();
@@ -598,6 +597,8 @@ public final class Level
         coinLayer.setName(COIN_LAYER_NAME);
         Array<MapLayer> array = new Array<MapLayer>();
         
+        // MapLayers has no insert method (or clear method), so we do
+        // the following to get all layers and insert in the desired order        
         for (MapLayer layer : layers) {
             array.add(layer);
             
@@ -632,7 +633,7 @@ public final class Level
                     Object value = cell.getTile().getProperties().get(TileProperty.SPECIAL.key);
                     
                     if (value != null && value.equals(SpecialTile.COIN.value)) {
-                        coins.add( new Coin(column, row, cell) );
+                        addNewCoin(column, row, cell);
                     }
                     else {
                         coinLayer.setCell(column, row, null);
@@ -640,6 +641,13 @@ public final class Level
                 }       
             }
         }
+    }
+    
+    private void addNewCoin(int column, int row, Cell cell)
+    {
+        Coin c = new Coin(column, row, cell);
+        coins.add(c);
+        tileObjArray[column][row] = c;
     }
     
     // loads the waterfall animation for the dungeon environment
@@ -710,10 +718,12 @@ public final class Level
     {
         return new Iterable<Cell>()
         {
+            private Iterator<Cell> iterator = new CellIterator(layer);
+            
             @Override
             public Iterator<Cell> iterator()
             {
-                return new CellIterator(layer);
+                return iterator;
             }
         };
     }
